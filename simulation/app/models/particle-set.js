@@ -28,3 +28,10 @@ ParticleSet.prototype.getEstimateList = function() {
 
 	return list;
 };
+
+ParticleSet.prototype.sample = function(control) {
+	
+	this.particles.forEach(function(p) {
+		p.sample(control);
+	});
+};

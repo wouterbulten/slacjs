@@ -123,13 +123,16 @@ var app = {
     iterate: function() {
 
         this.user.step();
+        this.particles.sample();
 
         console.log([this.user.x, this.user.y])
 
+        //Plot current user position
         this.plot.series[this.groundTruthSeries].addPoint([this.user.x, this.user.y], true)
 
         //Plot the particles
         this.plot.series[this.particleSeries].setData(this.particles.getEstimateList())
+
     	this.iteration++;
     },
 
