@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="nl.wouterbulten.slacapp" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>SlacApp</name>
+    <description>
+        Simultaneously Localisation and Configuration for Wireless Sensor Networks in indoor environments.
+    </description>
+    <author email="slacjs@wouterbulten.nl" href="https://wouterbulten.nl">
+        Wouter Bulten
+    </author>
+    <content src="index.html" />
+    <access origin="*" />
+</widget>
