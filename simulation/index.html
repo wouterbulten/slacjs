@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>SLACjs Test</title>
+</head>
+
+<body>
+
+<h1>SLAC.js test</h1>
+<div id="map" style="height: 500px; width: 500px;"></div>
+
+<script type="text/javascript" src="vendor/jquery/jquery-2.1.3.js"></script>
+<script type="text/javascript" src="vendor/highcharts/js/highcharts.js"></script>
+<script type="text/javascript" src="app/models/node.js"></script>
+<script type="text/javascript" src="app/models/user.js"></script>
+<script type="text/javascript" src="app/app.js"></script>
+
+<script type="text/javascript">
+var maxLoops = 50;
+var currentLoop = 0;
+
+var loop = function() {
+
+	var i = 0;
+
+	var iterate = function() {
+
+		app.iterate();
+
+		if(i++ < 50) {
+			setTimeout(iterate, 500);
+		}
+		else {
+			app.reset();
+
+			setTimeout(loop, 1000);
+		}
+	};
+
+	setTimeout(iterate, 1000);
+}
+
+$(document).ready(function(){
+	app.initialize({
+		mapElement: 	'map',
+		nNodes: 		10,
+		xMax: 			50,
+		yMax:			50,  
+		nNodes: 		20,
+	});
+
+	setTimeout(loop, 1000);
+
+});
+</script>
+</body>
+</html>
