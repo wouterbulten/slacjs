@@ -8,9 +8,11 @@ var app = {
 
     groundTruthSeries: 0,
     nodesSeries: 1,
+    particleSeries: 2,
 
     user: undefined,
     nodes: [],
+    particles: undefined,
 
     // Application Constructor
     initialize: function(config) {
@@ -18,6 +20,9 @@ var app = {
         this.config = config;
 
         this.user = new User(25, 25, config.xMax, config.yMax)
+        
+        this.particles = new ParticleSet(30);
+        this.particles.initializeParticles();
 
         this.initializeNodes();
         this.initializePlot();
@@ -63,16 +68,16 @@ var app = {
                 title: {
                     text: 'Y position'
                 },
-                max: 50,
-                min: 0,
+                max: 55,
+                min: -5,
                 gridLineWidth: 1,
             },
             yAxis: {
                 title: {
                     text: 'X position'
                 },
-                max: 50,
-                min: 0,
+                max: 55,
+                min: -5,
                 gridLineWidth: 1,
             },
             tooltip: {
@@ -88,11 +93,24 @@ var app = {
                 name: 'Ground truth',
                 type: 'scatter',
                 lineWidth: 1,
-                data: [[this.user.x, this.user.y]]
+                data: [[this.user.x, this.user.y]],
+                marker: {
+                    enabled: false
+                }
             },
             {
                 name: "Node positions",
                 type: 'scatter',
+                animation: false,
+            },
+            {
+                name: "Particle estimate",
+                type: 'scatter',
+                animation: false,
+                marker: {
+                    fillColor: '#C90C0C',
+                    radius: 1
+                }
             },
             {
                 name: "Estimated trace",
@@ -110,6 +128,8 @@ var app = {
 
         this.plot.series[this.groundTruthSeries].addPoint([this.user.x, this.user.y], true)
 
+        //Plot the particles
+        this.plot.series[this.particleSeries].setData(this.particles.getEstimateList())
     	this.iteration++;
     },
 
@@ -117,5 +137,6 @@ var app = {
 
         this.iteration = 0;
     	this.plot.series[this.groundTruthSeries].setData([]);
+        this.user.reset();
     }
 };

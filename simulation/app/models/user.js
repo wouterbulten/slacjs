@@ -2,7 +2,7 @@ var User = function(x, y, xMax, yMax) {
 
 	this.x = 0;
 	this.y = 0;
-	this.v = 10;
+	this.v = 5;
 	this.r = 0.3;
 	this.xMax = xMax;
 	this.yMax = yMax;
@@ -18,8 +18,8 @@ User.prototype.moveToPosition = function(xn, yn) {
 
 User.prototype.step = function() {
 
-	xn = Math.max(Math.min(this.x + Math.cos(this.r) * this.v, this.xMax), 0);
-	yn = Math.max(Math.min(this.y + Math.sin(this.r) * this.v, this.yMax), 0);
+	xn = Math.max(Math.min(this.x + Math.cos(this.r) * this.v + (2 * Math.random() - 1), this.xMax), 0);
+	yn = Math.max(Math.min(this.y + Math.sin(this.r) * this.v + (2 * Math.random() - 1), this.yMax), 0);
 	
 	if(xn == 0 || xn == this.xMax) {
 		this.r = Math.PI - this.r;
@@ -32,5 +32,10 @@ User.prototype.step = function() {
 };
 
 User.prototype.reset = function() {
+	console.debug('User@reset not implemented yet');
+}
+
+
+User.prototype.getControl = function() {
 
 }
