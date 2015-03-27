@@ -29,6 +29,8 @@ var app = {
 
     initializeNodes: function() {
 
+        this.nodes = [];
+        
         for(var n = 0; n < this.config.nNodes; n++)
         {
             x = Math.random() * this.config.xMax;

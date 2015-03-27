@@ -35,3 +35,9 @@ ParticleSet.prototype.sample = function(control) {
 		p.sample(control);
 	});
 };
+
+ParticleSet.prototype.resample = function() {
+	
+
+	
+};

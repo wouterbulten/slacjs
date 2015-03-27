@@ -3,6 +3,7 @@ var Particle = function(x,y,r) {
 	this.x = x;
 	this.y = y;
 	this.r = r;
+	this.w = 0.1;
 
 	this.trace = [[x,y,r]];
 
@@ -22,4 +23,10 @@ Particle.prototype.sample = function(control) {
 	this.y = yPrevious + control[1] + (2 * Math.random() - 1);
 	this.r = rPrevious + control[2] + (1 * Math.random());
 	
+	this.trace.push([this.x, this.y, this.r])
+};
+
+Particle.prototype.calculateWeight = function(first_argument) {
+	
+	console.debug('Not implemented yet');
 };
