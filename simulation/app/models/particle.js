@@ -1,10 +1,10 @@
-var Particle = function(x,y,orientation) {
+var Particle = function(x,y,r) {
 
 	this.x = x;
 	this.y = y;
-	this.orientation = orientation;
+	this.r = r;
 
-	this.trace = [[x,y,orientation]];
+	this.trace = [[x,y,r]];
 
 	this.iteration = 0;
 };
@@ -15,9 +15,11 @@ Particle.prototype.sample = function(control) {
 
 	xPrevious = this.x;
 	yPrevious = this.y;
-	oPrevious = this.orientation;
+	rPrevious = this.r;
 
 	//Sample here
-
+	this.x = xPrevious + control[0] + (2 * Math.random() - 1);
+	this.y = yPrevious + control[1] + (2 * Math.random() - 1);
+	this.r = rPrevious + control[2] + (1 * Math.random());
 	
 };

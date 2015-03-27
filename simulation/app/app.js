@@ -19,11 +19,8 @@ var app = {
 
         this.config = config;
 
-        this.user = new User(25, 25, config.xMax, config.yMax)
-        
-        this.particles = new ParticleSet(30);
-        this.particles.initializeParticles();
-
+        this.initalizeUser();
+        this.initializeParticles();
         this.initializeNodes();
         this.initializePlot();
         this.plotNodes();
@@ -39,6 +36,15 @@ var app = {
 
             this.nodes.push(new Node("Node #" + n, n, x, y))
         }
+    },
+
+    initalizeUser: function() {
+        this.user = new User(25, 25, this.config.xMax, this.config.yMax)
+    },
+
+    initializeParticles: function() {
+        this.particles = new ParticleSet(this.config.nParticles);
+        this.particles.initializeParticles();
     },
 
     plotNodes: function() {
@@ -123,7 +129,7 @@ var app = {
     iterate: function() {
 
         this.user.step();
-        this.particles.sample();
+        this.particles.sample(this.user.getControl());
 
         console.log([this.user.x, this.user.y])
 
@@ -138,8 +144,10 @@ var app = {
 
     reset: function() {
 
-        this.iteration = 0;
-    	this.plot.series[this.groundTruthSeries].setData([]);
-        this.user.reset();
+        this.initalizeUser();
+        this.initializeParticles();
+        this.initializeNodes();
+        this.initializePlot();
+        this.plotNodes();
     }
 };
