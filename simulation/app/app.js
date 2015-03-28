@@ -66,11 +66,11 @@ var app = {
             },
             title: {
                 text: 'Localisation',
-                x: -20 //center
+                x: 30 //center
             },
             subtitle: {
                 text: 'Showing node positions, ground truth of user path and prediction.',
-                x: -20
+                x: 30
             },
             xAxis: {
                 title: {
@@ -133,7 +133,7 @@ var app = {
         this.user.step();
         this.particles.sample(this.user.getControl());
 
-        console.log([this.user.x, this.user.y])
+        this.particles.resample();
 
         //Plot current user position
         this.plot.series[this.groundTruthSeries].addPoint([this.user.x, this.user.y], true)

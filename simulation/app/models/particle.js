@@ -3,7 +3,7 @@ var Particle = function(x,y,r) {
 	this.x = x;
 	this.y = y;
 	this.r = r;
-	this.w = 0.1;
+	this.w = 0;
 
 	this.trace = [[x,y,r]];
 
@@ -23,10 +23,29 @@ Particle.prototype.sample = function(control) {
 	this.y = yPrevious + control[1] + (2 * Math.random() - 1);
 	this.r = rPrevious + control[2] + (1 * Math.random());
 	
-	this.trace.push([this.x, this.y, this.r])
+	this.trace.push([this.x, this.y, this.r]);
+
+	this.iteration++;
+
 };
 
-Particle.prototype.calculateWeight = function(first_argument) {
+Particle.prototype.computeWeight = function() {
 	
-	console.debug('Not implemented yet');
+	return this.w;
+};
+
+/**
+ * Clone a particle by replacing the internal state with values
+ * from a second particle.
+ * @param  Particle original
+ * @return void
+ */
+Particle.prototype.cloneParticle = function(original) {
+		this.x = original.x;
+		this.y = original.y;
+		this.r = original.r;
+		this.w = 0;
+		this.iteration = original.iteration;
+
+		this.trace = original.trace.slice();
 };
