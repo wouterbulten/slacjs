@@ -60,6 +60,47 @@ var app = {
 
     initializePlot: function() {
 
+        var series = [{
+            name: 'Ground truth',
+            type: 'scatter',
+            lineWidth: 2,
+            data: [[this.user.x, this.user.y]],
+            marker: {
+                enabled: false
+            }
+        },
+        {
+            name: "Node positions",
+            type: 'scatter',
+            animation: false,
+        },
+        {
+            name: "Particle estimate",
+            type: 'scatter',
+            animation: false,
+            marker: {
+                fillColor: '#C90C0C',
+                radius: 2
+            }
+        },
+        {
+            name: "Estimated trace",
+
+        }];
+
+        for(var i = 0; i < this.config.nParticles; i++) {
+            series.push({
+                name: 'P' + i,
+                animation: false,
+                type: 'scatter',
+                lineWidth: 1,
+                marker: {
+                    enabled: false
+                },
+                color: '#C9C9C9'
+            });
+        }
+
     	this.plot = new Highcharts.Chart({
             chart: {
                 renderTo: this.config.mapElement,
@@ -97,34 +138,7 @@ var app = {
                 verticalAlign: 'bottom',
                 borderWidth: 0
             },
-            series: [{
-                name: 'Ground truth',
-                type: 'scatter',
-                lineWidth: 1,
-                data: [[this.user.x, this.user.y]],
-                marker: {
-                    enabled: false
-                }
-            },
-            {
-                name: "Node positions",
-                type: 'scatter',
-                animation: false,
-            },
-            {
-                name: "Particle estimate",
-                type: 'scatter',
-                animation: false,
-                marker: {
-                    fillColor: '#C90C0C',
-                    radius: 1
-                }
-            },
-            {
-                name: "Estimated trace",
-
-            }]
-        });
+            series: series        });
 
     },
 
@@ -140,6 +154,11 @@ var app = {
 
         //Plot the particles
         this.plot.series[this.particleSeries].setData(this.particles.getEstimateList())
+
+        for(var i = 0; i < this.config.nParticles; i++)
+        {
+            this.plot.series[4 + i].setData(this.particles.particles[i].trace)
+        }
 
     	this.iteration++;
     },

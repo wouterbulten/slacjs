@@ -10,7 +10,7 @@
 <body>
 
 <h1>SLAC.js test</h1>
-<div id="map" style="height: 500px; width: 500px;"></div>
+<div id="map" style="height: 700px; width: 700px;"></div>
 
 <script type="text/javascript" src="vendor/jquery/jquery-2.1.3.js"></script>
 <script type="text/javascript" src="vendor/highcharts/js/highcharts.js"></script>
@@ -33,7 +33,7 @@ var loop = function() {
 		app.iterate();
 
 		if(i++ < 50) {
-			setTimeout(iterate, 500);
+			setTimeout(iterate, 50);
 		}
 		else {
 			app.reset();

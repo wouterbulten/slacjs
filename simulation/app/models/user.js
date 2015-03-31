@@ -3,7 +3,7 @@ var User = function(x, y, xMax, yMax) {
 	//Current position
 	this.x = 0;
 	this.y = 0;
-	this.r = 0.3;
+	this.r = Math.random() * 2 * Math.PI;
 
 	//Current velocity
 	this.v = 5;
