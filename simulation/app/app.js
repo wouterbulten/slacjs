@@ -7,7 +7,7 @@ var app = {
     iteration: 0,
 
     groundTruthSeries: 0,
-    nodesSeries: 1,
+    landmarkSeries: 1,
     particleSeries: 2,
 
     user: undefined,
@@ -23,7 +23,7 @@ var app = {
         this.initalizeLandmarks();
         this.initializeParticles();
         this.initializePlot();
-
+        this.plotLandmarks();
     },
 
     initalizeLandmarks: function() {
@@ -35,7 +35,7 @@ var app = {
             y = Math.random() * this.config.yMax;
 
             this.landmarks.push(new Landmark("Node #" + n, n, x, y, 
-                this.config.pathLoss, this.config.txPower, this.config.sensorNoise))
+                this.config.pathLoss, this.config.txPower, this.config.sensorNoise, this.config.sensorRange))
         }
     },
 
@@ -48,13 +48,11 @@ var app = {
         this.particles.initializeParticles(0,0,4);
     },
 
-    plotNodes: function() {
+    plotLandmarks: function() {
 
-        var _this = this;
-
-        this.nodes.forEach(function(n) {
-            _this.plot.series[_this.nodesSeries].addPoint([n.x, n.y])
-        });
+        this.landmarks.forEach(function(n) {
+            this.plot.series[this.landmarkSeries].addPoint([n.x, n.y])
+        }, this);
     },
 
     initializePlot: function() {
@@ -148,6 +146,16 @@ var app = {
         this.user.step();
         this.particles.sample(this.user.getControl());
 
+        Z = [];
+        //Get sensor readings
+        this.landmarks.forEach(function(l) {
+            if(l.inRange(this.user.x, this.user.y)) {
+                Z.push(l.rssiAtLocation(this.user.x, this.user.y))
+            }
+        }, this);
+
+        console.debug(Z);
+
         this.particles.resample();
 
         //Plot current user position
@@ -168,10 +176,6 @@ var app = {
 
     reset: function() {
 
-        this.initalizeUser();
-        this.initializeParticles();
-        this.initializeNodes();
-        this.initializePlot();
-        this.plotNodes();
+        this.initialize();
     }
 };
