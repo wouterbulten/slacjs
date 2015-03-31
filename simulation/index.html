@@ -15,10 +15,10 @@
 
 <script type="text/javascript" src="vendor/jquery/jquery-2.1.3.js"></script>
 <script type="text/javascript" src="vendor/highcharts/js/highcharts.js"></script>
-<script type="text/javascript" src="vendor/jstat/jstat.js"></script>
+<script type="text/javascript" src="vendor/mathjs/math.js"></script>
 <script type="text/javascript" src="app/util/math.js"></script>
-<script type="text/javascript" src="app/models/node.js"></script>
 <script type="text/javascript" src="app/models/particle.js"></script>
+<script type="text/javascript" src="app/models/landmark.js"></script>
 <script type="text/javascript" src="app/models/particle-set.js"></script>
 <script type="text/javascript" src="app/models/user.js"></script>
 <script type="text/javascript" src="app/app.js"></script>
@@ -57,9 +57,12 @@ $(document).ready(function(){
 		nNodes: 		10,
 		xMax: 			50,
 		yMax:			50,  
-		nNodes: 		20,
+		nLandmarks:		20,
 		nParticles: 	30,
 		plotParticleTraces: true,
+		txPower: 		60,
+		pathLoss: 		2,
+		sensorNoise: 	2,
 	});
 
 	setTimeout(loop, 1000);

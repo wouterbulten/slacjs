@@ -11,7 +11,7 @@ var app = {
     particleSeries: 2,
 
     user: undefined,
-    nodes: [],
+    landmarks: [],
     particles: undefined,
 
     // Application Constructor
@@ -20,23 +20,22 @@ var app = {
         this.config = config;
 
         this.initalizeUser();
+        this.initalizeLandmarks();
         this.initializeParticles();
-        this.initializeNodes();
         this.initializePlot();
-        this.plotNodes();
 
     },
 
-    initializeNodes: function() {
-
-        this.nodes = [];
+    initalizeLandmarks: function() {
+        this.landmarks = [];
         
-        for(var n = 0; n < this.config.nNodes; n++)
+        for(var n = 0; n < this.config.nLandmarks; n++)
         {
             x = Math.random() * this.config.xMax;
             y = Math.random() * this.config.yMax;
 
-            this.nodes.push(new Node("Node #" + n, n, x, y))
+            this.landmarks.push(new Landmark("Node #" + n, n, x, y, 
+                this.config.pathLoss, this.config.txPower, this.config.sensorNoise))
         }
     },
 

@@ -60,7 +60,10 @@ Particle.prototype.landmarkUpdate = function(measurements) {
 
 Particle.prototype.initLandmark = function(j, z) {
 	
-	var landmark = [0,0]; //Init landmark with 
+	var means = [0,0];
+	var covariance = [[0,0], [0,0]];
+
+	// mean = inverse of observation function
 };
 
 Particle.prototype.updateLandmark = function(j, z) {
