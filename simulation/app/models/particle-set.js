@@ -41,6 +41,31 @@ ParticleSet.prototype.getEstimateList = function() {
 };
 
 /**
+ * Update all particles in the set
+ * @param  {Array}
+ * @param  {Array}
+ * @return {void}
+ */
+ParticleSet.prototype.update = function(control, measurements) {
+
+	//Generate new samples
+	this.sample(control);
+
+	//Update the landmark estimates
+	this.updateLandmarks(measurements);
+
+	//Resample
+	this.resample();
+};
+
+ParticleSet.prototype.updateLandmarks = function(measurements) {
+	
+	this.particles.forEach(function(p) {
+		p.landmarkUpdate(measurements);
+	});
+};
+
+/**
  * Let each particle generate a new sample
  * @param  array control x,y,r control
  * @return void

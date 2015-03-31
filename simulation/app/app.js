@@ -144,19 +144,17 @@ var app = {
     iterate: function() {
 
         this.user.step();
-        this.particles.sample(this.user.getControl());
 
         Z = [];
         //Get sensor readings
         this.landmarks.forEach(function(l) {
             if(l.inRange(this.user.x, this.user.y)) {
-                Z.push(l.rssiAtLocation(this.user.x, this.user.y))
+                Z.push({id: l.id, value: l.rssiAtLocation(this.user.x, this.user.y)});
             }
         }, this);
 
-        console.debug(Z);
-
-        this.particles.resample();
+        //Update all particles
+        this.particles.update(this.user.getControl(), Z);
 
         //Plot current user position
         this.plot.series[this.groundTruthSeries].addPoint([this.user.x, this.user.y], true)
@@ -164,6 +162,7 @@ var app = {
         //Plot the particles
         this.plot.series[this.particleSeries].setData(this.particles.getEstimateList())
 
+        //Plot traces of the particles (very cpu intensive)
         if(this.config.plotParticleTraces) {
             for(var i = 0; i < this.config.nParticles; i++)
             {
@@ -176,6 +175,6 @@ var app = {
 
     reset: function() {
 
-        this.initialize();
+        this.initialize(this.config);
     }
 };
