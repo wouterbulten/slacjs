@@ -1,3 +1,7 @@
+/**
+ * ParticleSet
+ * @param int amount of particles
+ */
 var ParticleSet = function(M) {
 
 	this.M = M;
@@ -5,19 +9,28 @@ var ParticleSet = function(M) {
 	this.particles = [];
 }
 
-ParticleSet.prototype.initializeParticles = function() {
+/**
+ * Initalise all particles
+ * @return void
+ */
+ParticleSet.prototype.initializeParticles = function(xStart, yStart, sd) {
 	
-	var orientation = 0.5 * Math.PI;
-
 	for(var m = 0; m < this.M; m++) {
 
-		x = 0 + (4 * Math.random() - 2);
-		y = 0 + (4 * Math.random() - 2);
+		x = 0 + (sd * Math.random() - (0.5 * sd));
+		y = 0 + (sd * Math.random() - (0.5 * sd));
+		orientation = Math.random() * 2 * Math.PI;
 
 		this.particles.push(new Particle(x, y, orientation));
 	}
+
+	console.debug(this.particles)
 };
 
+/**
+ * Return the x,y estimate of each particle in a list
+ * @return list of x,y coordinates
+ */
 ParticleSet.prototype.getEstimateList = function() {
 	
 	var list = [];
@@ -53,8 +66,10 @@ ParticleSet.prototype.resample = function() {
 
 	//Calculate total sum of weights
 	oldParticles.forEach(function(p, i) {
-		stackedNormalizedWeights[i] = p.computeWeight();
-		sumOfWeights += stackedNormalizedWeights[i];
+		var weight = p.computeWeight();
+
+		stackedNormalizedWeights[i] = weight + sumOfWeights;
+		sumOfWeights += weight;
 	});
 
 	//Normalise
@@ -65,13 +80,18 @@ ParticleSet.prototype.resample = function() {
 	//Select new samples
 	this.particles.forEach(function(p) {
 
-		var sample = randomSample(oldParticles, stackedNormalizedWeights);
-		console.log(sample);
+		var sample = this.randomSample(oldParticles, stackedNormalizedWeights);
 		p.cloneParticle(sample);
-	})
+	}, this)
 };
 
-function randomSample(particles, weights)
+/**
+ * Take weighted sample from a list
+ * @param  array particles
+ * @param  array weights
+ * @return sample from particles
+ */
+ParticleSet.prototype.randomSample = function(particles, weights)
 {
 	var rand = Math.random();
 	var last = 0;

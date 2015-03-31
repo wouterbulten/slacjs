@@ -21,7 +21,8 @@ Particle.prototype.sample = function(control) {
 	//Sample here
 	this.x = xPrevious + control[0] + (2 * Math.random() - 1);
 	this.y = yPrevious + control[1] + (2 * Math.random() - 1);
-	this.r = rPrevious + control[2] + (1 * Math.random());
+
+	this.r = control[2] + (1 * Math.random());
 	
 	this.trace.push([this.x, this.y, this.r]);
 
@@ -29,9 +30,13 @@ Particle.prototype.sample = function(control) {
 
 };
 
+/**
+ * Compute the weight of this particle
+ * @return float
+ */
 Particle.prototype.computeWeight = function() {
 	
-	return this.w;
+	return 0.1;
 };
 
 /**

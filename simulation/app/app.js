@@ -46,7 +46,7 @@ var app = {
 
     initializeParticles: function() {
         this.particles = new ParticleSet(this.config.nParticles);
-        this.particles.initializeParticles();
+        this.particles.initializeParticles(0,0,4);
     },
 
     plotNodes: function() {
