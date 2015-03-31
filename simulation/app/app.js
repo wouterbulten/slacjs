@@ -88,6 +88,7 @@ var app = {
 
         }];
 
+        
         for(var i = 0; i < this.config.nParticles; i++) {
             series.push({
                 name: 'P' + i,
@@ -99,6 +100,7 @@ var app = {
                 },
                 color: '#C9C9C9'
             });
+            
         }
 
     	this.plot = new Highcharts.Chart({
@@ -155,9 +157,11 @@ var app = {
         //Plot the particles
         this.plot.series[this.particleSeries].setData(this.particles.getEstimateList())
 
-        for(var i = 0; i < this.config.nParticles; i++)
-        {
-            this.plot.series[4 + i].setData(this.particles.particles[i].trace)
+        if(this.config.plotParticleTraces) {
+            for(var i = 0; i < this.config.nParticles; i++)
+            {
+                this.plot.series[4 + i].setData(this.particles.particles[i].trace)
+            }
         }
 
     	this.iteration++;

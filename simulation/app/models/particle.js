@@ -5,6 +5,12 @@ var Particle = function(x,y,r) {
 	this.r = r;
 	this.w = 0;
 
+	/**
+	 *  List of landmark estimates over time
+	 * @type {Object}
+	 */
+	this.landmarks = {};
+
 	this.trace = [[x,y,r]];
 
 	this.iteration = 0;
@@ -19,10 +25,10 @@ Particle.prototype.sample = function(control) {
 	rPrevious = this.r;
 
 	//Sample here
-	this.x = xPrevious + control[0] + (2 * Math.random() - 1);
-	this.y = yPrevious + control[1] + (2 * Math.random() - 1);
+	this.x = xPrevious + control[0] + MathAdapter.randn(0,2);
+	this.y = yPrevious + control[1] + MathAdapter.randn(0,2);
 
-	this.r = control[2] + (1 * Math.random());
+	this.r = control[2] + (MathAdapter.randn(0,1));
 	
 	this.trace.push([this.x, this.y, this.r]);
 
@@ -30,9 +36,40 @@ Particle.prototype.sample = function(control) {
 
 };
 
+Particle.prototype.resample = function(first_argument) {
+	// body...
+};
+
+
+Particle.prototype.landmarkUpdate = function(measurements) {
+	
+	//Measurements is a list of {id: landmark, value: rssi} values
+
+	for(var i = 0; i < measurements.length; i++)
+	{
+		var z = measurements[i]
+
+		if(this.landmarks[z.id] == undefined) {
+			this.initLandmark(z.id, z.value);
+		}
+		else {
+			this.updateLandmark(z.id, z.value);
+		}
+	}
+};
+
+Particle.prototype.initLandmark = function(j, z) {
+	
+	var landmark = [0,0]; //Init landmark with 
+};
+
+Particle.prototype.updateLandmark = function(j, z) {
+	// body...
+};
+
 /**
  * Compute the weight of this particle
- * @return float
+ * @return {float}
  */
 Particle.prototype.computeWeight = function() {
 	
@@ -42,8 +79,8 @@ Particle.prototype.computeWeight = function() {
 /**
  * Clone a particle by replacing the internal state with values
  * from a second particle.
- * @param  Particle original
- * @return void
+ * @param  {Particle} original
+ * @return {void}
  */
 Particle.prototype.cloneParticle = function(original) {
 		this.x = original.x;

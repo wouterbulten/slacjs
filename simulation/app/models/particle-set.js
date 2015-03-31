@@ -17,14 +17,12 @@ ParticleSet.prototype.initializeParticles = function(xStart, yStart, sd) {
 	
 	for(var m = 0; m < this.M; m++) {
 
-		x = 0 + (sd * Math.random() - (0.5 * sd));
-		y = 0 + (sd * Math.random() - (0.5 * sd));
-		orientation = Math.random() * 2 * Math.PI;
+		x = 0 + MathAdapter.randn(0, sd);
+		y = 0 + MathAdapter.randn(0, sd);
+		orientation = MathAdapter.randn(0,1) * 2 * Math.PI;
 
 		this.particles.push(new Particle(x, y, orientation));
 	}
-
-	console.debug(this.particles)
 };
 
 /**
@@ -80,7 +78,7 @@ ParticleSet.prototype.resample = function() {
 	//Select new samples
 	this.particles.forEach(function(p) {
 
-		var sample = this.randomSample(oldParticles, stackedNormalizedWeights);
+		var sample = ParticleSet.randomSample(oldParticles, stackedNormalizedWeights);
 		p.cloneParticle(sample);
 	}, this)
 };
@@ -91,7 +89,7 @@ ParticleSet.prototype.resample = function() {
  * @param  array weights
  * @return sample from particles
  */
-ParticleSet.prototype.randomSample = function(particles, weights)
+ParticleSet.randomSample = function(particles, weights)
 {
 	var rand = Math.random();
 	var last = 0;

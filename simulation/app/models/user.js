@@ -3,7 +3,7 @@ var User = function(x, y, xMax, yMax) {
 	//Current position
 	this.x = 0;
 	this.y = 0;
-	this.r = Math.random() * 2 * Math.PI;
+	this.r = MathAdapter.randn(0,1) * 2 * Math.PI;
 
 	//Current velocity
 	this.v = 5;
@@ -31,8 +31,8 @@ User.prototype.step = function() {
 	this.dx = Math.cos(this.r) * this.v;
 	this.dy = Math.sin(this.r) * this.v;
 
-	xn = Math.max(Math.min(this.x + this.dx + (2 * Math.random() - 1), this.xMax), 0);
-	yn = Math.max(Math.min(this.y + this.dy + (2 * Math.random() - 1), this.yMax), 0);
+	xn = Math.max(Math.min(this.x + this.dx + MathAdapter.randn(0,2), this.xMax), 0);
+	yn = Math.max(Math.min(this.y + this.dy + MathAdapter.randn(0,2), this.yMax), 0);
 	
 	if(xn == 0 || xn == this.xMax) {
 		this.dr = Math.PI - this.r;
@@ -40,7 +40,7 @@ User.prototype.step = function() {
 	else if(yn == 0 || yn == this.yMax) {
 		this.dr = 2 * Math.PI - this.r;
 	}
-	this.r = this.dr + (Math.random() - 0.5);
+	this.r = this.dr //+ MathAdapter.randn(0,1);
 	
 	this.moveToPosition(xn, yn)
 };
