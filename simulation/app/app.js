@@ -9,6 +9,7 @@ var app = {
     groundTruthSeries: 0,
     landmarkSeries: 1,
     particleSeries: 2,
+    sensorRangeSeries: 4,
 
     user: undefined,
     landmarks: [],
@@ -83,6 +84,17 @@ var app = {
         {
             name: "Estimated trace",
 
+        },
+        {
+            name: "Sensor range",
+            type: 'scatter',
+            marker: {
+                radius: 2 * this.config.sensorRange,
+                symbol: "circle",
+                lineWidth: 1,
+                lineColor: "rgba(0, 0, 0, 0.05)",
+                fillColor: "rgba(0, 0, 255, 0.04)",
+            }
         }];
 
         
@@ -137,7 +149,18 @@ var app = {
                 verticalAlign: 'bottom',
                 borderWidth: 0
             },
-            series: series        });
+            series: series
+        }, function(chart) {
+
+            //Fix the marker size for the radius plot
+            var r = 4;
+            chart.series[4].legendSymbol.attr({
+                height: 2 * r,
+                width: 2 * r,
+                x: (chart.legend.options.symbolWidth / 2)  - r,
+                y: chart.legend.baseline - 4 - r
+            });
+        });
 
     },
 
@@ -157,7 +180,8 @@ var app = {
         this.particles.update(this.user.getControl(), Z);
 
         //Plot current user position
-        this.plot.series[this.groundTruthSeries].addPoint([this.user.x, this.user.y], true)
+        this.plot.series[this.groundTruthSeries].addPoint([this.user.x, this.user.y], true);
+        //this.plot.series[this.sensorRangeSeries].setData([[this.user.x, this.user.y]]);
 
         //Plot the particles
         this.plot.series[this.particleSeries].setData(this.particles.getEstimateList())
@@ -166,7 +190,7 @@ var app = {
         if(this.config.plotParticleTraces) {
             for(var i = 0; i < this.config.nParticles; i++)
             {
-                this.plot.series[4 + i].setData(this.particles.particles[i].trace)
+                this.plot.series[5 + i].setData(this.particles.particles[i].trace)
             }
         }
 
