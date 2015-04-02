@@ -172,7 +172,19 @@ var app = {
         //Get sensor readings
         this.landmarks.forEach(function(l) {
             if(l.inRange(this.user.x, this.user.y)) {
-                Z.push({id: l.id, value: l.rssiAtLocation(this.user.x, this.user.y)});
+                //@todo Remove r, now added to create a range-only with bearing implementation
+                
+                var rssi = l.rssiAtLocation(this.user.x, this.user.y);
+
+                //Calculate bearing
+                var r = Math.atan2(l.y - this.user.y, l.x - this.user.x) - this.user.r //atan2(y,x)
+
+                Z.push({
+                    id: l.id, 
+                    value: rssi,
+                    r: l.rssiToDistance(rssi),
+                    theta: r + MathAdapter.randn(0,0.5)
+                });
             }
         }, this);
 

@@ -1,8 +1,8 @@
-var Particle = function(x,y,r) {
+var Particle = function(x,y,theta) {
 
 	this.x = x;
 	this.y = y;
-	this.r = r;
+	this.theta = theta;
 	this.w = 0;
 
 	/**
@@ -11,7 +11,7 @@ var Particle = function(x,y,r) {
 	 */
 	this.landmarks = {};
 
-	this.trace = [[x,y,r]];
+	this.trace = [[x,y,theta]];
 
 	this.iteration = 0;
 };
@@ -22,15 +22,15 @@ Particle.prototype.sample = function(control) {
 
 	xPrevious = this.x;
 	yPrevious = this.y;
-	rPrevious = this.r;
+	rPrevious = this.theta;
 
 	//Sample here
 	this.x = xPrevious + control[0] + MathAdapter.randn(0,2);
 	this.y = yPrevious + control[1] + MathAdapter.randn(0,2);
 
-	this.r = control[2] + (MathAdapter.randn(0,1));
+	this.theta = control[2] + (MathAdapter.randn(0,1));
 	
-	this.trace.push([this.x, this.y, this.r]);
+	this.trace.push([this.x, this.y, this.theta]);
 
 	this.iteration++;
 
@@ -38,7 +38,7 @@ Particle.prototype.sample = function(control) {
 
 Particle.prototype.resample = function(first_argument) {
 	// body...
-};
+};8
 
 
 Particle.prototype.landmarkUpdate = function(measurements) {
@@ -50,23 +50,44 @@ Particle.prototype.landmarkUpdate = function(measurements) {
 		var z = measurements[i]
 
 		if(this.landmarks[z.id] == undefined) {
-			this.initLandmark(z.id, z.value);
+			this.initLandmark(z);
 		}
 		else {
-			this.updateLandmark(z.id, z.value);
+			this.updateLandmark(z);
 		}
 	}
 };
 
-Particle.prototype.initLandmark = function(j, z) {
+Particle.prototype.initLandmark = function(z) {
 	
 	var means = [0,0];
 	var covariance = [[0,0], [0,0]];
 
 	// mean = inverse of observation function
+	
+	var bearing = this.theta + z.theta;
+
+	//Estimate the position of the landmark
+	var estX = this.x + z.r * Math.cos(bearing);
+	var estY = this.y + z.r * Math.sin(bearing);
+
+	//Global covariance for range and bearing
+	var Q = math.matrix([[5, 0], [0, 0.25]])
+
+	//Calculate the Jacobian
+	H = Particle.jacobian(estX, estY);
+
+	//H^-1
+	Hinv = math.inv(H);
+
+	//Calculate covariance
+	//H^-1 . Q . (H^-1)^T
+	cov = math.multiply(math.multiply(Hinv, Q), math.transpose(Hinv))
+
+	this.landmarks[z.id] = {x: estX, y: estY, cov: cov};
 };
 
-Particle.prototype.updateLandmark = function(j, z) {
+Particle.prototype.updateLandmark = function(z) {
 	// body...
 };
 
@@ -88,9 +109,22 @@ Particle.prototype.computeWeight = function() {
 Particle.prototype.cloneParticle = function(original) {
 		this.x = original.x;
 		this.y = original.y;
-		this.r = original.r;
+		this.theta = original.theta;
 		this.w = 0;
 		this.iteration = original.iteration;
 
 		this.trace = original.trace.slice();
 };
+
+Particle.jacobian = function(x,y) {
+
+	r = Math.sqrt(Math.pow(x,2) + Math.pow(x,2))
+	r2 = Math.pow(r,2);
+
+	if(r == 0) {
+		console.error("Cannot compute jacobian at (0,0)")
+	}
+
+	return math.matrix([[x / r 	, y / r], 
+						[-y / r2, x / r2]]);
+}

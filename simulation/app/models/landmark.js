@@ -24,16 +24,20 @@ var Landmark = function(name, id, x, y, n, txPower, noise, range) {
 
 Landmark.prototype.distance = function(x,y) {
 	return Math.sqrt(Math.pow(x - this.x, 2) + Math.pow(y - this.y, 2))
-}
+};
 
 Landmark.prototype.rssiAtLocationRaw = function(x, y) {
 	return -(10 * this.n) *  MathAdapter.log(Math.max(this.distance(x,y), 0.1), 10) + this.txPower
-}
+};
 
 Landmark.prototype.rssiAtLocation = function(x,y) {
 	return this.rssiAtLocationRaw(x,y) + MathAdapter.randn(0, this.noise)
-}
+};
 
 Landmark.prototype.inRange = function(x,y) {
 	return this.distance(x,y) < this.range;
+};
+
+Landmark.prototype.rssiToDistance = function(rssi) {
+	return Math.pow(10, (rssi - this.txPower) / (-10 * this.n));
 };
