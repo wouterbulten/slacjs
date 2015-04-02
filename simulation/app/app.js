@@ -20,11 +20,15 @@ var app = {
 
         this.config = config;
 
+        visualisation.init(config.canvasElement, config.xMax, config.yMax);
+
         this.initalizeUser();
         this.initalizeLandmarks();
         this.initializeParticles();
-        this.initializePlot();
-        this.plotLandmarks();
+        //this.initializePlot();
+        //this.plotLandmarks();
+
+        visualisation.plotLandmarks(this.landmarks);
     },
 
     initalizeLandmarks: function() {
@@ -192,21 +196,23 @@ var app = {
         this.particles.update(this.user.getControl(), Z);
 
         //Plot current user position
-        this.plot.series[this.groundTruthSeries].addPoint([this.user.x, this.user.y], true);
+        //this.plot.series[this.groundTruthSeries].addPoint([this.user.x, this.user.y], true);
         //this.plot.series[this.sensorRangeSeries].setData([[this.user.x, this.user.y]]);
 
         //Plot the particles
-        this.plot.series[this.particleSeries].setData(this.particles.getEstimateList())
+        //this.plot.series[this.particleSeries].setData(this.particles.getEstimateList())
 
         //Plot traces of the particles (very cpu intensive)
         if(this.config.plotParticleTraces) {
             for(var i = 0; i < this.config.nParticles; i++)
             {
-                this.plot.series[5 + i].setData(this.particles.particles[i].trace)
+                //this.plot.series[5 + i].setData(this.particles.particles[i].trace)
             }
         }
 
     	this.iteration++;
+
+        visualisation.update(this.user, this.landmarks, this.particles.particles)
     },
 
     reset: function() {

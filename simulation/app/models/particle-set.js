@@ -17,8 +17,9 @@ ParticleSet.prototype.initializeParticles = function(xStart, yStart, sd) {
 	
 	for(var m = 0; m < this.M; m++) {
 
-		x = 0 + MathAdapter.randn(0, sd);
-		y = 0 + MathAdapter.randn(0, sd);
+		//@todo look at this initalisation, does it require randomness?
+		x = 0;
+		y = 0;
 		orientation = MathAdapter.randn(0,1) * 2 * Math.PI;
 
 		this.particles.push(new Particle(x, y, orientation));

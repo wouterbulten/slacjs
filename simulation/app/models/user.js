@@ -1,8 +1,8 @@
 var User = function(x, y, xMax, yMax) {
 
 	//Current position
-	this.x = 0;
-	this.y = 0;
+	this.x = x;
+	this.y = y;
 	this.r = MathAdapter.randn(0,1) * 2 * Math.PI;
 
 	//Current velocity
