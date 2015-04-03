@@ -77,7 +77,7 @@ var visualisation = {
 	scaleCanvas: function() {
 
 		//Get desired width of the canvas
-		var width = window.innerWidth;
+		var width = Math.min(window.innerWidth, window.innerHeight);
 
 		this.canvas.landmarks.width = width;
 		this.canvas.landmarks.height = width;
