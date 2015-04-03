@@ -20,7 +20,7 @@ var app = {
 
         this.config = config;
 
-        visualisation.init(config.canvasElement, config.xMax, config.yMax);
+        visualisation.init(config.xMax, config.yMax);
 
         this.initalizeUser();
         this.initalizeLandmarks();
