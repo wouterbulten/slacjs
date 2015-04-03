@@ -18,6 +18,8 @@ var Particle = function(x,y,theta) {
 
 Particle.prototype.sample = function(control) {
 	
+	this.iteration++;
+
 	// P(x_t | x_{t-1} , control )
 
 	xPrevious = this.x;
@@ -31,14 +33,11 @@ Particle.prototype.sample = function(control) {
 	this.theta = control[2] + (MathAdapter.randn(0,1));
 	
 	this.trace.push([this.x, this.y, this.theta]);
-
-	this.iteration++;
-
 };
 
 Particle.prototype.resample = function(first_argument) {
 	// body...
-};8
+};
 
 
 Particle.prototype.landmarkUpdate = function(measurements) {

@@ -5,20 +5,41 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>SLACjs Test</title>
+
+	<style>
+		* { margin:0; padding:0; } /* to remove the top and left whitespace */
+
+		html, body { width:100%; height:100%; } /* just to be sure these are full screen*/
+
+		canvas { display:block; } /* To remove the scrollbars */
+
+		#slac-stage {
+			width: 100%;
+			position: relative;
+			border: 1px solid #0f0f0f;
+		}
+		#slac-stage canvas { 
+			position: absolute;
+		}
+		#slac-map { z-index: 2 }
+		#slac-map-particles { z-index: 1 }
+	</style>
 </head>
 
 <body>
 
 <h1>SLAC.js test</h1>
-<button id="toggle-particle-traces">Toggle particle traces</button>
-<button id="toggle-running">Start / Restart</button>
-<div id="map" style="height: 700px; width: 700px;"></div>
+
+<div id="slac-stage">
+	<canvas id="slac-map-landmarks" height="1400" width="1400"></canvas>
+	<canvas id="slac-map" height="1400" width="1400"></canvas>
+</div>
 
 <script type="text/javascript" src="vendor/jquery/jquery-2.1.3.js"></script>
-<script type="text/javascript" src="vendor/highcharts/js/highcharts.js"></script>
-<script type="text/javascript" src="vendor/highcharts/js/highcharts-more.js"></script>
+<script type="text/javascript" src="vendor/processing/processing.js"></script>
 <script type="text/javascript" src="vendor/mathjs/math.js"></script>
 <script type="text/javascript" src="app/util/math.js"></script>
+<script type="text/javascript" src="app/util/visualisation.js"></script>
 <script type="text/javascript" src="app/models/particle.js"></script>
 <script type="text/javascript" src="app/models/landmark.js"></script>
 <script type="text/javascript" src="app/models/particle-set.js"></script>
@@ -44,7 +65,7 @@ var loop = function() {
 		app.iterate();
 
 		if(i++ < 50) {
-			setTimeout(iterate, 0);
+			setTimeout(iterate, 500);
 		}
 		else {
 			
@@ -52,14 +73,14 @@ var loop = function() {
 			setTimeout(function() {
 				app.reset();
 				loop();
-			}, 5000);
+			}, 500);
 		}
 	};
 
 	setTimeout(iterate, 1000);
 }
 
-$('#toggle-running').click(function() {
+//$('#toggle-running').click(function() {
 
 	if(!running) {
 		app.initialize({
@@ -80,7 +101,7 @@ $('#toggle-running').click(function() {
 	}
 
 	running = !running;
-});
+//});
 
 $('#toggle-particle-traces').click(function() {
 	app.config.plotParticleTraces = ! app.config.plotParticleTraces;
