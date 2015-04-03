@@ -21,9 +21,11 @@ var visualisation = {
 		map: 		'slac-map'
 	},
 
+	dpi: 2,
+
 	styleBase: {
-		traceWidth: 3,
-		particleTraceWidth: 1,
+		traceWidth: 5,
+		particleTraceWidth: 2,
 		landmarkSize: 12,
 		particleSize: 6,
 	},
@@ -77,7 +79,7 @@ var visualisation = {
 	scaleCanvas: function() {
 
 		//Get desired width of the canvas
-		var width = Math.min(window.innerWidth, window.innerHeight);
+		var width = this.dpi * Math.min(window.innerWidth, window.innerHeight);
 
 		this.canvas.landmarks.width = width;
 		this.canvas.landmarks.height = width;
@@ -92,7 +94,7 @@ var visualisation = {
 		this.ctx.landmarks.scale(scaleFactorX, scaleFactorY);
 
 		this.style.traceWidth = this.styleBase.traceWidth / scaleFactorX;
-		this.style.particleTraceWidth = this.styleBase.traceWidth / scaleFactorX;
+		this.style.particleTraceWidth = this.styleBase.particleTraceWidth / scaleFactorX;
 		this.style.landmarkSize = this.styleBase.landmarkSize / scaleFactorX;
 		this.style.particleSize = this.styleBase.particleSize / scaleFactorX;
 	},
