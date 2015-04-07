@@ -29,3 +29,34 @@ MathAdapter.randn = function(mean, sd) {
 MathAdapter.log = function(x, base) {
 	return Math.log(x) / Math.log(base);
 }
+
+/**
+ * Calculates two eigenvalues and eigenvectors from a 2x2 covariance matrix
+ * @param  {Matrix} cov [description]
+ * @return {[type]}     [description]
+ */
+MathAdapter.eigenValues = function(cov) {
+
+	cov = cov.valueOf();
+	var a = cov[0][0];
+	var b = cov[0][1];
+	var c = cov[1][0];
+	var d = cov[1][1];
+
+	var A = 1;
+	var B = - (a + d);
+	var C = (a*d) - (c*b);
+
+	var L1 = (-B + Math.sqrt((Math.pow(a - d, 2) + (4 * c * d))) / 2 * A);
+	var L2 = (-B - Math.sqrt((Math.pow(a - d, 2) + (4 * c * d))) / 2 * A);
+
+	var y1 = (L1 - a) / b;
+	var y2 = (L2 - a) / b;
+	var mag1 = Math.sqrt(1 + (y1 * y1));
+	var mag2 = Math.sqrt(1 + (y2 * y2));
+
+	return {
+		values: [L1, L2], 
+		vectors: [[1 / mag1, y1 / mag1], [1/mag2, y2/mag2]]
+	};
+}

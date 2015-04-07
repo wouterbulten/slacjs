@@ -110,6 +110,23 @@ ParticleSet.prototype.resample = function() {
 };
 
 /**
+ * Returns the particle with the heighest weight
+ * @return {Particle}
+ */
+ParticleSet.prototype.bestSample = function() {
+	
+	var bestSample = this.particles[0];
+
+	this.particles.forEach(function(p) {
+		if(p.w > bestSample.w) {
+			bestSample = p;
+		}
+	});
+
+	return bestSample;
+};
+
+/**
  * Take weighted sample from a list
  * @param  array particles
  * @param  array weights
