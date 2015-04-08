@@ -90,7 +90,7 @@ ParticleSet.prototype.resample = function() {
 
 	//Calculate total sum of weights
 	oldParticles.forEach(function(p, i) {
-		var weight = p.computeWeight();
+		var weight = p.weight();
 
 		stackedNormalizedWeights[i] = weight + sumOfWeights;
 		sumOfWeights += weight;
@@ -143,4 +143,6 @@ ParticleSet.randomSample = function(particles, weights)
 			return particles[m];
 		}
 	}
+
+	console.error("No particle selected");
 }
