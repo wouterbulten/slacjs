@@ -1,3 +1,7 @@
+/**
+ * [app description]
+ * @type {Object}
+ */
 var app = {
     
     config: {},
