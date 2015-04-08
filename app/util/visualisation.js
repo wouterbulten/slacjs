@@ -21,7 +21,7 @@ var visualisation = {
 		map: 		'slac-map'
 	},
 
-	dpi: 1,
+	dpi: 2,
 
 	styleBase: {
 		traceWidth: 5,
@@ -112,7 +112,11 @@ var visualisation = {
 		this.plotLandmarks(landmarks);
 		this.plotUserTrace(user);
 		this.plotParticles(user, particles);
-		this.plotLandmarkPredictions(user,bestParticle, landmarks);
+		
+		/*particles.forEach(function(b) {
+			this.plotLandmarkPredictions(user,b, landmarks);
+		}, this);*/
+		this.plotLandmarkPredictions(user, bestParticle, landmarks)
 	},
 
 	plotLandmarks: function(landmarks) {
