@@ -7,6 +7,7 @@ SLACjs uses bower and gulp to manage dependencies and build the project. Make su
 
 `
 npm install
+bower install
 gulp serve
 `
 
