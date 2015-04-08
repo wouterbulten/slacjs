@@ -1,51 +1,44 @@
-var User = function(x, y, xMax, yMax) {
+class User {
 
-	//Current position
-	this.x = x;
-	this.y = y;
-	this.r = Math.random() * 2 * Math.PI;
-
-	//Current velocity
-	this.v = 5;
-
-	//Latest control, without noise
-	this.dx = 0;
-	this.dy = 0;
-	this.dr = 0;
-
-
-	this.xMax = xMax;
-	this.yMax = yMax;
-	this.trace = [[x,y]];
-};
-
-User.prototype.moveToPosition = function(xn, yn) {
-
-	this.trace.push([xn, yn]);
-	this.x = xn;
-	this.y = yn;
-};
-
-User.prototype.step = function() {
-
-	this.dx = Math.cos(this.r) * this.v;
-	this.dy = Math.sin(this.r) * this.v;
-
-	xn = Math.max(Math.min(this.x + this.dx + MathAdapter.randn(0,1), this.xMax), 0);
-	yn = Math.max(Math.min(this.y + this.dy + MathAdapter.randn(0,1), this.yMax), 0);
 	
-	if(xn == 0 || xn == this.xMax) {
-		this.r = Math.PI - this.r;
-	}
-	else if(yn == 0 || yn == this.yMax) {
-		this.r = 2 * Math.PI - this.r;
+	/**
+	 * Create a new user
+	 * @param  {float} options.x     Starting x location of the user
+	 * @param  {float} options.y     Starting y location of the user
+	 * @param  {float} options.theta Direction of the user in radials relative to (0,0)
+	 * @return {User}       
+	 */
+	constructor({x, y, theta}) {
+		this.x = x;
+		this.y = y;
+		this.theta = theta;
+
+		this.trace = [[x,y,r]];
 	}
 
-	this.dr = this.r //+ MathAdapter.randn(0,1);
-	
-	this.moveToPosition(xn, yn)
-};
+	moveUser(r, theta) {
+		a = 2;
+		this.theta = this.addTheta(theta, this.theta);
 
-User.prototype.getControl = function() {
-	return [this.dx, this.dy, this.dr];
+	}
+
+	/**
+	 * Add two radials
+	 * @param {float} t1
+	 * @param {float} t2
+	 * @return {float}
+	 */
+	static addTheta(t1, t2) {
+		let theta = t1 + t2;
+		const twoPi = Math.PI * 2;
+
+		if(theta > (twoPi)) {
+			theta -= twoPi;
+		}
+		else if(theta < 0) {
+			theta += twoPi;
+		}
+
+		return theta;
+	}
 }
