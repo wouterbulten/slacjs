@@ -15,8 +15,10 @@ var gulp = require("gulp"),
 	buffer = require('vinyl-buffer'),
 	gutil = require('gulp-util'),
 	cached = require('gulp-cached'),
-	jscs = require('gulp-jscs');
+	jscs = require('gulp-jscs'),
+	jscsStylish = require('gulp-jscs-stylish');
 
+var none = function () { this.emit('end'); };
 var reload = browserSync.reload;
 
 var entry = "./src/app/app.js";
@@ -66,7 +68,9 @@ gulp.task("lint", function() {
 		.pipe(cached(scripts))
 		.pipe(jshint())
 		.pipe(jscs())
-		.pipe(jshint.reporter(stylish));
+		.on('error', function () {})              // don't stop on error 
+        .pipe(jscsStylish.combineWithHintResults())   // combine with jshint results 
+        .pipe(jshint.reporter(stylish)); 
 });
 
 /*
