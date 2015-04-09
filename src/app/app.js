@@ -1,4 +1,4 @@
-import User from './models/user';
+import ParticleSet from './models/particle-set';
 
 /* global window */
 /* global console */
@@ -8,12 +8,10 @@ window.app = {
 	initialize: function() {
 		'use strict';
 
-		const user = new User({x: 0, y: 0, theta: 0});
+		const particleSet = new ParticleSet(40, {x: 0, y: 0, theta: 0});
 
-		console.log(user);
+		particleSet.processObservation({id: 10, r: 20});
 
-		user.moveUser(10, 0.25 * Math.PI);
-
-		console.log(user);
+		console.log(particleSet);
 	}
 };
