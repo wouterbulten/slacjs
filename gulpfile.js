@@ -97,6 +97,13 @@ gulp.task('clean', function(cb) {
 });
 
 /*
+Reload browser
+ */
+gulp.task('reload-styles', ['styles'], browserSync.reload);
+gulp.task('reload-scripts', ['jshint', 'modules'], browserSync.reload);
+gulp.task('reload-index', ['index'], browserSync.reload);
+
+/*
 Default task running all sub task in the right order
  */
 gulp.task('default', ['clean'], function() {
@@ -113,14 +120,10 @@ gulp.task('serve', ['default'], function() {
 	});
 
 	// Watch .css files
-	gulp.watch(styles, ['styles']);
+	gulp.watch(styles, ['reload-styles']);
 
 	// Watch .js files
-	gulp.watch(scripts, ['jshint', 'modules']);
+	gulp.watch(scripts, ['reload-scripts']);
 
-	gulp.watch(index, ['index']);
-
-	gulp.watch(['dist/**']).on('change', function() {
-		console.log('reload')
-	});
+	gulp.watch(index, ['reload-index']);
 });
