@@ -1,5 +1,4 @@
 class User {
-
 	
 	/**
 	 * Create a new user
@@ -13,7 +12,7 @@ class User {
 		this.y = y;
 		this.theta = theta;
 
-		this.trace = [[x,y,r]];
+		this.trace = [[x,y,theta]];
 	}
 
 	moveUser(r, theta) {
@@ -26,7 +25,7 @@ class User {
 	 * Add two radials
 	 * @param {float} t1
 	 * @param {float} t2
-	 * @return {float}
+	 * @return {float} Sum of t1 and t2
 	 */
 	static addTheta(t1, t2) {
 		let theta = t1 + t2;
@@ -42,3 +41,5 @@ class User {
 		return theta;
 	}
 }
+
+export default User;
