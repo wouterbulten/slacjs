@@ -11,7 +11,7 @@ class Particle {
 	constructor({x, y, theta}) {
 		this.user = new User({x, y, theta});
 		this.weight = 1;
-		this.landmarks = {};
+		this.landmarks = new Map();
 	}
 
 	/**
@@ -40,7 +40,7 @@ class Particle {
 	processObservation({id, r}) {
 
 		//Update landmark
-		if (this.landmarks[id] === undefined) {
+		if (this.landmarks.has(id) === undefined) {
 			this.addLandmark({id, r});
 		}
 		else {

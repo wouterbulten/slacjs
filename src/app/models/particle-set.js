@@ -25,9 +25,8 @@ class ParticleSet {
 	 * @return {ParticleSet}
 	 */
 	samplePose(control) {
-		this.particles.forEach(function(p) {
-			p.samplePose({id, r});
-		});
+		this.particles.forEach((p) => p.samplePose(control));
+
 		return this;
 	}
 
@@ -38,10 +37,57 @@ class ParticleSet {
 	 * @return {ParticleSet}
 	 */
 	processObservation({id, r}) {
-		this.particles.forEach(function(p) {
-			p.processObservation({id, r});
-		});
+		this.particles.forEach((p) => p.processObservation({id, r}));
+
 		return this;
+	}
+
+	/**
+	 * Resample the internal particle list using their weights
+	 * @return {ParticleSet}
+	 */
+	resample() {
+		const weights = this._calculateNormalisedWeights();
+
+		const newParticles = [];
+
+		for (let i = 0; i < this.nParticles; i++) {
+			//Do copy here
+			newParticles[i] = new Particle({x: 0, y: 0, theta: 0});
+		}
+
+		return this;
+	}
+
+	/**
+	 * Compute a list of normalised stacked weights of the internal particle list
+	 * @return {Array}
+	 */
+	_calculateNormalisedWeights() {
+		const stackedWeights = [];
+		const sumOfWeigths = this.particles.reduce((total, p, i) => {
+			const sum = total + p.weight;
+			stackedWeights[i] = sum;
+			return sum;
+		}, 0);
+
+		return stackedWeights.map((x) => x / sumOfWeigths);
+	}
+
+	/**
+	 * Draw a weighted sample from from a list and return the index
+	 * @param  {Array} weights
+	 * @return {int}
+	 */
+	_weightedRandomSample(weights) {
+		const rand = Math.random();
+
+		for (let m = 0; m < weights.length; m++) {
+
+			if (weights[m] > rand) {
+				return m;
+			}
+		}
 	}
 }
 
