@@ -13,7 +13,8 @@ var gulp = require("gulp"),
 	browserify = require('browserify'),
 	source = require('vinyl-source-stream'),
 	buffer = require('vinyl-buffer'),
-	gutil = require('gulp-util');
+	gutil = require('gulp-util'),
+	cached = require('gulp-cached');
 
 var reload = browserSync.reload;
 
@@ -61,7 +62,7 @@ Performs jshint on all script files
  */
 gulp.task("jshint", function() {
 	return gulp.src(scripts)
-		.pipe(changed(scripts))
+		.pipe(cached(scripts))
 		.pipe(jshint())
 		.pipe(jshint.reporter(stylish));
 });
@@ -71,7 +72,7 @@ Pack vendor in one js file
  */
 gulp.task("vendor", function() {
 	return gulp.src(mainBowerFiles())
-		.pipe(changed(distVendor))
+		.pipe(cached(distVendor))
 		.pipe(sourcemaps.init())
 		.pipe(concat("vendor.js"))
 		.pipe(sourcemaps.write("."))
