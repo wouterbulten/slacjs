@@ -52,10 +52,12 @@ class ParticleSet {
 		const newParticles = [];
 
 		for (let i = 0; i < this.nParticles; i++) {
-			//Do copy here
-			newParticles[i] = new Particle({x: 0, y: 0, theta: 0});
+			const sample = this.particles[this._weightedRandomSample(weights)];
+			newParticles[i] = new Particle({}, sample);
 		}
 
+		this.particles = newParticles;
+		
 		return this;
 	}
 

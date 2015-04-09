@@ -8,10 +8,16 @@ class Particle {
 	 * @param  {float} options.theta Initial theta of user
 	 * @return {Particle}
 	 */
-	constructor({x, y, theta}) {
-		this.user = new User({x, y, theta});
-		this.weight = 1;
-		this.landmarks = new Map();
+	constructor({x, y, theta}, parent = undefined) {
+
+		if(parent !== undefined) {
+			this.weight = parent.weight;
+		}
+		else {
+			this.user = new User({x, y, theta});
+			this.weight = 1;
+			this.landmarks = new Map();
+		}
 	}
 
 	/**
@@ -55,6 +61,10 @@ class Particle {
 	}
 
 	updateLandmark({id, r}) {
+
+	}
+
+	_constructFromParent(parent) {
 
 	}
 }
