@@ -1,45 +1,36 @@
+import { addTheta, polarToCartesian } from '../util/coordinate-system';
+
 class User {
-	
 	/**
 	 * Create a new user
 	 * @param  {float} options.x     Starting x location of the user
 	 * @param  {float} options.y     Starting y location of the user
-	 * @param  {float} options.theta Direction of the user in radials relative to (0,0)
-	 * @return {User}       
+	 * @param  {float} options.theta Direction of the user in radials relative to the x-axis
+	 * @return {User}
 	 */
 	constructor({x, y, theta}) {
 		this.x = x;
 		this.y = y;
 		this.theta = theta;
 
-		this.trace = [[x,y,theta]];
-	}
-
-	moveUser(r, theta) {
-		a = 2;
-		this.theta = this.addTheta(theta, this.theta);
-
+		this.trace = [[x, y, theta]];
 	}
 
 	/**
-	 * Add two radials
-	 * @param {float} t1
-	 * @param {float} t2
-	 * @return {float} Sum of t1 and t2
+	 * Move a user to a new position
+	 * @param  {float} r
+	 * @param  {float} theta
+	 * @return {void}
 	 */
-	static addTheta(t1, t2) {
-		let theta = t1 + t2;
-		const twoPi = Math.PI * 2;
+	moveUser(r, theta) {
 
-		if(theta > (twoPi)) {
-			theta -= twoPi;
-		}
-		else if(theta < 0) {
-			theta += twoPi;
-		}
+		const {x, y} = polarToCartesian(r, theta + this.theta);
 
-		return theta;
+		this.x += x;
+		this.y += y;
+		this.theta = addTheta(theta, this.theta);
 	}
+
 }
 
 export default User;

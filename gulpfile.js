@@ -14,7 +14,8 @@ var gulp = require("gulp"),
 	source = require('vinyl-source-stream'),
 	buffer = require('vinyl-buffer'),
 	gutil = require('gulp-util'),
-	cached = require('gulp-cached');
+	cached = require('gulp-cached'),
+	jscs = require('gulp-jscs');
 
 var reload = browserSync.reload;
 
@@ -51,19 +52,20 @@ gulp.task("modules", function() {
 		.pipe(buffer())
 		.pipe(sourcemaps.init({loadMaps: true}))
 		// Add transformation tasks to the pipeline here.
-		.pipe(uglify())
+		//.pipe(uglify())
 		.on('error', gutil.log)
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(distJs));
 });
 
 /*
-Performs jshint on all script files
+Performs lint on all script files
  */
-gulp.task("jshint", function() {
+gulp.task("lint", function() {
 	return gulp.src(scripts)
 		.pipe(cached(scripts))
 		.pipe(jshint())
+		.pipe(jscs())
 		.pipe(jshint.reporter(stylish));
 });
 
@@ -100,14 +102,14 @@ gulp.task('clean', function(cb) {
 Reload browser
  */
 gulp.task('reload-styles', ['styles'], browserSync.reload);
-gulp.task('reload-scripts', ['jshint', 'modules'], browserSync.reload);
+gulp.task('reload-scripts', ['lint', 'modules'], browserSync.reload);
 gulp.task('reload-index', ['index'], browserSync.reload);
 
 /*
 Default task running all sub task in the right order
  */
 gulp.task('default', ['clean'], function() {
-	gulp.start('jshint', 'modules', 'vendor', 'styles', 'index');
+	gulp.start('lint', 'modules', 'vendor', 'styles', 'index');
 });
 
 /*
