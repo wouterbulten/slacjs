@@ -1,4 +1,5 @@
 import { addTheta, polarToCartesian } from '../util/coordinate-system';
+import LinkedList from '../util/linked-list';
 
 class User {
 	/**
@@ -6,14 +7,22 @@ class User {
 	 * @param  {float} options.x     Starting x location of the user
 	 * @param  {float} options.y     Starting y location of the user
 	 * @param  {float} options.theta Direction of the user in radials relative to the x-axis
+	 * @param  {LinkedList} trace 	 Optional trace to extend
 	 * @return {User}
 	 */
-	constructor({x, y, theta}) {
+	constructor({x, y, theta}, trace = undefined) {
 		this.x = x;
 		this.y = y;
 		this.theta = theta;
 
-		this.trace = [{x, y, theta}];
+		if(trace === undefined) {
+			this.trace = new LinkedList().add({x, y, theta});
+		}
+		else {
+			//We use a LinkedList here to make use of the reference to the
+			//trace instead of copying the whole list
+			this.trace = new LinkedList(trace);
+		}
 	}
 
 	/**
@@ -29,11 +38,23 @@ class User {
 		this.y += y;
 		this.theta = addTheta(theta, this.theta);
 
-		this.trace.push({x: this.x, y: this.y, theta: this.theta});
+		this.trace.add({x: this.x, y: this.y, theta: this.theta});
 
 		return this;
 	}
 
+	/**
+	 * Safely copy a user object
+	 * @param  {User} user User to copy
+	 * @return {User}
+	 */
+	static copyUser(user) {
+		return new User({
+			x: user.x,
+			y: user.y,
+			theta: user.theta
+		}, user.trace);
+	}
 }
 
 export default User;

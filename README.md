@@ -1,9 +1,11 @@
 # SlacJS
-Simultaneously Localisation and Configuration for Wireless Sensor Networks in indoor environments
+Simultaneously Localisation and Configuration for Wireless Sensor Networks in indoor environments using FastSLAM.
 
 ## Installation
 
 SLACjs uses *bower* and *gulp* to manage dependencies and build the project. Make sure that you have *npm* installed and then run:
+
+`npm install --global gulp` (Only required if you do not have gulp installed)
 
 `npm install`
 

@@ -52,7 +52,10 @@ class ParticleSet {
 		const newParticles = [];
 
 		for (let i = 0; i < this.nParticles; i++) {
-			const sample = this.particles[this._weightedRandomSample(weights)];
+			const id = this._weightedRandomSample(weights);
+			const sample = this.particles[id];
+
+			console.log("Selected particle " + id);
 			newParticles[i] = new Particle({}, sample);
 		}
 

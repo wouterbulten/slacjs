@@ -10,8 +10,10 @@ class Particle {
 	 */
 	constructor({x, y, theta}, parent = undefined) {
 
-		if(parent !== undefined) {
+		if (parent !== undefined) {
 			this.weight = parent.weight;
+			this.user = User.copyUser(parent.user);
+			this.landmarks = new Map();
 		}
 		else {
 			this.user = new User({x, y, theta});
@@ -33,7 +35,7 @@ class Particle {
 		const theta = Math.random() * 2 * Math.PI;
 
 		this.user.move(r, theta);
-		
+
 		return this;
 	}
 
@@ -61,10 +63,6 @@ class Particle {
 	}
 
 	updateLandmark({id, r}) {
-
-	}
-
-	_constructFromParent(parent) {
 
 	}
 }
