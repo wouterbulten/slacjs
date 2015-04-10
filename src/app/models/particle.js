@@ -13,7 +13,7 @@ class Particle {
 		if (parent !== undefined) {
 			this.weight = parent.weight;
 			this.user = User.copyUser(parent.user);
-			this.landmarks = new Map();
+			this.landmarks = this._copyMap(parent.landmarks);
 		}
 		else {
 			this.user = new User({x, y, theta});
@@ -64,6 +64,26 @@ class Particle {
 
 	updateLandmark({id, r}) {
 
+	}
+
+	_copyMap(map) {
+		const copy = new Map();
+
+		for (let [key, value] of myMap.entries()) {
+			copy.set(key, this._copyLandmark(value));
+		}
+
+		return copy;
+	}
+
+	_copyLandmark(landmark) {
+		let copy = {};
+
+		copy.x = landmark.x;
+		copy.y = landmark.y;
+		copy.cov = landmark.cov.clone();
+
+		return copy;
 	}
 }
 
