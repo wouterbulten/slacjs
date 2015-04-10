@@ -69,7 +69,7 @@ class Particle {
 	_copyMap(map) {
 		const copy = new Map();
 
-		for (let [key, value] of myMap.entries()) {
+		for (let [key, value] of map.entries()) {
 			copy.set(key, this._copyLandmark(value));
 		}
 
