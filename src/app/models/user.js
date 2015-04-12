@@ -15,7 +15,7 @@ class User {
 		this.y = y;
 		this.theta = theta;
 
-		if(trace === undefined) {
+		if (trace === undefined) {
 			this.trace = new LinkedList().add({x, y, theta});
 		}
 		else {

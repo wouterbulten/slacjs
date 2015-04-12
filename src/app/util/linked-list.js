@@ -25,6 +25,7 @@ class LinkedList {
 		if (this.list[0] !== undefined) {
 			values = this.list[0].values();
 		}
+
 		values = values.concat(this.list.slice(1));
 
 		return values;
