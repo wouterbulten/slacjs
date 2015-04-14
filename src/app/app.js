@@ -1,6 +1,6 @@
 import ParticleSet from './models/particle-set';
-import LinkedList from './util/linked-list';
 import Visualizer from './view/visualizer';
+import SimulatedUser from './simulation/user';
 
 /* global window */
 /* global console */
@@ -8,24 +8,28 @@ import Visualizer from './view/visualizer';
 
 window.app = {
 
+	particleSet: undefined,
+	visualizer: undefined,
+	user: undefined,
+
 	initialize: function() {
 		'use strict';
 
-		const particleSet = new ParticleSet(40, {x: 0, y: 0, theta: 0});
+		this.particleSet = new ParticleSet(40, {x: 0, y: 0, theta: 0});
+		this.visualizer = new Visualizer('slac-map', 50, 50);
+		this.user = new SimulatedUser({x: 0, y: 0, theta: 0.5}, 2, {xRange: 25, yRange: 25, padding: 5});
+	},
 
-		const visualizer = new Visualizer('slac-map', 50, 50, 2);
+	step: function() {
 
-		for (let i = 0; i < 10; i++) {
+		this.user.randomWalk();
 
-			particleSet.samplePose({})
-					   .processObservation({id: 10, r: 20})
-					   .resample()
+		this.particleSet.samplePose({})
+				   		.processObservation({id: 10, r: 20})
+				   		.resample()
 
-			console.log(particleSet);
-
-			visualizer.clearCanvas().plotParticleSet(particleSet);
-		}
-
-
+		this.visualizer.clearCanvas()
+				  		.plotUserTrace(this.user, 'blue')
+				  		.plotParticleSet(this.particleSet);
 	}
 };
