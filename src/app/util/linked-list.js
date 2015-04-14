@@ -5,6 +5,10 @@ class LinkedList {
 	 * @return LinkedList
 	 */
 	constructor(base = undefined) {
+		if (base !== undefined && typeof base != 'object') {
+			console.error("Base must be a LinkedList");
+		}
+
 		this.list = [base];
 	}
 
@@ -29,6 +33,14 @@ class LinkedList {
 		values = values.concat(this.list.slice(1));
 
 		return values;
+	}
+
+	/**
+	 * Return the base of this linked list
+	 * @return {undefined|LinkedList}
+	 */
+	getBase() {
+		return this.list[0];
 	}
 }
 

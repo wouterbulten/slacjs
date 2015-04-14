@@ -1,4 +1,6 @@
 import ParticleSet from './models/particle-set';
+import LinkedList from './util/linked-list';
+import Visualizer from './view/visualizer';
 
 /* global window */
 /* global console */
@@ -11,15 +13,19 @@ window.app = {
 
 		const particleSet = new ParticleSet(40, {x: 0, y: 0, theta: 0});
 
-		for (let i = 0; i < 1; i++) {
+		const visualizer = new Visualizer('slac-map', 50, 50, 2);
+
+		for (let i = 0; i < 10; i++) {
 
 			particleSet.samplePose({})
 					   .processObservation({id: 10, r: 20})
 					   .resample()
-					   .samplePose({})
-					   .samplePose({});
 
 			console.log(particleSet);
+
+			visualizer.clearCanvas().plotParticleSet(particleSet);
 		}
+
+
 	}
 };

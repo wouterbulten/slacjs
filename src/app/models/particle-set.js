@@ -12,10 +12,10 @@ class ParticleSet {
 	constructor(nParticles, {x, y, theta}) {
 		this.nParticles = 40;
 
-		this.particles = [];
+		this.particleList = [];
 
 		for (let i = 0; i < nParticles; i++) {
-			this.particles.push(new Particle({x, y, theta}));
+			this.particleList.push(new Particle({x, y, theta}));
 		}
 	}
 
@@ -25,7 +25,7 @@ class ParticleSet {
 	 * @return {ParticleSet}
 	 */
 	samplePose(control) {
-		this.particles.forEach((p) => p.samplePose(control));
+		this.particleList.forEach((p) => p.samplePose(control));
 
 		return this;
 	}
@@ -37,7 +37,7 @@ class ParticleSet {
 	 * @return {ParticleSet}
 	 */
 	processObservation({id, r}) {
-		this.particles.forEach((p) => p.processObservation({id, r}));
+		this.particleList.forEach((p) => p.processObservation({id, r}));
 
 		return this;
 	}
@@ -52,13 +52,21 @@ class ParticleSet {
 		const newParticles = [];
 
 		for (let i = 0; i < this.nParticles; i++) {
-			const sample = this.particles[this._weightedRandomSample(weights)];
+			const sample = this.particleList[this._weightedRandomSample(weights)];
 			newParticles[i] = new Particle({}, sample);
 		}
 
-		this.particles = newParticles;
-		
+		this.particleList = newParticles;
+
 		return this;
+	}
+
+	/**
+	 * Get particles
+	 * @return {[Array]
+	 */
+	particles() {
+		return this.particleList;
 	}
 
 	/**
@@ -67,7 +75,7 @@ class ParticleSet {
 	 */
 	_calculateNormalisedWeights() {
 		const stackedWeights = [];
-		const sumOfWeigths = this.particles.reduce((total, p, i) => {
+		const sumOfWeigths = this.particleList.reduce((total, p, i) => {
 			const sum = total + p.weight;
 			stackedWeights[i] = sum;
 			return sum;
