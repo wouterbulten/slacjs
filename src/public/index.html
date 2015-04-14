@@ -19,17 +19,20 @@
 			
 		}
 		#slac-stage canvas { 
+			z-index: -1;
 			position: absolute;
+			border: 1px solid black;
+			background-color: #eeeeee;
+			box-sizing:border-box;
+			-moz-box-sizing:border-box;
+			-webkit-box-sizing:border-box;
 		}
-		#slac-map { z-index: 2;}
-		#slac-map-landmarks { z-index: 1 }
 	</style>
 </head>
 
 <body>
 
 <div id="slac-stage">
-	<canvas id="slac-map-landmarks"></canvas>
 	<canvas id="slac-map"></canvas>
 </div>
 
@@ -40,6 +43,13 @@
 
 <script type="text/javascript">
 app.initialize();
+
+var iteration = function() {
+	app.step();
+	setTimeout(iteration, 500);
+};
+
+setTimeout(iteration, 500);
 </script>
 </body>
 </html>
