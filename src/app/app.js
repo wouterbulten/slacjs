@@ -27,13 +27,27 @@ window.app = {
 
 		this.user.randomWalk();
 
-		this.particleSet.samplePose({})
-				   		.processObservation({id: 10, r: 20})
-				   		.resample()
+		//Get accelerometer data
+		// ...
 
+		//Transform to angle and distance
+		const r = 1;
+		const theta = 1;
+
+		//Sample a new pose for each particle in the set
+		this.particleSet.samplePose(r, theta);
+
+		//Get the latest observation
+		const obs = {id: 10, r: 20};
+
+		//Update the EKF and resmample
+		this.particleSet.processObservation(obs)
+						.resample();
+
+		//Update the canvas
 		this.visualizer.clearCanvas()
-				  		.plotUserTrace(this.user, 'blue')
-				  		.plotParticleSet(this.particleSet)
-				  		.plotObjects(this.landmarks.landmarks);
+						.plotUserTrace(this.user, 'blue')
+						.plotParticleSet(this.particleSet)
+						.plotObjects(this.landmarks.landmarks);
 	}
 };
