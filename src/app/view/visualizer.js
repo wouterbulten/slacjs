@@ -63,12 +63,34 @@ class Visualizer {
 	}
 
 	/**
+	 * Plot a set of objects as squares
+	 * @param  {Array} objects An array of objects with at least an x,y value
+	 * @return {Visualizer}
+	 */
+	plotObjects(objects) {
+		this.ctx.fillStyle = '#000000';
+		const size = 0.5;
+
+		objects.forEach((o) => {
+
+			//Compensate for landmark size
+			var x = this._tx(o.x) - (0.5 * size);
+			var y = this._ty(o.y) - (0.5 * size);
+
+			this.ctx.fillRect(x, y, size, size);
+
+		});
+	}
+
+	/**
 	 * Scale the canvas
 	 * @return {void}
 	 */
 	_scaleCanvas() {
+
 		//Use 1.99 scale on retina devices
 		const scaleFactor = window.devicePixelRatio && window.devicePixelRatio === 2 ? 1.99 : 1;
+
 		//Get desired width of the canvas
 		const width = Math.min(window.innerWidth, window.innerHeight);
 
