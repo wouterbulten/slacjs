@@ -17,10 +17,17 @@ window.app = {
 	initialize: function() {
 		'use strict';
 
+		const landmarkConfig = {
+			n: 2,
+			txPower: -20, 
+			noise: 2,
+			range: 10
+		};
+
 		this.particleSet = new ParticleSet(1, {x: 0, y: 0, theta: 0});
 		this.visualizer = new Visualizer('slac-map', 50, 50);
 		this.user = new SimulatedUser({x: 0, y: 0, theta: 0.0}, 2, {xRange: 25, yRange: 25, padding: 5});
-		this.landmarks = new SimulatedLandmarkSet(50, 25, 25);
+		this.landmarks = new SimulatedLandmarkSet(50, 25, 25, landmarkConfig);
 	},
 
 	step: function() {

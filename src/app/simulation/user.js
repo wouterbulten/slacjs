@@ -29,7 +29,7 @@ class SimulatedUser extends User {
 	 */
 	randomWalk() {
 		let r = Math.abs(randn(this.v, 2));
-		let theta = 0.2;
+		let theta = randn(0.1, 0.2);
 
 		//Save the current x,y locally
 		const lastX = this.x;

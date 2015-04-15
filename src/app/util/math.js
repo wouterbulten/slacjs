@@ -1,3 +1,9 @@
+/**
+ * Random following normal distribution
+ * @param  {float} mean mean
+ * @param  {float} sd   standard deviation
+ * @return {float}      
+ */
 export function randn(mean, sd) {
 
 	//Retrieved from jStat
@@ -12,4 +18,17 @@ export function randn(mean, sd) {
 	} while (q > 0.27597 && (q > 0.27846 || v * v > -4 * Math.log(u) * u * u));
 
 	return (v/u) * sd + mean;
+}
+
+/**
+ * Compute the log with a given base
+ *
+ * Used primarily as log10 is not implemented yet on mobile browsers
+ * 
+ * @param  {int}
+ * @param  {int}
+ * @return {float}
+ */
+export function log(x, base) {
+	return Math.log(x) / Math.log(base);
 }

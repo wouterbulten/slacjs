@@ -56,7 +56,7 @@ export function cartesianToPolar(dx, dy) {
 		}
 	}
 	else {
-		if(dy >= 0) {
+		if (dy >= 0) {
 			theta = 0
 		}
 		else {

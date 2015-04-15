@@ -1,22 +1,107 @@
+import { log, randn } from '../util/math';
+
 class SimulatedLandmarkSet {
 
-	constructor(N, xRange, yRange) {
+	constructor(N, xRange, yRange, landmarkConfig) {
 		this.landmarks = [];
 		this.xRange = xRange;
 		this.yRange = yRange;
+		this.landmarkConfig = landmarkConfig;
 
 		for (let i = 0; i < N; i++) {
 			this.landmarks.push(this._randomLandmark('landmark-' + i));
 		}
 	}
 
+	rangeMeasurementsAtPoint(x, y) {
+		const landmarks = this.landmarksInRange(x,y);
+
+	}
+	/**
+	 * Return all landmarks within range of a given x,y position
+	 * @param  {float} x
+	 * @param  {float} y 
+	 * @return {Array}
+	 */
+	landmarksInRange(x, y) {
+		return this.landmarks.filter((l) => l.isInRange(x,y));
+	}
+
+	/**
+	 * Create a landmark at a random position
+	 * @param  {string} uid UID
+	 * @return {Landmark}
+	 */
 	_randomLandmark(uid) {
-		return {
-			id: uid,
+		return new Landmark(uid, {
 			x: Math.random() * (2 * this.xRange) - this.xRange,
 			y: Math.random() * (2 * this.yRange) - this.yRange
-		};
+		}, this.landmarkConfig);
 	}
+}
+
+class Landmark {
+	/**
+	 * Landmark
+	 * @param  {string} uid             UID of the landmark
+	 * @param  {float} options.x        Current x position
+	 * @param  {float} options.y        Current y position
+	 * @param  {int} options.n          Path loss exponent
+	 * @param  {int} options.txPower    Transmit power
+	 * @param  {float} options.noise    Noise level
+	 * @param  {int} options.range      Range
+	 * @return {Landmark}               
+	 */
+	constructor(uid, {x, y}, {n, txPower, noise, range}) {
+		this.uid = uid,
+		this.x = x;
+		this.y = y;
+		this.landmarkRange = range;
+		this.n = n;
+		this.txPower = txPower;
+		this.noise = noise;
+	}
+
+	/**
+	 * Returns true when a point x,y is in range
+	 * @param  {float}  x 
+	 * @param  {float}  y 
+	 * @return {Boolean}
+	 */
+	isInRange(x,y) {
+		return this.distanceTo(x,y) <= this.landmarkRange;
+	}
+
+	/**
+	 * Distance from this landmark to a x,y point
+	 * @param  {float} x
+	 * @param  {float} y 
+	 * @return {float}
+	 */
+	distanceTo(x, y) {
+		return Math.sqrt(Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2));
+	}
+
+	/**
+	 * RSSI value without noise at x,y point
+	 * @param  {float} x
+	 * @param  {float} y
+	 * @return {float} RSSI value
+	 */
+	rssiAtRaw(x, y) {
+		return -(10 * this.n) *  log(Math.max(this.distanceTo(x,y), 0.1), 10) + this.txPower
+	};
+
+	/**
+	 * RSSI with noise at x,y point
+	 * @param  {float} x
+	 * @param  {float} y
+	 * @return {float}
+	 */
+	rssiAt(x, y) {
+
+		return this.rssiAtLocationRaw(x,y) + randn(0, this.noise)
+	};
 }
 
 export default SimulatedLandmarkSet;
