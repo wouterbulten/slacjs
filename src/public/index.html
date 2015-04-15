@@ -37,6 +37,7 @@
 </div>
 
 <h1>SLAC.js <small>(ES6 Version)</small></h1>
+<button id="toggle-simulation">Toggle simulation</button>
 
 <script type="text/javascript" src="vendor/vendor.js"></script>
 <script type="text/javascript" src="assets/js/slacjs-app.js"></script>
@@ -44,12 +45,29 @@
 <script type="text/javascript">
 app.initialize();
 
+var timeout = undefined;
+
 var iteration = function() {
 	app.step();
-	setTimeout(iteration, 500);
+	timeout = setTimeout(iteration, 500);
 };
 
-setTimeout(iteration, 500);
+timeout = setTimeout(iteration, 500);
+
+$(window).ready(function() {
+	$('#toggle-simulation').on('click', function() {
+
+		if(timeout !== undefined) {
+			clearTimeout(timeout);
+			timeout = undefined;
+			console.log("Paused");
+		}
+		else {
+			timeout = setTimeout(iteration, 500);
+			console.log("Started");
+		}
+	});
+})
 </script>
 </body>
 </html>

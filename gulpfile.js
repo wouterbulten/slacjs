@@ -121,10 +121,6 @@ Watch for changes and rebuild when necessary
  */
 gulp.task('serve', ['default'], function() {
 
-	browserSync({
-		server: "./dist"
-	});
-
 	// Watch .css files
 	gulp.watch(styles, ['reload-styles']);
 
@@ -132,4 +128,8 @@ gulp.task('serve', ['default'], function() {
 	gulp.watch(scripts, ['reload-scripts']);
 
 	gulp.watch(index, ['reload-index']);
+
+	browserSync({
+		server: "./dist"
+	});
 });
