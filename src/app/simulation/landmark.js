@@ -1,6 +1,6 @@
 import { log, randn } from '../util/math';
 
-class SimulatedLandmarkSet {
+export class SimulatedLandmarkSet {
 
 	constructor(N, xRange, yRange, landmarkConfig) {
 		this.landmarks = [];
@@ -13,18 +13,45 @@ class SimulatedLandmarkSet {
 		}
 	}
 
-	rangeMeasurementsAtPoint(x, y) {
-		const landmarks = this.landmarksInRange(x,y);
+	/**
+	 * Simulate RSSI measurements for all landmarks in range
+	 * @param  {float} x
+	 * @param  {float} y
+	 * @return {Array}
+	 */
+	measurementsAtPoint(x, y) {
+		const landmarks = this.landmarksInRange(x, y);
+		const measurements = [];
 
+		return landmarks.forEach((l) => measurements.push({uid: l.uid, rssi: l.rssiAt(x, y)}));
 	}
+
+	/**
+	 * Get a random measurement from a device in range
+	 * @param  {float} x
+	 * @param  {float} y
+	 * @return {object}
+	 */
+	randomMeasurementAtPoint(x, y) {
+		const landmarks = this.landmarksInRange(x, y);
+
+		if (landmarks.length > 0) {
+			const landmark = landmarks[Math.floor(Math.random() * landmarks.length)];
+
+			return {uid: landmark.uid, rssi: landmark.rssiAt(x, y)};
+		}
+
+		return {};
+	}
+
 	/**
 	 * Return all landmarks within range of a given x,y position
 	 * @param  {float} x
-	 * @param  {float} y 
+	 * @param  {float} y
 	 * @return {Array}
 	 */
 	landmarksInRange(x, y) {
-		return this.landmarks.filter((l) => l.isInRange(x,y));
+		return this.landmarks.filter((l) => l.isInRange(x, y));
 	}
 
 	/**
@@ -50,10 +77,10 @@ class Landmark {
 	 * @param  {int} options.txPower    Transmit power
 	 * @param  {float} options.noise    Noise level
 	 * @param  {int} options.range      Range
-	 * @return {Landmark}               
+	 * @return {Landmark}
 	 */
 	constructor(uid, {x, y}, {n, txPower, noise, range}) {
-		this.uid = uid,
+		this.uid = uid;
 		this.x = x;
 		this.y = y;
 		this.landmarkRange = range;
@@ -64,18 +91,18 @@ class Landmark {
 
 	/**
 	 * Returns true when a point x,y is in range
-	 * @param  {float}  x 
-	 * @param  {float}  y 
+	 * @param  {float}  x
+	 * @param  {float}  y
 	 * @return {Boolean}
 	 */
-	isInRange(x,y) {
-		return this.distanceTo(x,y) <= this.landmarkRange;
+	isInRange(x, y) {
+		return this.distanceTo(x, y) <= this.landmarkRange;
 	}
 
 	/**
 	 * Distance from this landmark to a x,y point
 	 * @param  {float} x
-	 * @param  {float} y 
+	 * @param  {float} y
 	 * @return {float}
 	 */
 	distanceTo(x, y) {
@@ -89,8 +116,8 @@ class Landmark {
 	 * @return {float} RSSI value
 	 */
 	rssiAtRaw(x, y) {
-		return -(10 * this.n) *  log(Math.max(this.distanceTo(x,y), 0.1), 10) + this.txPower
-	};
+		return -(10 * this.n) *  log(Math.max(this.distanceTo(x, y), 0.1), 10) + this.txPower;
+	}
 
 	/**
 	 * RSSI with noise at x,y point
@@ -99,9 +126,16 @@ class Landmark {
 	 * @return {float}
 	 */
 	rssiAt(x, y) {
-
-		return this.rssiAtLocationRaw(x,y) + randn(0, this.noise)
-	};
+		return this.rssiAtRaw(x, y) + randn(0, this.noise);
+	}
 }
 
-export default SimulatedLandmarkSet;
+/**
+ * Convert RSSI to distance
+ * @param  {float} rssi
+ * @param  {object} landmarkConfig Should at least contain a txPower and n field
+ * @return {float}
+ */
+export function rssiToDistance(rssi, landmarkConfig) {
+	return Math.pow(10, (rssi - landmarkConfig.txPower) / (-10 * landmarkConfig.n));
+}

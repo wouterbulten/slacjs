@@ -45,24 +45,28 @@ class Particle {
 	 * @param  {float} options.r   Range measurement to this landmark
 	 * @return {Particle}
 	 */
-	processObservation({id, r}) {
+	processObservation({uid, r}) {
 
 		//Update landmark
-		if (this.landmarks.has(id) === undefined) {
-			this.addLandmark({id, r});
+		if (this.landmarks.has(uid) === undefined) {
+			this.addLandmark({uid, r});
 		}
 		else {
-			this.updateLandmark({id, r});
+			this.updateLandmark({uid, r});
 		}
 
 		return this;
 	}
 
-	addLandmark({id, r}) {
+	addLandmark({uid, r}) {
+		let x = 0;
+		let y = 0;
+		let cov;
 
+		this.landmarks.set(id, {x, y, cov});
 	}
 
-	updateLandmark({id, r}) {
+	updateLandmark({uid, r}) {
 
 	}
 

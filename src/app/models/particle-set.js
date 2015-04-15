@@ -32,13 +32,15 @@ class ParticleSet {
 
 	/**
 	 * Let each particle process an observation
-	 * @param  {int} options.id   Id of the landmark
-	 * @param  {float} options.r  Range measurement
+	 * @param  {object} obs
 	 * @return {ParticleSet}
 	 */
-	processObservation({id, r}) {
-		this.particleList.forEach((p) => p.processObservation({id, r}));
-
+	processObservation(obs) {
+		
+		if (obs !== {}) {
+			this.particleList.forEach((p) => p.processObservation(obs));
+		}
+		
 		return this;
 	}
 
