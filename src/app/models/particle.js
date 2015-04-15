@@ -48,11 +48,11 @@ class Particle {
 	processObservation({uid, r}) {
 
 		//Update landmark
-		if (this.landmarks.has(uid) === undefined) {
-			this.addLandmark({uid, r});
+		if (this.landmarks.has(uid)) {
+			this.updateLandmark({uid, r});
 		}
 		else {
-			this.updateLandmark({uid, r});
+			this.addLandmark({uid, r});
 		}
 
 		return this;
