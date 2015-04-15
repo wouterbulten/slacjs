@@ -31,12 +31,13 @@ class User {
 	 * @param  {float} theta
 	 * @return {User}
 	 */
-	move(r, theta) {
-		const {x, y} = polarToCartesian(r, theta + this.theta);
+	move({r, theta}) {
+		const dTheta = addTheta(theta, this.theta);
+		const {dx, dy} = polarToCartesian(r, dTheta);
 
-		this.x += x;
-		this.y += y;
-		this.theta = addTheta(theta, this.theta);
+		this.x += dx;
+		this.y += dy;
+		this.theta = dTheta;
 
 		this.trace.add({x: this.x, y: this.y, theta: this.theta});
 

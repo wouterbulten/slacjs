@@ -20,13 +20,49 @@ export function addTheta(t1, t2) {
 
 /**
  * Convert polar coordinates to cartesian coordinates
- * @param  {[type]} r     [description]
- * @param  {[type]} theta [description]
- * @return {[type]}       [description]
+ * @param  {float} r
+ * @param  {float} theta
+ * @return {object}
  */
 export function polarToCartesian(r, theta) {
-	const x = r * Math.cos(theta);
-	const y = r * Math.sin(theta);
+	const dx = r * Math.cos(theta);
+	const dy = r * Math.sin(theta);
 
-	return {x, y};
+	return {dx, dy};
+}
+
+/**
+ * Convert cartesian coordiantes to polar coordinates
+ * @param  {float} dx  x value from 0,0
+ * @param  {float} dy  y value from 0,0
+ * @return {object}
+ */
+export function cartesianToPolar(dx, dy) {
+
+	const r = Math.sqrt((dx * dx) + (dy * dy));
+	
+	let theta;
+
+	//Theta can be computed using tan^-1 when x != 0
+	if (dx !== 0) {
+		theta = Math.atan(dy / dx);
+
+		//Compensate for negative values of dx and dy
+		if (dx < 0) {
+			theta += Math.PI;
+		}
+		else if (dy < 0) {
+			theta += 2 * Math.PI;
+		}
+	}
+	else {
+		if(dy >= 0) {
+			theta = 0
+		}
+		else {
+			theta = - Math.PI;
+		}
+	}
+
+	return {r, theta};
 }

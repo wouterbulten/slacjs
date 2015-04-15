@@ -31,10 +31,10 @@ class Particle {
 
 		//Do something with the control here
 		//Random values for now
-		const r = 5;
-		const theta = Math.random() * 2 * Math.PI;
+		const r = control.r + (Math.random() - 0.5);
+		const theta = control.theta + (0.1 * (Math.random() - 0.5));
 
-		this.user.move(r, theta);
+		this.user.move({r, theta});
 
 		return this;
 	}
