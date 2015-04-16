@@ -33,9 +33,10 @@ class Visualizer {
 	 * Plot a user object on the canvas
 	 * @param  {User} user
 	 * @param  {String} color
+	 * @param  {float} Range of the sensor
 	 * @return {Visualizer}
 	 */
-	plotUserTrace(user, color = '#C7C7C7') {
+	plotUserTrace(user, color = '#C7C7C7', range) {
 		//@todo This can possibly be optimised by only plotting traces that have
 		//		not yet been plotted.
 
@@ -58,6 +59,15 @@ class Visualizer {
 
 		this.ctx.stroke();
 		this.ctx.closePath();
+
+		if (range !== undefined)
+		{
+			this.ctx.strokeStyle = '#C7C7C7';
+			this.ctx.beginPath();
+			this.ctx.arc(this._tx(user.x), this._ty(user.y), range, 0, Math.PI*2,true);
+			this.ctx.stroke();
+			this.ctx.closePath();
+		}
 
 		return this;
 	}
