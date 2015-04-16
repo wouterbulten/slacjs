@@ -8,6 +8,7 @@ export class SimulatedLandmarkSet {
 		this.yRange = yRange;
 		this.updateRate = updateRate;
 		this.landmarkConfig = landmarkConfig;
+		this.broadcastId = undefined;
 
 		for (let i = 0; i < N; i++) {
 			this.landmarks.push(this._randomLandmark('landmark-' + i));
@@ -15,7 +16,13 @@ export class SimulatedLandmarkSet {
 	}
 
 	startBroadcast(sensor, user) {
-		window.setTimeout(() => this._broadCast(sensor, user), this.updateRate);
+		this.broadcastId = window.setTimeout(() => this._broadCast(sensor, user), this.updateRate);
+	}
+
+	stopBroadCast() {
+		if(this.broadcastId !== undefined) {
+			window.clearTimeout(this.broadcastId)
+		}
 	}
 
 	/**
@@ -69,6 +76,14 @@ export class SimulatedLandmarkSet {
 		}, this.landmarkConfig);
 	}
 
+	/**
+	 * Simulate a broadcast
+	 *
+	 * Sets a timeout to run this function again after a fixed amount of time
+	 * @param  {Sensor} sensor
+	 * @param  {User} user
+	 * @return {void}
+	 */
 	_broadCast(sensor, user) {
 		
 		const measurement = this.randomMeasurementAtPoint(user.x, user.y);
@@ -80,7 +95,20 @@ export class SimulatedLandmarkSet {
 			sensor.addObservation(measurement);
 		}
 
-		window.setTimeout(() => this._broadCast(sensor, user), this.updateRate);
+		this.broadcastId = window.setTimeout(() => this._broadCast(sensor, user), this.updateRate);
+	}
+
+	/**
+	 * Get a landmark by its uid
+	 * @param  {string} uid
+	 * @return {Landmark}
+	 */
+	landmarkByUid(uid) {
+		for(let i = 0; i < this.landmarks.length; i++) {
+			if(this.landmarks[i].uid == uid) {
+				return this.landmarks[i];
+			}
+		}
 	}
 }
 

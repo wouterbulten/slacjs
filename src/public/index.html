@@ -60,10 +60,18 @@ $(window).ready(function() {
 		if(timeout !== undefined) {
 			clearTimeout(timeout);
 			timeout = undefined;
+
+			//Disable the simulated broadcast
+			app.landmarks.disableBroadcast();
+
 			console.log("Paused");
 		}
 		else {
 			timeout = setTimeout(iteration, 500);
+
+			//Enable the broadcast again
+			app.landmarks.startBroadcast(app.sensor, app.user);
+
 			console.log("Started");
 		}
 	});
