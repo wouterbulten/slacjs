@@ -36,7 +36,7 @@ class Visualizer {
 	 * @param  {float} Range of the sensor
 	 * @return {Visualizer}
 	 */
-	plotUserTrace(user, color = '#C7C7C7', range) {
+	plotUserTrace(user, color = '#C7C7C7', range = undefined) {
 		//@todo This can possibly be optimised by only plotting traces that have
 		//		not yet been plotted.
 

@@ -58,18 +58,46 @@ class Particle {
 		return this;
 	}
 
+	/**
+	 * Register a new landmark
+	 * @param {string} options.uid
+	 * @param {flaot} options.r
+	 */
 	addLandmark({uid, r}) {
-		let x = 0;
-		let y = 0;
-		let cov = [0,0];
+		let {x, y} = this._getInitialEstimate(uid, r);
+
+		//@todo find better values for initial covariance
+		let cov = [2, 2];
 
 		this.landmarks.set(uid, {x, y, cov});
 	}
 
 	updateLandmark({uid, r}) {
 
+		const landmark = this.landmarks.get(uid);
+		const dx = this.user.x - landmark.x;
+		const dy = this.user.y - landmark.y;
+
+		//@todo find better values for default coviarance
+		const rangeCov = [2, 2];
+
+		const dist = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+		
+		//Compute innovation
+		const v = r - dist;
+
+		//Compute Jacobian
+		const H = [-dx / dist, -dy / dist];
+
+		//Cov = H * Cov_s * H^T + error
+		const cov = 0;
 	}
 
+	/**
+	 * Deep copy a mpa
+	 * @param  {Map} map
+	 * @return {Map}
+	 */
 	_copyMap(map) {
 		const copy = new Map();
 
@@ -80,6 +108,11 @@ class Particle {
 		return copy;
 	}
 
+	/**
+	 * Deep copy a landmark
+	 * @param  {object} landmark
+	 * @return {landmark}
+	 */
 	_copyLandmark(landmark) {
 		let copy = {};
 
@@ -88,6 +121,23 @@ class Particle {
 		copy.cov = [...landmark.cov];
 
 		return copy;
+	}
+
+	/**
+	 * Get an initial estimate of a particle
+	 * @param  {string} uid
+	 * @param  {float} r
+	 * @return {object}
+	 */
+	_getInitialEstimate(uid, r) {
+		//Cheat here for now to get a rough estimate
+		//Start ugly hack, should be removed when we have
+		//a good way to estimate the initial position
+		const landmark = window.app.landmarks.landmarkByUid(uid);
+		const trueX = landmark.x;
+		const trueY = landmark.y;
+
+		return {x: trueX + (3 * Math.random() - 1.5), y: trueY + (3 * Math.random() - 1.5)};
 	}
 }
 

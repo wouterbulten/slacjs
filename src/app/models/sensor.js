@@ -37,9 +37,9 @@ class Sensor {
 		const observedLandmarks = [];
 
 		//Get all the landmarks that have been upated during the current iteration
-		this.landmarks.forEach((l, id) => {
+		this.landmarks.forEach((l, uid) => {
 			if (l.iteration === this.iteration) {
-				observedLandmarks.push({id, r: this._rssiToDistance(l.rssi)});
+				observedLandmarks.push({uid, r: this._rssiToDistance(l.rssi)});
 			}
 		});
 
@@ -93,7 +93,7 @@ class Sensor {
 		const timeDiff = Math.max(this.iteration - previousIteration, 1);
 
 		const timeFactor = 1 - (1 / (Math.pow(timeDiff, 1.5) + 1));
-		const rssiFactor = Math.min(1, 1 - (0.5 * ((-10 - rssi) / 60)));
+		//const rssiFactor = Math.min(1, 1 - (0.5 * ((-10 - rssi) / 60)));
 
 		return timeFactor;
 	}

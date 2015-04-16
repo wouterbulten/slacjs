@@ -1,7 +1,7 @@
 import ParticleSet from './models/particle-set';
 import Visualizer from './view/visualizer';
 import SimulatedUser from './simulation/user';
-import { SimulatedLandmarkSet, rssiToDistance } from './simulation/landmark';
+import { SimulatedLandmarkSet } from './simulation/landmark';
 import Sensor from './models/sensor';
 
 /* global window */
@@ -55,16 +55,10 @@ window.app = {
 		const observations = this.sensor.getObservations();
 		const obs = this.landmarks.randomMeasurementAtPoint(this.user.x, this.user.y);
 
-		if(obs !== undefined)
-		{
-			//Translate RSSI to distance
-			obs.r = rssiToDistance(obs.rssi, this.landmarkConfig);
+		observations.forEach((obs) => this.particleSet.processObservation(obs));
 
-			//Update the EKF and resmample
-			this.particleSet.processObservation(obs)
-							.resample();
-		}
-		
+		this.particleSet.resample();
+
 		//Update the canvas
 		this.visualizer.clearCanvas()
 						.plotUserTrace(this.user, 'blue', this.landmarkConfig.range)
