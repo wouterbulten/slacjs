@@ -61,9 +61,9 @@ class Particle {
 	addLandmark({uid, r}) {
 		let x = 0;
 		let y = 0;
-		let cov;
+		let cov = [0,0];
 
-		this.landmarks.set(id, {x, y, cov});
+		this.landmarks.set(uid, {x, y, cov});
 	}
 
 	updateLandmark({uid, r}) {
@@ -85,7 +85,7 @@ class Particle {
 
 		copy.x = landmark.x;
 		copy.y = landmark.y;
-		copy.cov = landmark.cov.clone();
+		copy.cov = [...landmark.cov];
 
 		return copy;
 	}

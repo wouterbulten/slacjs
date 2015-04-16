@@ -2,6 +2,7 @@ import ParticleSet from './models/particle-set';
 import Visualizer from './view/visualizer';
 import SimulatedUser from './simulation/user';
 import { SimulatedLandmarkSet, rssiToDistance } from './simulation/landmark';
+import Sensor from './models/sensor';
 
 /* global window */
 /* global console */
@@ -13,6 +14,7 @@ window.app = {
 	visualizer: undefined,
 	user: undefined,
 	landmarks: undefined,
+	sensor: undefined,
 
 	landmarkConfig: {
 		n: 2,
@@ -25,9 +27,14 @@ window.app = {
 		'use strict';
 
 		this.particleSet = new ParticleSet(1, {x: 0, y: 0, theta: 0});
-		this.visualizer = new Visualizer('slac-map', 50, 50);
-		this.user = new SimulatedUser({x: 0, y: 0, theta: 0.0}, 2, {xRange: 25, yRange: 25, padding: 5});
-		this.landmarks = new SimulatedLandmarkSet(50, 25, 25, this.landmarkConfig);
+		this.visualizer = new Visualizer('slac-map', 100, 100);
+		this.user = new SimulatedUser({x: 0, y: 0, theta: 0.0}, 2, {xRange: 50, yRange: 50, padding: 5});
+		this.landmarks = new SimulatedLandmarkSet(50, {xRange: 50, yRange: 50}, 50, this.landmarkConfig);
+		this.sensor = new Sensor(this.landmarkConfig);
+
+		//Start broadcasting of the simulated landmarks
+		//Broadcasts are sent to the sensor, the user object is used to find nearby landmarks
+		this.landmarks.startBroadcast(this.sensor, this.user)
 	},
 
 	step: function() {
@@ -45,18 +52,22 @@ window.app = {
 		this.particleSet.samplePose({r, theta});
 
 		//Get the latest observation
+		const observations = this.sensor.getObservations();
 		const obs = this.landmarks.randomMeasurementAtPoint(this.user.x, this.user.y);
 
-		//Translate RSSI to distance
-		obs.r = rssiToDistance(obs.rssi, this.landmarkConfig);
+		if(obs !== undefined)
+		{
+			//Translate RSSI to distance
+			obs.r = rssiToDistance(obs.rssi, this.landmarkConfig);
 
-		//Update the EKF and resmample
-		this.particleSet.processObservation(obs)
-						.resample();
-
+			//Update the EKF and resmample
+			this.particleSet.processObservation(obs)
+							.resample();
+		}
+		
 		//Update the canvas
 		this.visualizer.clearCanvas()
-						.plotUserTrace(this.user, 'blue')
+						.plotUserTrace(this.user, 'blue', this.landmarkConfig.range)
 						.plotParticleSet(this.particleSet)
 						.plotObjects(this.landmarks.landmarks);
 	}

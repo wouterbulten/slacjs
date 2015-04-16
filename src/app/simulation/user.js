@@ -28,7 +28,7 @@ class SimulatedUser extends User {
 	 * @return {SimulatedUser}
 	 */
 	randomWalk() {
-		let r = Math.abs(randn(this.v, 2));
+		let r = Math.abs(randn(this.v, 1));
 		let theta = randn(0.1, 0.2);
 
 		//Save the current x,y locally

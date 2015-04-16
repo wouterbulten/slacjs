@@ -2,15 +2,20 @@ import { log, randn } from '../util/math';
 
 export class SimulatedLandmarkSet {
 
-	constructor(N, xRange, yRange, landmarkConfig) {
+	constructor(N, {xRange, yRange}, updateRate, landmarkConfig) {
 		this.landmarks = [];
 		this.xRange = xRange;
 		this.yRange = yRange;
+		this.updateRate = updateRate;
 		this.landmarkConfig = landmarkConfig;
 
 		for (let i = 0; i < N; i++) {
 			this.landmarks.push(this._randomLandmark('landmark-' + i));
 		}
+	}
+
+	startBroadcast(sensor, user) {
+		window.setTimeout(() => this._broadCast(sensor, user), this.updateRate);
 	}
 
 	/**
@@ -37,11 +42,9 @@ export class SimulatedLandmarkSet {
 
 		if (landmarks.length > 0) {
 			const landmark = landmarks[Math.floor(Math.random() * landmarks.length)];
-
+			
 			return {uid: landmark.uid, rssi: landmark.rssiAt(x, y)};
 		}
-
-		return {};
 	}
 
 	/**
@@ -64,6 +67,20 @@ export class SimulatedLandmarkSet {
 			x: Math.random() * (2 * this.xRange) - this.xRange,
 			y: Math.random() * (2 * this.yRange) - this.yRange
 		}, this.landmarkConfig);
+	}
+
+	_broadCast(sensor, user) {
+		
+		const measurement = this.randomMeasurementAtPoint(user.x, user.y);
+		
+		if (measurement !== undefined) {
+			if(measurement.uid === undefined) {
+				console.error(measurement)
+			}
+			sensor.addObservation(measurement);
+		}
+
+		window.setTimeout(() => this._broadCast(sensor, user), this.updateRate);
 	}
 }
 
