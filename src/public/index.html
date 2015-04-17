@@ -1,0 +1,81 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>SLACjs Test</title>
+
+	<style>
+		* { margin:0; padding:0; } /* to remove the top and left whitespace */
+
+		html, body { width:100%; height:100%; } /* just to be sure these are full screen*/
+
+		canvas { display:block; } /* To remove the scrollbars */
+
+		#slac-stage {
+			width: 100%;
+			position: relative;
+			
+		}
+		#slac-stage canvas { 
+			z-index: -1;
+			position: absolute;
+			border: 1px solid black;
+			background-color: #eeeeee;
+			box-sizing:border-box;
+			-moz-box-sizing:border-box;
+			-webkit-box-sizing:border-box;
+		}
+	</style>
+</head>
+
+<body>
+
+<div id="slac-stage">
+	<canvas id="slac-map"></canvas>
+</div>
+
+<h1>SLAC.js <small>(ES6 Version)</small></h1>
+<button id="toggle-simulation">Toggle simulation</button>
+
+<script type="text/javascript" src="vendor/vendor.js"></script>
+<script type="text/javascript" src="assets/js/slacjs-app.js"></script>
+
+<script type="text/javascript">
+app.initialize();
+
+var timeout = undefined;
+
+var iteration = function() {
+	app.step();
+	timeout = setTimeout(iteration, 500);
+};
+
+timeout = setTimeout(iteration, 500);
+
+$(window).ready(function() {
+	$('#toggle-simulation').on('click', function() {
+
+		if(timeout !== undefined) {
+			clearTimeout(timeout);
+			timeout = undefined;
+
+			//Disable the simulated broadcast
+			app.landmarks.stopBroadCast();
+
+			console.log("Paused");
+		}
+		else {
+			timeout = setTimeout(iteration, 500);
+
+			//Enable the broadcast again
+			app.landmarks.startBroadcast(app.sensor, app.user);
+
+			console.log("Started");
+		}
+	});
+})
+</script>
+</body>
+</html>
