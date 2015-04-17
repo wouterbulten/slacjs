@@ -81,20 +81,20 @@ class Particle {
 		//@todo find better values for default coviarance
 		const errorCov = 1;
 
-		const dist = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+		const dist = Math.max(0.01, Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)));
 
 		//Compute innovation
 		const v = r - dist;
 
 		//Compute Jacobian
 		const H = [-dx / dist, -dy / dist];
-		
+
 		//Compute innovation covariance
 		//covV = H * Cov_s * H^T + error
 		const HxCov = [	l.cov[0][0] * H[0] + l.cov[0][1] * H[1],
 						l.cov[1][0] * H[0] + l.cov[1][1] * H[1]];
 
-		const covV = HxCov[0] * H[0] + HxCov * H[1] + errorCov;
+		const covV = HxCov[0] * H[0] + HxCov[1] * H[1] + errorCov;
 
 		//Kalman gain
 		const K = [HxCov[0] * (1 / covV), HxCov[1] * (1 / covV)];
@@ -108,9 +108,9 @@ class Particle {
 						[l.cov[1][0] - deltaCov, l.cov[1][1] - deltaCov]];
 
 		//Update particle
-		//l.x = newX;
-		//l.y = newY;
-		//l.cov = newCov;
+		l.x = newX;
+		l.y = newY;
+		l.cov = newCov;
 	}
 
 	/**

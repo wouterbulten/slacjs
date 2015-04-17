@@ -74,11 +74,12 @@ class Visualizer {
 
 	/**
 	 * Plot a set of objects as squares
-	 * @param  {Array} objects An array of objects with at least an x,y value
+	 * @param {Array} objects An array of objects with at least an x,y value
+	 * @param {string} fillStyle
 	 * @return {Visualizer}
 	 */
-	plotObjects(objects) {
-		this.ctx.fillStyle = '#000000';
+	plotObjects(objects, fillStyle = '#000000') {
+		this.ctx.fillStyle = fillStyle;
 		const size = 0.5;
 
 		objects.forEach((o) => {
@@ -88,7 +89,33 @@ class Visualizer {
 			var y = this._ty(o.y) - (0.5 * size);
 
 			this.ctx.fillRect(x, y, size, size);
+		});
 
+		return this;
+	}
+
+	plotLandmarkPredictions(particle, landmarks = undefined, fillStyle = '#941313') {
+		this.ctx.fillStyle = fillStyle;
+		const size = 0.5;
+
+		particle.landmarks.forEach((l, uid) => {
+
+			//Compensate for landmark size
+			var x = this._tx(l.x) - (0.5 * size);
+			var y = this._ty(l.y) - (0.5 * size);
+
+			this.ctx.fillRect(x, y, size, size);
+
+			if (landmarks !== undefined) {
+				const trueL = landmarks.landmarkByUid(uid);
+
+				this.ctx.strokeStyle = '#8C7A7A';
+				this.ctx.beginPath();
+				this.ctx.moveTo(x, y);
+				this.ctx.lineTo(this._tx(trueL.x), this._ty(trueL.y));
+				this.ctx.stroke();
+				this.ctx.closePath();
+			}
 		});
 	}
 

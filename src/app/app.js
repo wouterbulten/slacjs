@@ -63,6 +63,7 @@ window.app = {
 		this.visualizer.clearCanvas()
 						.plotUserTrace(this.user, 'blue', this.landmarkConfig.range)
 						.plotParticleSet(this.particleSet)
-						.plotObjects(this.landmarks.landmarks);
+						.plotObjects(this.landmarks.landmarks)
+						.plotLandmarkPredictions(this.particleSet.bestParticle(), this.landmarks);
 	}
 };

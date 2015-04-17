@@ -72,6 +72,22 @@ class ParticleSet {
 	}
 
 	/**
+	 * Return the particle with the heighest weight
+	 * @return {Particle}
+	 */
+	bestParticle() {
+		let best = this.particleList[0];
+
+		this.particleList.forEach((p) => {
+			if (p.weight > best.weight) {
+				best = p;
+			}
+		});
+
+		return best;
+	}
+
+	/**
 	 * Compute a list of normalised stacked weights of the internal particle list
 	 * @return {Array}
 	 */
