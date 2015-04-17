@@ -67,30 +67,50 @@ class Particle {
 		let {x, y} = this._getInitialEstimate(uid, r);
 
 		//@todo find better values for initial covariance
-		let cov = [2, 2];
+		let cov = [[2, 2], [2, 2]];
 
 		this.landmarks.set(uid, {x, y, cov});
 	}
 
 	updateLandmark({uid, r}) {
 
-		const landmark = this.landmarks.get(uid);
-		const dx = this.user.x - landmark.x;
-		const dy = this.user.y - landmark.y;
+		const l = this.landmarks.get(uid);
+		const dx = this.user.x - l.x;
+		const dy = this.user.y - l.y;
 
 		//@todo find better values for default coviarance
-		const rangeCov = [2, 2];
+		const errorCov = 1;
 
 		const dist = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-		
+
 		//Compute innovation
 		const v = r - dist;
 
 		//Compute Jacobian
 		const H = [-dx / dist, -dy / dist];
+		
+		//Compute innovation covariance
+		//covV = H * Cov_s * H^T + error
+		const HxCov = [	l.cov[0][0] * H[0] + l.cov[0][1] * H[1],
+						l.cov[1][0] * H[0] + l.cov[1][1] * H[1]];
 
-		//Cov = H * Cov_s * H^T + error
-		const cov = 0;
+		const covV = HxCov[0] * H[0] + HxCov * H[1] + errorCov;
+
+		//Kalman gain
+		const K = [HxCov[0] * (1 / covV), HxCov[1] * (1 / covV)];
+
+		const newX = l.x + (K[0] * v); 
+		const newY = l.y + (K[1] * v);
+
+		const deltaCov = K[0] * K[0] * covV + K[1] * K[1] * covV;
+
+		const newCov = [[l.cov[0][0] - deltaCov, l.cov[0][1] - deltaCov],
+						[l.cov[1][0] - deltaCov, l.cov[1][1] - deltaCov]];
+
+		//Update particle
+		//l.x = newX;
+		//l.y = newY;
+		//l.cov = newCov;
 	}
 
 	/**

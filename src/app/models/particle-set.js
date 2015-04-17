@@ -10,7 +10,7 @@ class ParticleSet {
 	 * @return ParticleSet
 	 */
 	constructor(nParticles, {x, y, theta}) {
-		this.nParticles = 40;
+		this.nParticles = nParticles;
 
 		this.particleList = [];
 

@@ -89,9 +89,6 @@ export class SimulatedLandmarkSet {
 		const measurement = this.randomMeasurementAtPoint(user.x, user.y);
 		
 		if (measurement !== undefined) {
-			if(measurement.uid === undefined) {
-				console.error(measurement)
-			}
 			sensor.addObservation(measurement);
 		}
 
