@@ -13,8 +13,17 @@ class Visualizer {
 
 	plotParticleSet(particleSet) {
 
+		const best = particleSet.bestParticle();
+
 		//Plot user traces
-		particleSet.particles().forEach((p) => this.plotUserTrace(p.user));
+		particleSet.particles().forEach((p) => {
+			if(p !== best) {
+				this.plotUserTrace(p.user)
+			}
+		});
+
+		//Plot best last
+		this.plotUserTrace(best.user, '#11913E')
 
 		return this;
 	}
@@ -94,28 +103,30 @@ class Visualizer {
 		return this;
 	}
 
-	plotLandmarkPredictions(particle, landmarks = undefined, fillStyle = '#941313') {
+	plotLandmarkPredictions(particles, landmarks = undefined, fillStyle = '#941313') {
 		this.ctx.fillStyle = fillStyle;
 		const size = 0.5;
 
-		particle.landmarks.forEach((l, uid) => {
+		particles.forEach((p) => {
+			p.landmarks.forEach((l, uid) => {
 
-			//Compensate for landmark size
-			var x = this._tx(l.x) - (0.5 * size);
-			var y = this._ty(l.y) - (0.5 * size);
+				//Compensate for landmark size
+				var x = this._tx(l.x) - (0.5 * size);
+				var y = this._ty(l.y) - (0.5 * size);
 
-			this.ctx.fillRect(x, y, size, size);
+				this.ctx.fillRect(x, y, size, size);
 
-			if (landmarks !== undefined) {
-				const trueL = landmarks.landmarkByUid(uid);
+				if (landmarks !== undefined) {
+					const trueL = landmarks.landmarkByUid(uid);
 
-				this.ctx.strokeStyle = '#8C7A7A';
-				this.ctx.beginPath();
-				this.ctx.moveTo(x, y);
-				this.ctx.lineTo(this._tx(trueL.x), this._ty(trueL.y));
-				this.ctx.stroke();
-				this.ctx.closePath();
-			}
+					this.ctx.strokeStyle = '#8C7A7A';
+					this.ctx.beginPath();
+					this.ctx.moveTo(x, y);
+					this.ctx.lineTo(this._tx(trueL.x), this._ty(trueL.y));
+					this.ctx.stroke();
+					this.ctx.closePath();
+				}
+			});
 		});
 	}
 

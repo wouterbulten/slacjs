@@ -31,8 +31,8 @@ class Particle {
 
 		//Do something with the control here
 		//Random values for now
-		const r = control.r + (Math.random() - 0.5);
-		const theta = control.theta + (0.1 * (Math.random() - 0.5));
+		const r = control.r + (1 * Math.random() - 0.5);
+		const theta = control.theta + (1 * (Math.random() - 0.5));
 
 		this.user.move({r, theta});
 
@@ -64,9 +64,7 @@ class Particle {
 	 */
 	computeWeight() {
 		if (this.weights.length > 0) {
-			console.log(this.weights)
 			this.weight = this.weights.reduce((w, total) => w + total, 0) / this.weights.length;
-			console.log(this.weight)
 		}
 		else {
 			this.weight = 0.1;
@@ -176,7 +174,7 @@ class Particle {
 		copy.y = landmark.y;
 		copy.cov = [...landmark.cov];
 		copy.weight = 0.1;
-		
+
 		return copy;
 	}
 
