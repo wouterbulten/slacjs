@@ -11,15 +11,15 @@ class Particle {
 	constructor({x, y, theta}, parent = undefined) {
 
 		if (parent !== undefined) {
-			this.weight = parent.weight;
 			this.user = User.copyUser(parent.user);
 			this.landmarks = this._copyMap(parent.landmarks);
 		}
 		else {
-			this.user = new User({x, y, theta});
-			this.weight = 1;
+			this.user = new User({x, y, theta});	
 			this.landmarks = new Map();
 		}
+
+		this.weights = [];
 	}
 
 	/**
@@ -49,12 +49,39 @@ class Particle {
 
 		//Update landmark
 		if (this.landmarks.has(uid)) {
-			this.updateLandmark({uid, r});
+			this._updateLandmark({uid, r});
 		}
 		else {
-			this.addLandmark({uid, r});
+			this._addLandmark({uid, r});
 		}
 
+		return this;
+	}
+
+	/**
+	 * Compute the weight of this particle
+	 * @return {Particle}
+	 */
+	computeWeight() {
+		if (this.weights.length > 0) {
+			console.log(this.weights)
+			this.weight = this.weights.reduce((w, total) => w + total, 0) / this.weights.length;
+			console.log(this.weight)
+		}
+		else {
+			this.weight = 0.1;
+		}
+
+		return this;
+	}
+
+	/**
+	 * Reset the internal weight list
+	 * @return {void}
+	 */
+	resetWeightList() {
+		this.weights = [];
+		
 		return this;
 	}
 
@@ -63,23 +90,25 @@ class Particle {
 	 * @param {string} options.uid
 	 * @param {flaot} options.r
 	 */
-	addLandmark({uid, r}) {
+	_addLandmark({uid, r}) {
 		let {x, y} = this._getInitialEstimate(uid, r);
 
 		//@todo find better values for initial covariance
 		let cov = [[2, 2], [2, 2]];
 
-		this.landmarks.set(uid, {x, y, cov});
+		let weight = 0.1;
+
+		this.landmarks.set(uid, {x, y, cov, weight});
 	}
 
-	updateLandmark({uid, r}) {
+	_updateLandmark({uid, r}) {
 
 		const l = this.landmarks.get(uid);
 		const dx = this.user.x - l.x;
 		const dy = this.user.y - l.y;
 
 		//@todo find better values for default coviarance
-		const errorCov = 1;
+		const errorCov = Math.random() - 0.5;
 
 		const dist = Math.max(0.01, Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)));
 
@@ -99,6 +128,7 @@ class Particle {
 		//Kalman gain
 		const K = [HxCov[0] * (1 / covV), HxCov[1] * (1 / covV)];
 
+		//Do we need to translate this? regarding robot pose
 		const newX = l.x + (K[0] * v); 
 		const newY = l.y + (K[1] * v);
 
@@ -107,10 +137,15 @@ class Particle {
 		const newCov = [[l.cov[0][0] - deltaCov, l.cov[0][1] - deltaCov],
 						[l.cov[1][0] - deltaCov, l.cov[1][1] - deltaCov]];
 
+		const w = Math.max(0.01, l.weight - v * (1 / covV) * v);
+
 		//Update particle
 		l.x = newX;
 		l.y = newY;
 		l.cov = newCov;
+		l.weight = w;
+		
+		this.weights.push(w);
 	}
 
 	/**
@@ -136,10 +171,12 @@ class Particle {
 	_copyLandmark(landmark) {
 		let copy = {};
 
+		//Copy everything except weight
 		copy.x = landmark.x;
 		copy.y = landmark.y;
 		copy.cov = [...landmark.cov];
-
+		copy.weight = 0.1;
+		
 		return copy;
 	}
 

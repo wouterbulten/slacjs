@@ -36,11 +36,11 @@ class ParticleSet {
 	 * @return {ParticleSet}
 	 */
 	processObservation(obs) {
-		
+
 		if (obs !== {}) {
 			this.particleList.forEach((p) => p.processObservation(obs));
 		}
-		
+
 		return this;
 	}
 
@@ -49,6 +49,9 @@ class ParticleSet {
 	 * @return {ParticleSet}
 	 */
 	resample() {
+		//Let each particle calculate its weight
+		this.particleList.forEach(p => p.computeWeight().resetWeightList());
+
 		const weights = this._calculateNormalisedWeights();
 
 		const newParticles = [];
@@ -116,6 +119,8 @@ class ParticleSet {
 				return m;
 			}
 		}
+
+		console.error("Did not draw a sample");
 	}
 }
 
