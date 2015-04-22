@@ -52,7 +52,6 @@ class ParticleSet {
 	 */
 	resample() {
 
-		const M = this.particleList.length;
 		const weights = this.particleList.map(p => p.weight);
 		const min = Math.min.apply(null, weights);
 
@@ -61,24 +60,19 @@ class ParticleSet {
 			weights.forEach((w, i, a) => a[i] = w - min);
 		}
 
-		const rand = Math.random() * (1 / M);
-		let c = weights[0];
-		let i = 0;
+		const sum = weights.reduce((w, total) => total + w, 0);
+		const normalisedWeights = weights.map((w) => w / sum);
+		const normalisedSum = normalisedWeights.reduce((w, total) => total + (w * w), 0);
 
-		const newParticleSet = [];
+		const Neff = Math.round(1 / normalisedSum);
 
-		for (let m = 1; m <= M; m++) {
-			const U = rand + (m - 1) * (1 / M);
-
-			while (U > c) {
-				i = i + 1;
-				c = c + weights[i];
-			}
-
-			newParticleSet.push(new Particle({}, this.particleList[i]));
+		if (Neff < 40) {
+			this._lowVarianceSampling();
+		}
+		else {
+			console.debug(`Skipped resample, effective N=${Neff}`);
 		}
 
-		this.particleList = newParticleSet;
 		return this;
 	}
 
@@ -106,6 +100,31 @@ class ParticleSet {
 		return best;
 	}
 
+	_lowVarianceSampling()
+	{
+		const M = this.particleList.length;
+		const weights = this._calculateStackedWeights();
+		console.log(weights);
+		const rand = Math.random() * (1 / M);
+		let c = weights[0];
+		let i = 0;
+
+		const newParticleSet = [];
+
+		for (let m = 1; m <= M; m++) {
+			const U = rand + (m - 1) * (1 / M);
+
+			while (U > c) {
+				i = i + 1;
+				c = c + weights[i];
+			}
+
+			console.debug("Selected particle with weight " + weights[i])
+			newParticleSet.push(new Particle({}, this.particleList[i]));
+		}
+
+		this.particleList = newParticleSet;
+	}
 	/**
 	 * Compute a list of normalised weights of the internal particle list
 	 * @return {Array}
