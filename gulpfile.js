@@ -25,6 +25,7 @@ var entry = "./src/app/app.js";
 var scripts = "src/app/**/*.js";
 var styles = "src/styles/**/*.css";
 var index = "src/public/index.html";
+var polyfill = "node_modules/babelify/node_modules/babel-core/browser-polyfill.js";
 
 var dist = "dist/";
 var distStyles = dist + "assets/css/";
@@ -94,6 +95,12 @@ gulp.task("index", function() {
 		.pipe(gulp.dest(dist))
 });
 
+gulp.task("polyfill", function() {
+	return gulp.src(polyfill)
+		.pipe(changed(distJs))
+		.pipe(gulp.dest(distJs))
+})
+
 /*
 Clean up dist directory
  */
@@ -113,7 +120,7 @@ gulp.task('reload-index', ['index'], browserSync.reload);
 Default task running all sub task in the right order
  */
 gulp.task('default', ['clean'], function() {
-	gulp.start('lint', 'modules', 'vendor', 'styles', 'index');
+	gulp.start('lint', 'modules', 'vendor', 'polyfill', 'styles', 'index');
 });
 
 /*

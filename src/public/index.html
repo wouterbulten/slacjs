@@ -38,7 +38,9 @@
 
 <h1>SLAC.js <small>(ES6 Version)</small></h1>
 <button id="toggle-simulation">Toggle simulation</button>
+<button id="step">Step</button>
 
+<script type="text/javascript" src="assets/js/browser-polyfill.js"></script>
 <script type="text/javascript" src="vendor/vendor.js"></script>
 <script type="text/javascript" src="assets/js/slacjs-app.js"></script>
 
@@ -49,12 +51,16 @@ var timeout = undefined;
 
 var iteration = function() {
 	app.step();
-	timeout = setTimeout(iteration, 500);
+	timeout = setTimeout(iteration, 5000);
 };
 
 timeout = setTimeout(iteration, 500);
 
 $(window).ready(function() {
+	$('#step').on('click', function() {
+		app.step();
+	});
+
 	$('#toggle-simulation').on('click', function() {
 
 		if(timeout !== undefined) {
