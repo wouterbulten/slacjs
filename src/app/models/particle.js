@@ -19,7 +19,7 @@ class Particle {
 			this.landmarks = new Map();
 		}
 
-		this.weights = [];
+		this.weight = 1;
 	}
 
 	/**
@@ -40,6 +40,16 @@ class Particle {
 	}
 
 	/**
+	 * Reset the weight of the particle
+	 * @return {Particle}
+	 */
+	resetWeight() {
+		this.weight = 1;
+
+		return this;
+	}
+
+	/**
 	 * Process a new observation for a landmark
 	 * @param  {string} options.id The id of the landmark
 	 * @param  {float} options.r   Range measurement to this landmark
@@ -55,31 +65,6 @@ class Particle {
 			this._addLandmark({uid, r});
 		}
 
-		return this;
-	}
-
-	/**
-	 * Compute the weight of this particle
-	 * @return {Particle}
-	 */
-	computeWeight() {
-		if (this.weights.length > 0) {
-			this.weight = this.weights.reduce((w, total) => w + total, 0) / this.weights.length;
-		}
-		else {
-			this.weight = 0.1;
-		}
-
-		return this;
-	}
-
-	/**
-	 * Reset the internal weight list
-	 * @return {void}
-	 */
-	resetWeightList() {
-		this.weights = [];
-		
 		return this;
 	}
 
@@ -135,15 +120,13 @@ class Particle {
 		const newCov = [[l.cov[0][0] - deltaCov, l.cov[0][1] - deltaCov],
 						[l.cov[1][0] - deltaCov, l.cov[1][1] - deltaCov]];
 
-		const w = Math.max(0.01, l.weight - v * (1 / covV) * v);
+		//console.log(-1 * (v * (1 / covV) * v));
+		this.weight = this.weight - v * (1 / covV) * v;
 
 		//Update particle
 		l.x = newX;
 		l.y = newY;
 		l.cov = newCov;
-		l.weight = w;
-		
-		this.weights.push(w);
 	}
 
 	/**
@@ -169,11 +152,9 @@ class Particle {
 	_copyLandmark(landmark) {
 		let copy = {};
 
-		//Copy everything except weight
 		copy.x = landmark.x;
 		copy.y = landmark.y;
 		copy.cov = [...landmark.cov];
-		copy.weight = 0.1;
 
 		return copy;
 	}

@@ -49,11 +49,9 @@ class ParticleSet {
 	 * @return {ParticleSet}
 	 */
 	resample() {
-		//Let each particle calculate its weight
-		this.particleList.forEach(p => p.computeWeight().resetWeightList());
 
-		const weights = this._calculateNormalisedWeights();
-
+		const weights = this._calculateStackedWeights();
+		console.log(weights);
 		const newParticles = [];
 
 		for (let i = 0; i < this.nParticles; i++) {
@@ -91,18 +89,54 @@ class ParticleSet {
 	}
 
 	/**
-	 * Compute a list of normalised stacked weights of the internal particle list
+	 * Compute a list of normalised weights of the internal particle list
 	 * @return {Array}
 	 */
 	_calculateNormalisedWeights() {
-		const stackedWeights = [];
-		const sumOfWeigths = this.particleList.reduce((total, p, i) => {
-			const sum = total + p.weight;
-			stackedWeights[i] = sum;
-			return sum;
-		}, 0);
 
-		return stackedWeights.map((x) => x / sumOfWeigths);
+		if(this.particleList.length == 1) {
+			return [1];
+		}
+
+		const weights = this.particleList.map(p => p.weight);
+		console.log(weights);
+		const max = Math.max.apply(null, weights);
+		const min = Math.min.apply(null, weights);
+		const diff = max - min;
+
+		//If all weights are equal we just return an
+		//array with 1/N
+		if(diff === 0) {
+			const nw = 1 / weights.length;
+			return weights.map(w => nw);
+		}
+		
+		return weights.map(w => (w - min) / diff);
+	}
+
+	/**
+	 * Calculate a list of stacked normalised weights of the internal particle list
+	 * @return {Array}
+	 */
+	_calculateStackedWeights() {
+		const weights = this.particleList.map(p => p.weight);
+		const min = Math.min.apply(null, weights);
+
+		if(min < 0) {
+			//Make sure all weights are above zero
+			weights.forEach((w, i, a) => a[i] = w - min);
+		}
+
+		const stackedWeights = [];
+
+		let total = 0;
+		const sums = weights.map(w => {
+			total = w + total;
+			console.log(total)
+			return total;
+		});
+
+		return sums.map(w => w / total);
 	}
 
 	/**
