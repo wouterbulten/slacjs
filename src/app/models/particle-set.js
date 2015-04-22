@@ -46,21 +46,39 @@ class ParticleSet {
 
 	/**
 	 * Resample the internal particle list using their weights
+	 *
+	 * Uses a low variance sample
 	 * @return {ParticleSet}
 	 */
 	resample() {
 
-		const weights = this._calculateStackedWeights();
-		console.log(weights);
-		const newParticles = [];
+		const M = this.particleList.length;
+		const weights = this.particleList.map(p => p.weight);
+		const min = Math.min.apply(null, weights);
 
-		for (let i = 0; i < this.nParticles; i++) {
-			const sample = this.particleList[this._weightedRandomSample(weights)];
-			newParticles[i] = new Particle({}, sample);
+		if (min < 0) {
+			//Make sure all weights are above zero
+			weights.forEach((w, i, a) => a[i] = w - min);
 		}
 
-		this.particleList = newParticles;
+		const rand = Math.random() * (1 / M);
+		let c = weights[0];
+		let i = 0;
 
+		const newParticleSet = [];
+
+		for (let m = 1; m <= M; m++) {
+			const U = rand + (m - 1) * (1 / M);
+
+			while (U > c) {
+				i = i + 1;
+				c = c + weights[i];
+			}
+
+			newParticleSet.push(new Particle({}, this.particleList[i]));
+		}
+
+		this.particleList = newParticleSet;
 		return this;
 	}
 
@@ -94,23 +112,22 @@ class ParticleSet {
 	 */
 	_calculateNormalisedWeights() {
 
-		if(this.particleList.length == 1) {
+		if (this.particleList.length == 1) {
 			return [1];
 		}
 
 		const weights = this.particleList.map(p => p.weight);
-		console.log(weights);
 		const max = Math.max.apply(null, weights);
 		const min = Math.min.apply(null, weights);
 		const diff = max - min;
 
 		//If all weights are equal we just return an
 		//array with 1/N
-		if(diff === 0) {
+		if (diff === 0) {
 			const nw = 1 / weights.length;
 			return weights.map(w => nw);
 		}
-		
+
 		return weights.map(w => (w - min) / diff);
 	}
 
@@ -122,7 +139,7 @@ class ParticleSet {
 		const weights = this.particleList.map(p => p.weight);
 		const min = Math.min.apply(null, weights);
 
-		if(min < 0) {
+		if (min < 0) {
 			//Make sure all weights are above zero
 			weights.forEach((w, i, a) => a[i] = w - min);
 		}
@@ -132,7 +149,6 @@ class ParticleSet {
 		let total = 0;
 		const sums = weights.map(w => {
 			total = w + total;
-			console.log(total)
 			return total;
 		});
 
@@ -154,7 +170,7 @@ class ParticleSet {
 			}
 		}
 
-		console.error("Did not draw a sample");
+		console.error('Did not draw a sample');
 	}
 }
 
