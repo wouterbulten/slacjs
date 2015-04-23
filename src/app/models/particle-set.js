@@ -52,21 +52,7 @@ class ParticleSet {
 	 */
 	resample() {
 
-		const weights = this.particleList.map(p => p.weight);
-		const min = Math.min.apply(null, weights);
-
-		if (min < 0) {
-			//Make sure all weights are above zero
-			weights.forEach((w, i, a) => a[i] = w - min);
-		}
-
-		const sum = weights.reduce((w, total) => total + w, 0);
-		const normalisedWeights = weights.map((w) => w / sum);
-		const normalisedSum = normalisedWeights.reduce((w, total) => total + (w * w), 0);
-
-		const Neff = Math.round(1 / normalisedSum);
-
-		if (Neff < 40) {
+		if (this._weightVariance() > 100) {
 			this._lowVarianceSampling();
 		}
 
@@ -100,12 +86,11 @@ class ParticleSet {
 	/**
 	 * Samples a new particle set
 	 */
-	_lowVarianceSampling()
-	{
+	_lowVarianceSampling() {
 		const M = this.particleList.length;
 		const weights = this._calculateStackedWeights();
 		const rand = Math.random() * (1 / M);
-		
+
 		let c = weights[0];
 		let i = 0;
 
@@ -118,10 +103,27 @@ class ParticleSet {
 				i = i + 1;
 				c = c + weights[i];
 			}
+
 			newParticleSet.push(new Particle({}, this.particleList[i]));
 		}
 
 		this.particleList = newParticleSet;
+	}
+
+	/**
+	 * Calculates the variance of the weights
+	 * @return {float}
+	 */
+	_weightVariance() {
+		if(this.particleList.length < 2) {
+			return false;
+		}
+
+		const weights = this.particleList.map(p => p.weight);
+		const sum = weights.reduce((w, total) => total + w, 0);
+		const mean = sum / weights.length;
+
+		return weights.reduce((w, total) => total + ((w - mean) * (w - mean)), 0) / (weights.length - 1);
 	}
 
 	/**

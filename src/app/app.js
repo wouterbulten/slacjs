@@ -18,18 +18,18 @@ window.app = {
 
 	landmarkConfig: {
 		n: 2,
-		txPower: -20, 
-		noise: 2,
+		txPower: -12, 
+		noise: 0,
 		range: 20
 	},
 
 	initialize: function() {
 		'use strict';
 
-		this.particleSet = new ParticleSet(40, {x: 0, y: 0, theta: 0});
+		this.particleSet = new ParticleSet(2, {x: 0, y: 0, theta: 0});
 		this.visualizer = new Visualizer('slac-map', 100, 100);
 		this.user = new SimulatedUser({x: 0, y: 0, theta: 0.0}, 2, {xRange: 50, yRange: 50, padding: 5});
-		this.landmarks = new SimulatedLandmarkSet(50, {xRange: 50, yRange: 50}, 50, this.landmarkConfig);
+		this.landmarks = new SimulatedLandmarkSet(10, {xRange: 50, yRange: 50}, 50, this.landmarkConfig);
 		this.sensor = new Sensor(this.landmarkConfig);
 
 		//Start broadcasting of the simulated landmarks
