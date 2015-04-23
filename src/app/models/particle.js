@@ -77,15 +77,14 @@ class Particle {
 		let {x, y} = this._getInitialEstimate(uid, r);
 
 		//@todo find better values for initial covariance
-		let cov = [[2, 2], [2, 2]];
+		let cov = [[-0.01, -0.01], [-0.01, -0.01]];
 
-		let weight = 0.1;
-
-		this.landmarks.set(uid, {x, y, cov, weight});
+		this.landmarks.set(uid, {x, y, cov});
 	}
 
 	_updateLandmark({uid, r}) {
 
+		const landmark = window.app.landmarks.landmarkByUid(uid);
 		const l = this.landmarks.get(uid);
 		const dx = this.user.x - l.x;
 		const dy = this.user.y - l.y;

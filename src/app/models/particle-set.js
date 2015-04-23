@@ -51,11 +51,13 @@ class ParticleSet {
 	 * @return {ParticleSet}
 	 */
 	resample() {
-
-		if (this._weightVariance() > 100) {
+		const variance = this._weightVariance();
+		console.log(variance)
+		if (variance > 100) {
 			this._lowVarianceSampling();
 		}
 
+		console.log(this.particleList.map(p => p.weight));
 		return this;
 	}
 
@@ -122,8 +124,12 @@ class ParticleSet {
 		const weights = this.particleList.map(p => p.weight);
 		const sum = weights.reduce((w, total) => total + w, 0);
 		const mean = sum / weights.length;
+		console.log(mean)
+		return weights.reduce((w, total) => {
+			console.log((w - mean) * (w - mean))
+			return total + ((w - mean) * (w - mean))
 
-		return weights.reduce((w, total) => total + ((w - mean) * (w - mean)), 0) / (weights.length - 1);
+		}, 0) / weights.length;
 	}
 
 	/**
