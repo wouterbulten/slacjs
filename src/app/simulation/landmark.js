@@ -26,6 +26,17 @@ export class SimulatedLandmarkSet {
 	}
 
 	/**
+	 * Set the update rate of the landmarks
+	 * @param {float} updateRate
+	 * @return {SimulatedLandmarkSet}
+	 */
+	setUpdateRate(updateRate) {
+		this.updateRate = updateRate;
+
+		return this;
+	}
+
+	/**
 	 * Simulate RSSI measurements for all landmarks in range
 	 * @param  {float} x
 	 * @param  {float} y

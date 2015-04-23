@@ -39,6 +39,24 @@
 <h1>SLAC.js <small>(ES6 Version)</small></h1>
 <button id="toggle-simulation">Toggle simulation</button>
 <button id="step">Step</button>
+Iteration time:
+<select id="time">
+	<option>5000</option>
+	<option>2000</option>
+	<option>1000</option>
+	<option selected>500</option>
+	<option>50</option>
+	<option>10</option>
+</select>
+Landmark update rate
+<select id="l-time">
+	<option>5000</option>
+	<option>2000</option>
+	<option>1000</option>
+	<option>500</option>
+	<option selected>50</option>
+	<option>10</option>
+</select>
 
 <script type="text/javascript" src="assets/js/browser-polyfill.js"></script>
 <script type="text/javascript" src="vendor/vendor.js"></script>
@@ -51,14 +69,19 @@ var timeout = undefined;
 
 var iteration = function() {
 	app.step();
-	timeout = setTimeout(iteration, 5000);
+	timeout = setTimeout(iteration, $('#time').val());
 };
 
 timeout = setTimeout(iteration, 500);
 
 $(window).ready(function() {
+	
 	$('#step').on('click', function() {
 		app.step();
+	});
+
+	$('#l-time').change(function() {
+		app.landmarks.setUpdateRate($('#l-time').val());
 	});
 
 	$('#toggle-simulation').on('click', function() {

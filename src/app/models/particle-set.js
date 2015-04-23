@@ -69,9 +69,6 @@ class ParticleSet {
 		if (Neff < 40) {
 			this._lowVarianceSampling();
 		}
-		else {
-			console.debug(`Skipped resample, effective N=${Neff}`);
-		}
 
 		return this;
 	}
@@ -100,12 +97,15 @@ class ParticleSet {
 		return best;
 	}
 
+	/**
+	 * Samples a new particle set
+	 */
 	_lowVarianceSampling()
 	{
 		const M = this.particleList.length;
 		const weights = this._calculateStackedWeights();
-		console.log(weights);
 		const rand = Math.random() * (1 / M);
+		
 		let c = weights[0];
 		let i = 0;
 
@@ -118,13 +118,12 @@ class ParticleSet {
 				i = i + 1;
 				c = c + weights[i];
 			}
-
-			console.debug("Selected particle with weight " + weights[i])
 			newParticleSet.push(new Particle({}, this.particleList[i]));
 		}
 
 		this.particleList = newParticleSet;
 	}
+
 	/**
 	 * Compute a list of normalised weights of the internal particle list
 	 * @return {Array}

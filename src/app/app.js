@@ -53,7 +53,6 @@ window.app = {
 
 		//Get the latest observation
 		const observations = this.sensor.getObservations();
-		const obs = this.landmarks.randomMeasurementAtPoint(this.user.x, this.user.y);
 
 		observations.forEach((obs) => this.particleSet.processObservation(obs));
 
