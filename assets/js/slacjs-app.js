@@ -35,18 +35,18 @@ window.app = {
 
 	landmarkConfig: {
 		n: 2,
-		txPower: -20,
+		txPower: -12,
 		noise: 2,
-		range: 10
+		range: 20
 	},
 
 	initialize: function initialize() {
 		'use strict';
 
-		this.particleSet = new _ParticleSet2['default'](1, { x: 0, y: 0, theta: 0 });
+		this.particleSet = new _ParticleSet2['default'](40, { x: 0, y: 0, theta: 0 });
 		this.visualizer = new _Visualizer2['default']('slac-map', 100, 100);
 		this.user = new _SimulatedUser2['default']({ x: 0, y: 0, theta: 0 }, 2, { xRange: 50, yRange: 50, padding: 5 });
-		this.landmarks = new _SimulatedLandmarkSet.SimulatedLandmarkSet(50, { xRange: 50, yRange: 50 }, 50, this.landmarkConfig);
+		this.landmarks = new _SimulatedLandmarkSet.SimulatedLandmarkSet(10, { xRange: 50, yRange: 50 }, 50, this.landmarkConfig);
 		this.sensor = new _Sensor2['default'](this.landmarkConfig);
 
 		//Start broadcasting of the simulated landmarks
@@ -75,7 +75,6 @@ window.app = {
 
 		//Get the latest observation
 		var observations = this.sensor.getObservations();
-		var obs = this.landmarks.randomMeasurementAtPoint(this.user.x, this.user.y);
 
 		observations.forEach(function (obs) {
 			return _this.particleSet.processObservation(obs);
@@ -84,7 +83,7 @@ window.app = {
 		this.particleSet.resample();
 
 		//Update the canvas
-		this.visualizer.clearCanvas().plotUserTrace(this.user, 'blue', this.landmarkConfig.range).plotParticleSet(this.particleSet).plotObjects(this.landmarks.landmarks).plotLandmarkPredictions(this.particleSet.bestParticle(), this.landmarks);
+		this.visualizer.clearCanvas().plotUserTrace(this.user, 'blue', this.landmarkConfig.range).plotParticleSet(this.particleSet).plotObjects(this.landmarks.landmarks).plotLandmarkPredictions(this.particleSet.particles(), this.landmarks);
 	}
 };
 
@@ -169,20 +168,20 @@ var ParticleSet = (function () {
 
 		/**
    * Resample the internal particle list using their weights
+   *
+   * Uses a low variance sample
    * @return {ParticleSet}
    */
 		value: function resample() {
-			var weights = this._calculateNormalisedWeights();
-
-			var newParticles = [];
-
-			for (var i = 0; i < this.nParticles; i++) {
-				var sample = this.particleList[this._weightedRandomSample(weights)];
-				newParticles[i] = new _Particle2['default']({}, sample);
+			var variance = this._weightVariance();
+			console.log(variance);
+			if (variance > 100) {
+				this._lowVarianceSampling();
 			}
 
-			this.particleList = newParticles;
-
+			console.log(this.particleList.map(function (p) {
+				return p.weight;
+			}));
 			return this;
 		}
 	}, {
@@ -214,22 +213,130 @@ var ParticleSet = (function () {
 			return best;
 		}
 	}, {
+		key: '_lowVarianceSampling',
+
+		/**
+   * Samples a new particle set
+   */
+		value: function _lowVarianceSampling() {
+			var M = this.particleList.length;
+			var weights = this._calculateStackedWeights();
+			var rand = Math.random() * (1 / M);
+
+			var c = weights[0];
+			var i = 0;
+
+			var newParticleSet = [];
+
+			for (var m = 1; m <= M; m++) {
+				var U = rand + (m - 1) * (1 / M);
+
+				while (U > c) {
+					i = i + 1;
+					c = c + weights[i];
+				}
+
+				newParticleSet.push(new _Particle2['default']({}, this.particleList[i]));
+			}
+
+			this.particleList = newParticleSet;
+		}
+	}, {
+		key: '_weightVariance',
+
+		/**
+   * Calculates the variance of the weights
+   * @return {float}
+   */
+		value: function _weightVariance() {
+			if (this.particleList.length < 2) {
+				return false;
+			}
+
+			var weights = this.particleList.map(function (p) {
+				return p.weight;
+			});
+			var sum = weights.reduce(function (w, total) {
+				return total + w;
+			}, 0);
+			var mean = sum / weights.length;
+			console.log(mean);
+			return weights.reduce(function (w, total) {
+				console.log((w - mean) * (w - mean));
+				return total + (w - mean) * (w - mean);
+			}, 0) / weights.length;
+		}
+	}, {
 		key: '_calculateNormalisedWeights',
 
 		/**
-   * Compute a list of normalised stacked weights of the internal particle list
+   * Compute a list of normalised weights of the internal particle list
    * @return {Array}
    */
 		value: function _calculateNormalisedWeights() {
-			var stackedWeights = [];
-			var sumOfWeigths = this.particleList.reduce(function (total, p, i) {
-				var sum = total + p.weight;
-				stackedWeights[i] = sum;
-				return sum;
-			}, 0);
 
-			return stackedWeights.map(function (x) {
-				return x / sumOfWeigths;
+			if (this.particleList.length == 1) {
+				return [1];
+			}
+
+			var weights = this.particleList.map(function (p) {
+				return p.weight;
+			});
+			var max = Math.max.apply(null, weights);
+			var min = Math.min.apply(null, weights);
+			var diff = max - min;
+
+			//If all weights are equal we just return an
+			//array with 1/N
+			if (diff === 0) {
+				var _ret = (function () {
+					var nw = 1 / weights.length;
+					return {
+						v: weights.map(function (w) {
+							return nw;
+						})
+					};
+				})();
+
+				if (typeof _ret === 'object') {
+					return _ret.v;
+				}
+			}
+
+			return weights.map(function (w) {
+				return (w - min) / diff;
+			});
+		}
+	}, {
+		key: '_calculateStackedWeights',
+
+		/**
+   * Calculate a list of stacked normalised weights of the internal particle list
+   * @return {Array}
+   */
+		value: function _calculateStackedWeights() {
+			var weights = this.particleList.map(function (p) {
+				return p.weight;
+			});
+			var min = Math.min.apply(null, weights);
+
+			if (min < 0) {
+				//Make sure all weights are above zero
+				weights.forEach(function (w, i, a) {
+					return a[i] = w - min;
+				});
+			}
+
+			var stackedWeights = [];
+
+			var total = 0;
+			var sums = weights.map(function (w) {
+				total = w + total;
+				return total;
+			});
+
+			return sums.map(function (w) {
+				return w / total;
 			});
 		}
 	}, {
@@ -249,6 +356,8 @@ var ParticleSet = (function () {
 					return m;
 				}
 			}
+
+			console.error('Did not draw a sample');
 		}
 	}]);
 
@@ -297,14 +406,14 @@ var Particle = (function () {
 		_classCallCheck(this, Particle);
 
 		if (parent !== undefined) {
-			this.weight = parent.weight;
 			this.user = _User2['default'].copyUser(parent.user);
 			this.landmarks = this._copyMap(parent.landmarks);
 		} else {
 			this.user = new _User2['default']({ x: x, y: y, theta: theta });
-			this.weight = 1;
 			this.landmarks = new Map();
 		}
+
+		this.weight = 1;
 	}
 
 	_createClass(Particle, [{
@@ -319,10 +428,22 @@ var Particle = (function () {
 
 			//Do something with the control here
 			//Random values for now
-			var r = control.r + (Math.random() - 0.5);
-			var theta = control.theta + 0.1 * (Math.random() - 0.5);
+			var r = control.r + (1 * Math.random() - 0.5);
+			var theta = control.theta + 1 * (Math.random() - 0.5);
 
 			this.user.move({ r: r, theta: theta });
+
+			return this;
+		}
+	}, {
+		key: 'resetWeight',
+
+		/**
+   * Reset the weight of the particle
+   * @return {Particle}
+   */
+		value: function resetWeight() {
+			this.weight = 1;
 
 			return this;
 		}
@@ -341,22 +462,22 @@ var Particle = (function () {
 
 			//Update landmark
 			if (this.landmarks.has(uid)) {
-				this.updateLandmark({ uid: uid, r: r });
+				this._updateLandmark({ uid: uid, r: r });
 			} else {
-				this.addLandmark({ uid: uid, r: r });
+				this._addLandmark({ uid: uid, r: r });
 			}
 
 			return this;
 		}
 	}, {
-		key: 'addLandmark',
+		key: '_addLandmark',
 
 		/**
    * Register a new landmark
    * @param {string} options.uid
    * @param {flaot} options.r
    */
-		value: function addLandmark(_ref3) {
+		value: function _addLandmark(_ref3) {
 			var uid = _ref3.uid;
 			var r = _ref3.r;
 
@@ -366,22 +487,23 @@ var Particle = (function () {
 			var y = _getInitialEstimate.y;
 
 			//@todo find better values for initial covariance
-			var cov = [[2, 2], [2, 2]];
+			var cov = [[-0.01, -0.01], [-0.01, -0.01]];
 
 			this.landmarks.set(uid, { x: x, y: y, cov: cov });
 		}
 	}, {
-		key: 'updateLandmark',
-		value: function updateLandmark(_ref4) {
+		key: '_updateLandmark',
+		value: function _updateLandmark(_ref4) {
 			var uid = _ref4.uid;
 			var r = _ref4.r;
 
+			var landmark = window.app.landmarks.landmarkByUid(uid);
 			var l = this.landmarks.get(uid);
 			var dx = this.user.x - l.x;
 			var dy = this.user.y - l.y;
 
 			//@todo find better values for default coviarance
-			var errorCov = 1;
+			var errorCov = Math.random() - 0.5;
 
 			var dist = Math.max(0.01, Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)));
 
@@ -400,12 +522,16 @@ var Particle = (function () {
 			//Kalman gain
 			var K = [HxCov[0] * (1 / covV), HxCov[1] * (1 / covV)];
 
+			//Do we need to translate this? regarding robot pose
 			var newX = l.x + K[0] * v;
 			var newY = l.y + K[1] * v;
 
 			var deltaCov = K[0] * K[0] * covV + K[1] * K[1] * covV;
 
 			var newCov = [[l.cov[0][0] - deltaCov, l.cov[0][1] - deltaCov], [l.cov[1][0] - deltaCov, l.cov[1][1] - deltaCov]];
+
+			//console.log(-1 * (v * (1 / covV) * v));
+			this.weight = this.weight - v * (1 / covV) * v;
 
 			//Update particle
 			l.x = newX;
@@ -805,6 +931,19 @@ var SimulatedLandmarkSet = (function () {
 			if (this.broadcastId !== undefined) {
 				window.clearTimeout(this.broadcastId);
 			}
+		}
+	}, {
+		key: 'setUpdateRate',
+
+		/**
+   * Set the update rate of the landmarks
+   * @param {float} updateRate
+   * @return {SimulatedLandmarkSet}
+   */
+		value: function setUpdateRate(updateRate) {
+			this.updateRate = updateRate;
+
+			return this;
 		}
 	}, {
 		key: 'measurementsAtPoint',
@@ -1373,10 +1512,17 @@ var Visualizer = (function () {
 		value: function plotParticleSet(particleSet) {
 			var _this = this;
 
+			var best = particleSet.bestParticle();
+
 			//Plot user traces
 			particleSet.particles().forEach(function (p) {
-				return _this.plotUserTrace(p.user);
+				if (p !== best) {
+					_this.plotUserTrace(p.user);
+				}
 			});
+
+			//Plot best last
+			this.plotUserTrace(best.user, '#11913E');
 
 			return this;
 		}
@@ -1473,7 +1619,7 @@ var Visualizer = (function () {
 		}
 	}, {
 		key: 'plotLandmarkPredictions',
-		value: function plotLandmarkPredictions(particle) {
+		value: function plotLandmarkPredictions(particles) {
 			var _this4 = this;
 
 			var landmarks = arguments[1] === undefined ? undefined : arguments[1];
@@ -1482,24 +1628,26 @@ var Visualizer = (function () {
 			this.ctx.fillStyle = fillStyle;
 			var size = 0.5;
 
-			particle.landmarks.forEach(function (l, uid) {
+			particles.forEach(function (p) {
+				p.landmarks.forEach(function (l, uid) {
 
-				//Compensate for landmark size
-				var x = _this4._tx(l.x) - 0.5 * size;
-				var y = _this4._ty(l.y) - 0.5 * size;
+					//Compensate for landmark size
+					var x = _this4._tx(l.x) - 0.5 * size;
+					var y = _this4._ty(l.y) - 0.5 * size;
 
-				_this4.ctx.fillRect(x, y, size, size);
+					_this4.ctx.fillRect(x, y, size, size);
 
-				if (landmarks !== undefined) {
-					var trueL = landmarks.landmarkByUid(uid);
+					if (landmarks !== undefined) {
+						var trueL = landmarks.landmarkByUid(uid);
 
-					_this4.ctx.strokeStyle = '#8C7A7A';
-					_this4.ctx.beginPath();
-					_this4.ctx.moveTo(x, y);
-					_this4.ctx.lineTo(_this4._tx(trueL.x), _this4._ty(trueL.y));
-					_this4.ctx.stroke();
-					_this4.ctx.closePath();
-				}
+						_this4.ctx.strokeStyle = '#8C7A7A';
+						_this4.ctx.beginPath();
+						_this4.ctx.moveTo(x, y);
+						_this4.ctx.lineTo(_this4._tx(trueL.x), _this4._ty(trueL.y));
+						_this4.ctx.stroke();
+						_this4.ctx.closePath();
+					}
+				});
 			});
 		}
 	}, {
