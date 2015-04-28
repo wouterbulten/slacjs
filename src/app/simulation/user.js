@@ -21,6 +21,12 @@ class SimulatedUser extends User {
 		this.padding = padding;
 
 		this.lastControl = {r: 0, theta: 0};
+		this.iteration = 0;
+	}
+
+	setPath(distances, angles) {
+		this.distances = distances;
+		this.angles = angles;
 	}
 
 	/**
@@ -28,8 +34,7 @@ class SimulatedUser extends User {
 	 * @return {SimulatedUser}
 	 */
 	randomWalk() {
-		let r = Math.abs(randn(this.v, 1));
-		let theta = randn(0.1, 0.2);
+		let {r, theta} = this._newStep();
 
 		//Save the current x,y locally
 		const lastX = this.x;
@@ -71,6 +76,30 @@ class SimulatedUser extends User {
 
 	getLastControl() {
 		return this.lastControl;
+	}
+
+	/**
+	 * Generate a new step
+	 * @return {object}
+	 */
+	_newStep() {
+		if (this.distances !== undefined && this.angles !== undefined) {
+			if (this.iteration < this.distances.length) {
+				const step = {r: this.distances[this.iteration], theta: this.angles[this.iteration]};
+				this.iteration++;
+
+				return step;
+			}
+			else if(this.iteration == this.distances.length) {
+				return {r: 0, theta: 0};
+				
+				console.error("Simulater reached end of trace data");
+			}
+
+			this.iteration++;
+		}
+
+		return {r: Math.abs(randn(this.v, 1)), theta: randn(0.1, 0.2)};
 	}
 }
 
