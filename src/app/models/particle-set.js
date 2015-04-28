@@ -122,11 +122,13 @@ class ParticleSet {
 		}
 
 		const weights = this.particleList.map(p => p.weight);
-		const sum = weights.reduce((w, total) => total + w, 0);
+		const sum = weights.reduce((total, w) => total + w, 0);
 		const mean = sum / weights.length;
 		console.log(mean)
-		return weights.reduce((w, total) => {
-			console.log((w - mean) * (w - mean))
+		console.log(weights)
+		return weights.reduce((total, w) => {
+			console.log({w, total})
+			console.log({pow: (w - mean) * (w - mean)})
 			return total + ((w - mean) * (w - mean))
 
 		}, 0) / weights.length;
