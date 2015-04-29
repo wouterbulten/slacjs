@@ -31,8 +31,8 @@ class Particle {
 
 		//Do something with the control here
 		//Random values for now
-		const r = control.r + (1 * Math.random() - 0.5);
-		const theta = control.theta + (1 * (Math.random() - 0.5));
+		const r = control.r //+ (1 * Math.random() - 0.5);
+		const theta = control.theta //+ (1 * (Math.random() - 0.5));
 
 		this.user.move({r, theta});
 
@@ -71,30 +71,39 @@ class Particle {
 	/**
 	 * Register a new landmark
 	 * @param {string} options.uid
-	 * @param {flaot} options.r
+	 * @param {float} options.r
 	 */
 	_addLandmark({uid, r}) {
 		let {x, y} = this._getInitialEstimate(uid, r);
 
 		//@todo find better values for initial covariance
-		let cov = [[-0.01, -0.01], [-0.01, -0.01]];
+		let cov = [[0.01, 0.01], [0.01, 0.01]];
 
 		this.landmarks.set(uid, {x, y, cov});
 	}
 
+	/**
+	 * Update a landmark using the EKF update rule
+	 * @param  {string} options.uid landmark id
+	 * @param  {float} options.r    range measurement
+	 * @return {void}
+	 */
 	_updateLandmark({uid, r}) {
 
-		const landmark = window.app.landmarks.landmarkByUid(uid);
+		//Find the correct EKF
 		const l = this.landmarks.get(uid);
+
+		//Compute the difference between the predicted user position of this 
+		//particle and the predicted position of the landmark.
 		const dx = this.user.x - l.x;
 		const dy = this.user.y - l.y;
 
 		//@todo find better values for default coviarance
-		const errorCov = Math.random() - 0.5;
+		const errorCov = 0.01 * (Math.random() - 0.5);
 
-		const dist = Math.max(0.01, Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)));
+		const dist = Math.max(0.001, Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)));
 
-		//Compute innovation
+		//Compute innovation: difference between the observation and the predicted value
 		const v = r - dist;
 
 		//Compute Jacobian
@@ -105,22 +114,22 @@ class Particle {
 		const HxCov = [	l.cov[0][0] * H[0] + l.cov[0][1] * H[1],
 						l.cov[1][0] * H[0] + l.cov[1][1] * H[1]];
 
-		const covV = HxCov[0] * H[0] + HxCov[1] * H[1] + errorCov;
+		const covV = (HxCov[0] * H[0]) + (HxCov[1] * H[1]) + errorCov;
 
 		//Kalman gain
 		const K = [HxCov[0] * (1 / covV), HxCov[1] * (1 / covV)];
 
-		//Do we need to translate this? regarding robot pose
+		//Calculate the new position of the landmark
 		const newX = l.x + (K[0] * v); 
 		const newY = l.y + (K[1] * v);
 
-		const deltaCov = K[0] * K[0] * covV + K[1] * K[1] * covV;
+		const deltaCov = (K[0] * K[0] * covV) + (K[1] * K[1] * covV);
 
 		const newCov = [[l.cov[0][0] - deltaCov, l.cov[0][1] - deltaCov],
 						[l.cov[1][0] - deltaCov, l.cov[1][1] - deltaCov]];
 
-		//console.log(-1 * (v * (1 / covV) * v));
-		this.weight = this.weight - v * (1 / covV) * v;
+		//Update the weight of the particle
+		this.weight = this.weight - (v * (1 / covV) * v);
 
 		//Update particle
 		l.x = newX;

@@ -52,7 +52,7 @@ class ParticleSet {
 	 */
 	resample() {
 		const variance = this._weightVariance();
-		console.log(variance)
+
 		if (variance > 0.02) {
 			this._lowVarianceSampling();
 		}
