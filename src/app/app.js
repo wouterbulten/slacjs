@@ -31,9 +31,9 @@ window.app = {
 		this.user = new SimulatedUser({x: 0, y: 0, theta: 0.0}, 2, {xRange: 50, yRange: 50, padding: 5});
 
 		//Add simulated data to the user object
-		this._addSimulatedData();
+		//this._addSimulatedData();
 
-		this.landmarks = new SimulatedLandmarkSet(10, {xRange: 50, yRange: 50}, 50, this.landmarkConfig);
+		this.landmarks = new SimulatedLandmarkSet(40, {xRange: 50, yRange: 50}, 50, this.landmarkConfig);
 		this.sensor = new Sensor(this.landmarkConfig);
 
 		//Start broadcasting of the simulated landmarks
@@ -65,9 +65,10 @@ window.app = {
 		//Update the canvas
 		this.visualizer.clearCanvas()
 						.plotUserTrace(this.user, 'blue', this.landmarkConfig.range)
-						.plotParticleSet(this.particleSet)
 						.plotObjects(this.landmarks.landmarks)
-						.plotLandmarkPredictions(this.particleSet.particles(), this.landmarks);
+						.plotLandmarkPredictions(this.particleSet.particles(), this.landmarks)
+						.plotParticleSet(this.particleSet)
+
 	},
 
 	_addSimulatedData: function() {

@@ -1,4 +1,5 @@
 import User from './user';
+import { randn } from '../util/math';
 
 class Particle {
 	/**
@@ -31,8 +32,8 @@ class Particle {
 
 		//Do something with the control here
 		//Random values for now
-		const r = control.r //+ (1 * Math.random() - 0.5);
-		const theta = control.theta //+ (1 * (Math.random() - 0.5));
+		const r = control.r + randn(0, 0.5);
+		const theta = control.theta + randn(0, 0.5);
 
 		this.user.move({r, theta});
 
