@@ -1,3 +1,5 @@
+import { eigenvv } from '../util/math';
+
 class Visualizer {
 
 	constructor(element, xMax, yMax) {
@@ -24,6 +26,7 @@ class Visualizer {
 
 		//Plot best last
 		this.plotUserTrace(best.user, '#11913E')
+		this.plotLandmarksErrors(best);
 
 		return this;
 	}
@@ -89,13 +92,13 @@ class Visualizer {
 	 */
 	plotObjects(objects, fillStyle = '#000000') {
 		this.ctx.fillStyle = fillStyle;
-		const size = 0.5;
+		const size = 0.35;
 
 		objects.forEach((o) => {
 
 			//Compensate for landmark size
-			var x = this._tx(o.x) - (0.5 * size);
-			var y = this._ty(o.y) - (0.5 * size);
+			var x = this._tx(o.x) - (0.35 * size);
+			var y = this._ty(o.y) - (0.35 * size);
 
 			this.ctx.fillRect(x, y, size, size);
 		});
@@ -103,6 +106,13 @@ class Visualizer {
 		return this;
 	}
 
+	/**
+	 * Plot the predictions of each landmark
+	 * @param  {Array} particles
+	 * @param  {Array} landmarks
+	 * @param  {String} fillStyle
+	 * @return {Visualizer}
+	 */
 	plotLandmarkPredictions(particles, landmarks = undefined, fillStyle = '#941313') {
 		this.ctx.fillStyle = fillStyle;
 		const size = 0.5;
@@ -128,6 +138,71 @@ class Visualizer {
 				}
 			});
 		});
+
+		return this;
+	}
+
+	plotLandmarksErrors(particle) {
+
+		particle.landmarks.forEach((l, uid) => {
+
+			const{ values, vectors } = eigenvv(l.cov);
+
+			let major;
+			let minor;
+
+			if(values[0] > values[1]) {
+				major = [
+					vectors[0][0] * Math.sqrt(values[0]),
+					vectors[0][1] * Math.sqrt(values[0])
+				];
+				minor = [
+					vectors[1][0] * Math.sqrt(values[1]),
+					vectors[1][1] * Math.sqrt(values[1])
+				];
+			}
+			else {
+				major = [
+					vectors[1][0] * Math.sqrt(values[1]),
+					vectors[1][1] * Math.sqrt(values[1])
+				];
+				minor = [
+					vectors[0][0] * Math.sqrt(values[0]),
+					vectors[0][1] * Math.sqrt(values[0])
+				];
+			}
+
+			let beginX = 0;
+			let beginY = 0;
+			this.ctx.beginPath();
+			this.ctx.strokeStyle = '#B06D6D';
+			for(let i = 0; i < 16; i++) {
+
+				const r = Math.PI * (i/8);
+				const x = this._tx(minor[0] * Math.cos(r) + major[0] * Math.sin(r) + l.x)
+				const y = this._ty(minor[1] * Math.cos(r) + major[1] * Math.sin(r) + l.y) 
+				
+				if(isNaN(x)) {
+					console.log({m0: minor[0], m1: minor[1], mm0: major[0], mm1: major[1]})
+					console.log({values, vectors})
+				}
+
+				if(i == 0) {
+					this.ctx.moveTo(x, y);
+					beginX = x;
+					beginY = y;
+				}
+				else {
+					this.ctx.lineTo(x, y);
+				}
+			}
+
+			this.ctx.lineTo(beginX, beginY);
+			this.ctx.stroke();
+			this.ctx.closePath();
+		});
+
+		return this;
 	}
 
 	/**
