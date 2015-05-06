@@ -17,7 +17,7 @@ class VoteAccumulator {
 
 		const size = Math.round(dimension / precision);
 
-		this.votes = new Array(size).fill(0).map(() => new Uint8Array(size));
+		this.votes = new Array(size).fill(0).map(() => new Array(size).fill(0));
 	}
 
 	addMeasurement(x, y, r) {
@@ -29,9 +29,28 @@ class VoteAccumulator {
 			console.error("Coordinates not in range of VoteAccumulator internal cell matrix.");
 		}
 
+		//Get the current center
 		const {row, column} = this._cartesianToCell(x, y);
 
+		//Convert the range to cell distance
+		const dist = Math.round(r / this.precision);
+
+		if (!this._inRange(x+dist, y) || !this._inRange(x, y+dist)) {
+			console.error("Range measurement not in range of VoteAccumulator internal cell matrix.");
+		}
+
+		//Add votes according to midpoint circle algorithm
+		this._midpointCircle(row, column, dist);
+
 		return this;
+	}
+
+	/**
+	 * Return a string representation of the vote matrix
+	 * @return {String}
+	 */
+	toString() {
+		return this.votes.reduce((output, row) => output + row.join(' ') + '\n', '\n');
 	}
 
 	/**
@@ -47,6 +66,59 @@ class VoteAccumulator {
 			&&	y >= (-0.5 * this.dimension)
 			&&	y <= (0.5 * this.dimension)
 		);
+	}
+
+	_midpointCircle(row, column, r) {
+
+		let x = r;
+		let y = 0;
+		let radiusError = 1 - x;
+
+		while (x >= y) {
+			this._vote( y + row,  x + column);
+			this._vote( x + row,  y + column);
+			this._vote( y + row, -x + column);
+			this._vote( x + row, -y + column);
+			this._vote(-y + row, -x + column);
+			this._vote(-x + row, -y + column);
+			this._vote(-y + row,  x + column);
+			this._vote(-x + row,  y + column);
+
+			y++;
+
+			if (radiusError < 0) {
+				radiusError += 2 * y + 1;
+			}
+			else {
+				x--;
+				radiusError += 2 * (y - x) + 1;
+			}
+		}
+		
+		//At the ends of the cross, we have double votes, substract these
+		this._vote(row + r, column, -1)
+		this._vote(row - r, column, -1)
+		this._vote(row, column + r, -1)
+		this._vote(row, column - r, -1)
+
+		//Fix errors at 45deg
+		const qPi = Math.PI / 4;
+		const aX = Math.round(Math.cos(qPi) * r);
+		const aY = Math.round(Math.sin(qPi) * r);
+		/*this._vote(row + aY, column + aX, -1);
+		this._vote(row + aY, column - aX, -1);
+		this._vote(row - aY, column + aX, -1);
+		this._vote(row - aY, column - aX, -1);*/
+	}
+
+	/**
+	 * Increase votes at a specific cell
+	 * @param  {Number} row
+	 * @param  {Number} column
+	 * @return {void}
+	 */
+	_vote(row, column, value = 1) {
+		this.votes[row][column] += value;
 	}
 
 	/**
