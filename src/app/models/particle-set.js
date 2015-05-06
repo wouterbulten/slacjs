@@ -13,6 +13,7 @@ class ParticleSet {
 		this.nParticles = nParticles;
 
 		this.particleList = [];
+		this.observedLandmarks = [];
 
 		for (let i = 0; i < nParticles; i++) {
 			this.particleList.push(new Particle({x, y, theta}));
@@ -38,7 +39,17 @@ class ParticleSet {
 	processObservation(obs) {
 
 		if (obs !== {}) {
-			this.particleList.forEach((p) => p.processObservation(obs));
+
+			const { uid, r } = obs;
+			
+			if (this.observedLandmarks.indexOf(uid) == -1) {
+				this.particleList.forEach((p) => {
+					p.addLandmark({uid, r}, this._getInitialEstimate(uid));
+				});
+			}
+			else {
+				this.particleList.forEach((p) => p.processObservation({uid, r}));
+			}
 		}
 
 		return this;
@@ -195,6 +206,24 @@ class ParticleSet {
 		}
 
 		console.error('Did not draw a sample');
+	}
+
+
+	/**
+	 * Get an initial estimate of a particle
+	 * @param  {string} uid
+	 * @param  {float} r
+	 * @return {object}
+	 */
+	_getInitialEstimate(uid) {
+		//Cheat here for now to get a rough estimate
+		//Start ugly hack, should be removed when we have
+		//a good way to estimate the initial position
+		const landmark = window.app.landmarks.landmarkByUid(uid);
+		const trueX = landmark.x;
+		const trueY = landmark.y;
+
+		return {x: trueX + (3 * Math.random() - 1.5), y: trueY + (3 * Math.random() - 1.5)};
 	}
 }
 

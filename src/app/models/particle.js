@@ -51,31 +51,11 @@ class Particle {
 	}
 
 	/**
-	 * Process a new observation for a landmark
-	 * @param  {string} options.id The id of the landmark
-	 * @param  {float} options.r   Range measurement to this landmark
-	 * @return {Particle}
-	 */
-	processObservation({uid, r}) {
-
-		//Update landmark
-		if (this.landmarks.has(uid)) {
-			this._updateLandmark({uid, r});
-		}
-		else {
-			this._addLandmark({uid, r});
-		}
-
-		return this;
-	}
-
-	/**
 	 * Register a new landmark
 	 * @param {string} options.uid
 	 * @param {float} options.r
 	 */
-	_addLandmark({uid, r}) {
-		let {x, y} = this._getInitialEstimate(uid, r);
+	addLandmark({uid, r}, {x, y}) {
 
 		//@todo find better values for initial covariance
 		let cov = [[0.01, 0.01], [0.01, 0.01]];
@@ -89,7 +69,7 @@ class Particle {
 	 * @param  {float} options.r    range measurement
 	 * @return {void}
 	 */
-	_updateLandmark({uid, r}) {
+	processObservation({uid, r}) {
 
 		//Find the correct EKF
 		const l = this.landmarks.get(uid);
@@ -166,23 +146,6 @@ class Particle {
 		copy.cov = [...landmark.cov];
 
 		return copy;
-	}
-
-	/**
-	 * Get an initial estimate of a particle
-	 * @param  {string} uid
-	 * @param  {float} r
-	 * @return {object}
-	 */
-	_getInitialEstimate(uid, r) {
-		//Cheat here for now to get a rough estimate
-		//Start ugly hack, should be removed when we have
-		//a good way to estimate the initial position
-		const landmark = window.app.landmarks.landmarkByUid(uid);
-		const trueX = landmark.x;
-		const trueY = landmark.y;
-
-		return {x: trueX + (3 * Math.random() - 1.5), y: trueY + (3 * Math.random() - 1.5)};
 	}
 }
 
