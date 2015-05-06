@@ -3,10 +3,18 @@ import Visualizer from './view/visualizer';
 import SimulatedUser from './simulation/user';
 import { SimulatedLandmarkSet } from './simulation/landmark';
 import Sensor from './models/sensor';
+import VoteAccumulator from './models/voting';
 
 /* global window */
 /* global console */
 /* global math */
+
+window.test = new VoteAccumulator(0, 0, 25, 1);
+test.addMeasurement(0,0,6)
+test.addMeasurement(5,5,6)
+
+
+console.log(test.toString())
 
 window.app = {
 

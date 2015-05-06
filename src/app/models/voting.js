@@ -9,15 +9,14 @@ class VoteAccumulator {
 	 * @return {VoteAccumulator}
 	 */
 	constructor(startX = 0, startY = 0, dimension = 55, precision = 5) {
-		
 		this.dimension = dimension;
 		this.precision = precision;
 		this.centerX = startX;
 		this.centerY = startY;
 
-		const size = Math.round(dimension / precision);
+		this.size = Math.round(dimension / precision);
 
-		this.votes = new Array(size).fill(0).map(() => new Array(size).fill(0));
+		this.votes = new Array(this.size).fill(0).map(() => new Array(this.size).fill(0));
 	}
 
 	addMeasurement(x, y, r) {
@@ -26,7 +25,11 @@ class VoteAccumulator {
 		y = y - this.centerY;
 
 		if (!this._inRange(x, y)) {
-			console.error("Coordinates not in range of VoteAccumulator internal cell matrix.");
+			console.error('Coordinates not in range of VoteAccumulator internal cell matrix.');
+		}
+
+		if (!this._inRange(x + r, y) || !this._inRange(x, y + r)) {
+			console.error('Range measurement not in range of VoteAccumulator internal cell matrix.');
 		}
 
 		//Get the current center
@@ -34,10 +37,6 @@ class VoteAccumulator {
 
 		//Convert the range to cell distance
 		const dist = Math.round(r / this.precision);
-
-		if (!this._inRange(x+dist, y) || !this._inRange(x, y+dist)) {
-			console.error("Range measurement not in range of VoteAccumulator internal cell matrix.");
-		}
 
 		//Add votes according to midpoint circle algorithm
 		this._midpointCircle(row, column, dist);
@@ -68,6 +67,13 @@ class VoteAccumulator {
 		);
 	}
 
+	/**
+	 * Place votes based on the midpoint circle algorithm
+	 * @param  {Number} row    Center
+	 * @param  {Number} column Center
+	 * @param  {Number} r      Radius
+	 * @return {void}
+	 */
 	_midpointCircle(row, column, r) {
 
 		let x = r;
@@ -76,13 +82,16 @@ class VoteAccumulator {
 
 		while (x >= y) {
 			this._vote( y + row,  x + column);
-			this._vote( x + row,  y + column);
 			this._vote( y + row, -x + column);
-			this._vote( x + row, -y + column);
 			this._vote(-y + row, -x + column);
-			this._vote(-x + row, -y + column);
 			this._vote(-y + row,  x + column);
-			this._vote(-x + row,  y + column);
+			
+			if (x != y) {
+				this._vote( x + row,  y + column);
+				this._vote( x + row, -y + column);
+				this._vote(-x + row, -y + column);
+				this._vote(-x + row,  y + column);
+			}
 
 			y++;
 
@@ -96,19 +105,10 @@ class VoteAccumulator {
 		}
 		
 		//At the ends of the cross, we have double votes, substract these
-		this._vote(row + r, column, -1)
-		this._vote(row - r, column, -1)
-		this._vote(row, column + r, -1)
-		this._vote(row, column - r, -1)
-
-		//Fix errors at 45deg
-		const qPi = Math.PI / 4;
-		const aX = Math.round(Math.cos(qPi) * r);
-		const aY = Math.round(Math.sin(qPi) * r);
-		/*this._vote(row + aY, column + aX, -1);
-		this._vote(row + aY, column - aX, -1);
-		this._vote(row - aY, column + aX, -1);
-		this._vote(row - aY, column - aX, -1);*/
+		this._vote(row + r, column, -1);
+		this._vote(row - r, column, -1);
+		this._vote(row, column + r, -1);
+		this._vote(row, column - r, -1);
 	}
 
 	/**
@@ -118,7 +118,37 @@ class VoteAccumulator {
 	 * @return {void}
 	 */
 	_vote(row, column, value = 1) {
-		this.votes[row][column] += value;
+		this.votes[row][column] += 2 * value;
+
+		if (row > 0) {
+			this.votes[row - 1][column] += value;
+
+			if (column > 0) {
+				this.votes[row - 1][column - 1] += value;
+			}
+			if (column < (this.size - 1)) {
+				this.votes[row - 1][column + 1] += value;
+			}
+		}
+
+		if (row < (this.size - 1)) {
+			this.votes[row + 1][column] += value;
+
+			if (column > 0) {
+				this.votes[row + 1][column - 1] += value;
+			}
+			if (column < (this.size - 1)) {
+				this.votes[row + 1][column + 1] += value;
+			}
+		}
+
+		if (column > 0) {
+			this.votes[row][column - 1] += value;
+		}
+
+		if (column < (this.size - 1)) {
+			this.votes[row][column + 1] += value;
+		}
 	}
 
 	/**
