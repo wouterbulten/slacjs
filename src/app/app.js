@@ -3,40 +3,11 @@ import Visualizer from './view/visualizer';
 import SimulatedUser from './simulation/user';
 import { SimulatedLandmarkSet } from './simulation/landmark';
 import Sensor from './models/sensor';
-import VoteAccumulator from './models/voting';
+import VoteAccumulator from './models/vote-accumulator';
 
 /* global window */
 /* global console */
 /* global math */
-
-window.test = new VoteAccumulator(0, 0, 75,1);
-
-var cell = {};
-var x = 0;
-var y = 0;
-
-var bX = 5;
-var bY = 10;
-
-const {row, column } = test._cartesianToCell(bX, bY);
-
-
-for(var i = 0; i < 100; i++) {
-
-	x += 1 + 3 * Math.random();
-	y += 1 + 2 * Math.random();
-	var r = Math.sqrt(Math.pow(bX - x, 2) + Math.pow(bY - y, 2));
-
-	test.addMeasurement(x,y,r);
-	console.log(test.toString());
-
-	cell = test.positionEstimate();
-	console.log(cell)
-}
-
-
-
-console.log(test.toString())
 
 window.app = {
 

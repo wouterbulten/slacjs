@@ -2,19 +2,20 @@ class VoteAccumulator {
 
 	/**
 	 * Create new voting system
-	 * @param  {Number} startX    Center of the voting matrix
-	 * @param  {Number} startY    Center of the voting matrix
 	 * @param  {Number} dimension Size of the voting matrix coordinate system
 	 * @param  {Number} precision Defines amount of cells by dimension/precision
+	 * @param  {Number} startX    Center of the voting matrix
+	 * @param  {Number} startY    Center of the voting matrix
 	 * @return {VoteAccumulator}
 	 */
-	constructor(startX = 0, startY = 0, dimension = 55, precision = 5) {
+	constructor(dimension, precision, startX = 0, startY = 0) {
 		this.dimension = dimension;
 		this.precision = precision;
 		this.centerX = startX;
 		this.centerY = startY;
 
 		this.measurements = 0;
+		console.log({dimension, precision})
 		this.size = Math.round(dimension / precision);
 
 		this.votes = new Array(this.size).fill(0).map(() => new Array(this.size).fill(0));
@@ -49,7 +50,7 @@ class VoteAccumulator {
 
 	positionEstimate() {
 		if(this.measurements < 3) {
-			return {};
+			return {estimate: 0, x: 0, y: 0};
 		}
 
 		let firstValue = 0;
@@ -69,12 +70,13 @@ class VoteAccumulator {
 				}
 			}
 		}
-		console.log({f: firstValue, s: secondValue})
-		if((firstValue / (firstValue + secondValue)) > 0.6) {
-			return firstCell;
-		}
 
-		return {};
+		const {x, y} = this._cellToCartesian(firstCell.row, firstCell. column);
+
+		return {
+			estimate: (firstValue / (firstValue + secondValue)),
+			x, y
+		}
 	}
 
 	/**
@@ -165,9 +167,9 @@ class VoteAccumulator {
 			return;
 		}
 
-		this.votes[row][column] += 2 * value;
+		this.votes[row][column] += value;
 
-		if (row > 0) {
+		/*if (row > 0) {
 			this.votes[row - 1][column] += value;
 
 			if (column > 0) {
@@ -195,7 +197,7 @@ class VoteAccumulator {
 
 		if (column < (this.size - 1)) {
 			this.votes[row][column + 1] += value;
-		}
+		}*/
 	}
 
 	/**
