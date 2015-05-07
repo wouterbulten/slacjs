@@ -14,12 +14,15 @@ class VoteAccumulator {
 		this.centerX = startX;
 		this.centerY = startY;
 
+		this.measurements = 0;
 		this.size = Math.round(dimension / precision);
 
 		this.votes = new Array(this.size).fill(0).map(() => new Array(this.size).fill(0));
 	}
 
 	addMeasurement(x, y, r) {
+
+		this.measurements++;
 
 		x = x - this.centerX;
 		y = y - this.centerY;
@@ -44,12 +47,51 @@ class VoteAccumulator {
 		return this;
 	}
 
+	positionEstimate() {
+		if(this.measurements < 3) {
+			return {};
+		}
+
+		let firstValue = 0;
+		let firstCell = {};
+		let secondValue = 0;
+		let secondCell = {};
+
+		for (let row = 0; row < this.size; row++) {
+			for (let column = 0; column < this.size; column++) {
+				if (this.votes[row][column] > firstValue) {
+					firstValue = this.votes[row][column];
+					firstCell = {row, column};
+				}
+				else if (this.votes[row][column] > secondValue) {
+					secondValue = this.votes[row][column];
+					secondCell = {row, column};
+				}
+			}
+		}
+		console.log({f: firstValue, s: secondValue})
+		if((firstValue / (firstValue + secondValue)) > 0.6) {
+			return firstCell;
+		}
+
+		return {};
+	}
+
 	/**
 	 * Return a string representation of the vote matrix
 	 * @return {String}
 	 */
 	toString() {
-		return this.votes.reduce((output, row) => output + row.join(' ') + '\n', '\n');
+		return this.votes.reduce((output, row) => {
+			return output + row.reduce((rowOutput, cell) => {
+				if(cell > 9) {
+					return rowOutput + cell + ' ';
+				}
+				else {
+					return rowOutput + cell + '  ';
+				}
+			}) + '\n';
+		}, '\n');
 	}
 
 	/**
@@ -118,6 +160,11 @@ class VoteAccumulator {
 	 * @return {void}
 	 */
 	_vote(row, column, value = 1) {
+
+		if(row >= this.size || column >= this.size) {
+			return;
+		}
+
 		this.votes[row][column] += 2 * value;
 
 		if (row > 0) {
