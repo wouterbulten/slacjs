@@ -26,7 +26,7 @@ class Visualizer {
 
 		//Plot best last
 		this.plotUserTrace(best.user, '#11913E')
-		this.plotLandmarksErrors(best);
+		//this.plotLandmarksErrors(best);
 
 		return this;
 	}

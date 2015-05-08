@@ -4,10 +4,10 @@ import SimulatedUser from './simulation/user';
 import { SimulatedLandmarkSet } from './simulation/landmark';
 import Sensor from './models/sensor';
 import VoteAccumulator from './models/vote-accumulator';
-
-/* global window */
-/* global console */
-/* global math */
+ 
+ /* global window */
+ /* global console */
+ /* global math */
 
 window.app = {
 
@@ -27,7 +27,7 @@ window.app = {
 	initialize: function() {
 		'use strict';
 
-		this.particleSet = new ParticleSet(40, {x: 0, y: 0, theta: 0});
+		this.particleSet = new ParticleSet(1, {x: 0, y: 0, theta: 0});
 		this.visualizer = new Visualizer('slac-map', 100, 100);
 		this.user = new SimulatedUser({x: 0, y: 0, theta: 0.0}, 2, {xRange: 50, yRange: 50, padding: 5});
 
@@ -43,7 +43,7 @@ window.app = {
 	},
 
 	step: function() {
-
+		return;
 		this.user.randomWalk();
 
 		//Get accelerometer data
