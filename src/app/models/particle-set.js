@@ -50,7 +50,6 @@ class ParticleSet {
 				
 				const {x: uX, y: uY} = this.userEstimate();
 
-				//@todo, add best x,y here
 				this.landmarkVoteSet.addMeasurement(uid, uX, uY, r);
 
 				const {estimate, x, y} = this.landmarkVoteSet.estimate(uid);

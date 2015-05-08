@@ -18,7 +18,7 @@ window.test.voting = {
 	lC: 0,
 
 	initialize: function() {
-		this.votes = new VoteAccumulator(75, 1);
+		this.votes = new VoteAccumulator(75, 5);
 
 		const {row, column} = this.votes._cartesianToCell(this.lX, this.lY);
 		this.lR = row;

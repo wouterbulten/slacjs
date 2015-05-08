@@ -169,7 +169,7 @@ class VoteAccumulator {
 
 		this.votes[row][column] +=  value;
 
-		if (row > 0) {
+		/*if (row > 0) {
 			this.votes[row - 1][column] += value;
 
 			if (column > 0) {
@@ -197,7 +197,7 @@ class VoteAccumulator {
 
 		if (column < (this.size - 1)) {
 			this.votes[row][column + 1] += value;
-		}
+		}*/
 	}
 
 	/**

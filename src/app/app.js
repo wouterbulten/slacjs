@@ -43,7 +43,6 @@ window.app = {
 	},
 
 	step: function() {
-		return;
 		this.user.randomWalk();
 
 		//Get accelerometer data
