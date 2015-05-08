@@ -6,10 +6,32 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>SLACjs Voting test</title>
 
+	<style>
+		table {
+			table-layout: fixed;
+		}
+		td {
+			width: 40px;
+			text-align: center;
+			line-height: 20px;
+			vertical-align: middle;
+			border: 1px solid lightgrey;
+		}
+		#test-content {
+			overflow: scroll;
+			height: 80vh;
+		}
+	</style>
 </head>
 
 <body>
 <h1>EKF Initalisation test</h1>
+
+<div id="controls">
+	<button onClick="javascript:test.voting.iterate();">Iterate</button>
+</div>
+
+<div id="test-content"></div>
 
 <script type="text/javascript" src="../assets/js/browser-polyfill.js"></script>
 <script type="text/javascript" src="../vendor/vendor.js"></script>
