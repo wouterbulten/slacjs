@@ -169,7 +169,7 @@ class Landmark {
 	 * @return {float} RSSI value
 	 */
 	rssiAtRaw(x, y) {
-		return -(10 * this.n) *  log(Math.max(this.distanceTo(x, y), 0.1), 10) + this.txPower;
+		return this.txPower -(10 * this.n) *  log(Math.max(this.distanceTo(x, y), 0.1), 10);
 	}
 
 	/**

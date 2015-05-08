@@ -22,9 +22,10 @@ var none = function () { this.emit('end'); };
 var reload = browserSync.reload;
 
 var entry = "./src/app/app.js";
+var entries = ["./src/app/app.js", "./src/app/tests/voting.js"];
 var scripts = "src/app/**/*.js";
 var styles = "src/styles/**/*.css";
-var index = "src/public/index.html";
+var index = "src/public/**/*.html";
 var polyfill = "node_modules/babelify/node_modules/babel-core/browser-polyfill.js";
 
 var dist = "dist/";
@@ -45,7 +46,7 @@ gulp.task("modules", function() {
 	
 	// set up the browserify instance on a task basis
 	var b = browserify({
-		entries: entry,
+		entries: entries,
 		debug: true,
 		transform: [babelify]
 	});

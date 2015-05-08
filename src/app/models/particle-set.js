@@ -1,4 +1,5 @@
 import Particle from './particle';
+import VoteSet from './vote-set';
 
 class ParticleSet {
 	/**
@@ -13,7 +14,10 @@ class ParticleSet {
 		this.nParticles = nParticles;
 
 		this.particleList = [];
-		this.observedLandmarks = [];
+
+		//Internal list to keep track of initialised landmarks
+		this.initialisedLandmarks = [];
+		this.landmarkVoteSet = new VoteSet();
 
 		for (let i = 0; i < nParticles; i++) {
 			this.particleList.push(new Particle({x, y, theta}));
@@ -42,13 +46,27 @@ class ParticleSet {
 
 			const { uid, r } = obs;
 			
-			if (this.observedLandmarks.indexOf(uid) == -1) {
-				this.particleList.forEach((p) => {
-					p.addLandmark({uid, r}, this._getInitialEstimate(uid));
-				});
+			if (this.initialisedLandmarks.indexOf(uid) == -1) {
+				
+				const {x: uX, y: uY} = this.userEstimate();
+
+				this.landmarkVoteSet.addMeasurement(uid, uX, uY, r);
+
+				const {estimate, x, y} = this.landmarkVoteSet.estimate(uid);
+
+				if(estimate > 0.6) {
+					
+					this.particleList.forEach((p) => {
+						p.addLandmark({uid, r}, {x, y});
+					});
+
+					this.initialisedLandmarks.push(uid);
+					this.landmarkVoteSet.remove(uid);
+				}
+				
 			}
 			else {
-				this.particleList.forEach((p) => p.processObservation({uid, r}));
+				//this.particleList.forEach((p) => p.processObservation({uid, r}));
 			}
 		}
 
@@ -93,6 +111,16 @@ class ParticleSet {
 		});
 
 		return best;
+	}
+
+	/**
+	 * Get the best estimate of the current user position
+	 * @return {object}
+	 */
+	userEstimate() {
+		const particle = this.bestParticle();
+
+		return {x: particle.user.x, y: particle.user.y};
 	}
 
 	/**
@@ -206,24 +234,6 @@ class ParticleSet {
 		}
 
 		console.error('Did not draw a sample');
-	}
-
-
-	/**
-	 * Get an initial estimate of a particle
-	 * @param  {string} uid
-	 * @param  {float} r
-	 * @return {object}
-	 */
-	_getInitialEstimate(uid) {
-		//Cheat here for now to get a rough estimate
-		//Start ugly hack, should be removed when we have
-		//a good way to estimate the initial position
-		const landmark = window.app.landmarks.landmarkByUid(uid);
-		const trueX = landmark.x;
-		const trueY = landmark.y;
-
-		return {x: trueX + (3 * Math.random() - 1.5), y: trueY + (3 * Math.random() - 1.5)};
 	}
 }
 
