@@ -1,7 +1,7 @@
 import VoteAccumulator from './vote-accumulator';
 
 class VoteSet {
-	constructor(dimension = 55, precision = 5) {
+	constructor(dimension = 100, precision = 5) {
 		this.dimension = dimension;
 		this.precision = precision;
 

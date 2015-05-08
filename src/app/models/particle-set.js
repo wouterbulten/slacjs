@@ -54,16 +54,20 @@ class ParticleSet {
 				this.landmarkVoteSet.addMeasurement(uid, uX, uY, r);
 
 				const {estimate, x, y} = this.landmarkVoteSet.estimate(uid);
-				console.log({estimate, x, y})
-				if(estimate > 0.5) {
+
+				if(estimate > 0.6) {
+					
 					this.particleList.forEach((p) => {
 						p.addLandmark({uid, r}, {x, y});
 					});
+
+					this.initialisedLandmarks.push(uid);
+					this.landmarkVoteSet.remove(uid);
 				}
 				
 			}
 			else {
-				this.particleList.forEach((p) => p.processObservation({uid, r}));
+				//this.particleList.forEach((p) => p.processObservation({uid, r}));
 			}
 		}
 

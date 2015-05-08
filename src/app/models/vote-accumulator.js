@@ -15,7 +15,6 @@ class VoteAccumulator {
 		this.centerY = startY;
 
 		this.measurements = 0;
-		console.log({dimension, precision})
 		this.size = Math.round(dimension / precision);
 
 		this.votes = new Array(this.size).fill(0).map(() => new Array(this.size).fill(0));
@@ -164,10 +163,10 @@ class VoteAccumulator {
 	 */
 	_vote(row, column, value = 1) {
 
-		if(row >= this.size || column >= this.size) {
+		if(row >= this.size || column >= this.size || row < 0 || column < 0) {
 			return;
 		}
-
+		
 		this.votes[row][column] += value;
 
 		/*if (row > 0) {
