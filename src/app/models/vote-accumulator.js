@@ -29,7 +29,8 @@ class VoteAccumulator {
 		y = y - this.centerY;
 
 		if (!this._inRange(x, y)) {
-			console.error('Coordinates not in range of VoteAccumulator internal cell matrix.');
+			console.error(	'Coordinates not in range of VoteAccumulator internal cell matrix ' +
+							`with x:${x}, y:${y} and centerX:${this.centerX}, centerY:${this.centerY}.`);
 		}
 
 		if (!this._inRange(x + r, y) || !this._inRange(x, y + r)) {

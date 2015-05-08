@@ -48,11 +48,13 @@ class ParticleSet {
 			
 			if (this.initialisedLandmarks.indexOf(uid) == -1) {
 				
+				const {x: uX, y: uY} = this.userEstimate();
+
 				//@todo, add best x,y here
-				this.landmarkVoteSet.addMeasurement(uid, 10 * Math.random(), 0, r);
+				this.landmarkVoteSet.addMeasurement(uid, uX, uY, r);
 
 				const {estimate, x, y} = this.landmarkVoteSet.estimate(uid);
-				console.log(estimate)
+				console.log({estimate, x, y})
 				if(estimate > 0.5) {
 					this.particleList.forEach((p) => {
 						p.addLandmark({uid, r}, {x, y});
@@ -106,6 +108,16 @@ class ParticleSet {
 		});
 
 		return best;
+	}
+
+	/**
+	 * Get the best estimate of the current user position
+	 * @return {object}
+	 */
+	userEstimate() {
+		const particle = this.bestParticle();
+
+		return {x: particle.user.x, y: particle.user.y};
 	}
 
 	/**
