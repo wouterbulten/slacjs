@@ -2,7 +2,8 @@
  * Random following normal distribution
  * @param  {float} mean mean
  * @param  {float} sd   standard deviation
- * @return {float}      
+ * @return {float}
+ * @todo  rename sd to var      
  */
 export function randn(mean, sd) {
 
