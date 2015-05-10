@@ -28,10 +28,6 @@ class LandmarkParticleSet {
 		}
 	}
 
-	_resample() {
-
-	}
-
 	/**
 	 * Init the particle set
 	 *
@@ -54,10 +50,17 @@ class LandmarkParticleSet {
 
 			const {x, y} = polarToCartesian(r, theta);
 
-			this.particles.push({x, y, w: 1});
+			this.particles.push({x, y, weight: 1});
 		}
 	}
 
+	/**
+	 * Update each particle by updating their weights
+	 * @param  {Number} x
+	 * @param  {Number} y
+	 * @param  {Number} r
+	 * @return {void}
+	 */
 	_updateWeights(x, y, r) {
 
 		this.particles.forEach((p) => {
@@ -70,6 +73,56 @@ class LandmarkParticleSet {
 			//p(r) = N(r|dist,sd)
 
 		})
+	}
+
+	/**
+	 * Samples a new particle set
+	 */
+	_lowVarianceSampling() {
+		const M = this.particles.length;
+		const weights = this._calculateStackedWeights();
+		const rand = Math.random() * (1 / M);
+
+		let c = weights[0];
+		let i = 0;
+
+		const newParticleSet = [];
+
+		for (let m = 1; m <= M; m++) {
+			const U = rand + (m - 1) * (1 / M);
+
+			while (U > c) {
+				i = i + 1;
+				c = c + weights[i];
+			}
+
+			newParticleSet.push({
+				x: this.particles[i].x
+				y: this.particles[i].y
+				weight: this.particles[i].weight
+			});
+		}
+
+		this.particleList = newParticleSet;
+	}
+
+	/**
+	 * Calculate a list of stacked normalised weights of the internal particle list
+	 * @return {Array}
+	 */
+	_calculateStackedWeights() {
+		const weights = this.particles.map(p => p.weight);
+		const min = Math.min.apply(null, weights);
+
+		const stackedWeights = [];
+
+		let total = 0;
+		const sums = weights.map(w => {
+			total = w + total;
+			return total;
+		});
+
+		return sums.map(w => w / total);
 	}
 }
 
