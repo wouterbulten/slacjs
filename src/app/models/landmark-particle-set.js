@@ -2,12 +2,13 @@ import { randn, pdfn } from '../util/math';
 import { polarToCartesian } from '../util/coordinate-system';
 
 class LandmarkParticleSet {
-	constructor(nParticles, stdRange) {
+	constructor(nParticles, stdRange, effectiveParticleThreshold = 30, randomParticles = 5) {
 		this.nParticles = nParticles;
 		this.stdRange = stdRange;
 		this.measurements = 0;
 		this.particles = [];
-		this.effectiveParticleThreshold = 20;
+		this.effectiveParticleThreshold = effectiveParticleThreshold;
+		this.randomParticles = randomParticles;
 	}
 
 	/**
@@ -25,8 +26,11 @@ class LandmarkParticleSet {
 			this._updateWeights(x, y, r);
 
 			if(this._numberOfEffectiveParticles() < this.effectiveParticleThreshold) {
-				console.log('resample')
-				this._lowVarianceSampling();
+				const set = this._lowVarianceSampling(this.nParticles - this.randomParticles);
+
+				//@todo, add random samples here
+				
+				this.particles = set;
 			}
 		}
 
@@ -108,11 +112,11 @@ class LandmarkParticleSet {
 
 	/**
 	 * Samples a new particle set
+	 * @param {Number}
 	 */
-	_lowVarianceSampling() {
+	_lowVarianceSampling(nSamples) {
 		const M = this.particles.length;
 		const weights = this._calculateStackedWeights();
-		console.log(weights)
 		const rand = Math.random() * (1 / M);
 
 		let c = weights[0];
@@ -120,7 +124,7 @@ class LandmarkParticleSet {
 
 		const newParticleSet = [];
 
-		for (let m = 1; m <= M; m++) {
+		for (let m = 1; m <= nSamples; m++) {
 			const U = rand + (m - 1) * (1 / M);
 
 			while (U > c) {
@@ -135,7 +139,7 @@ class LandmarkParticleSet {
 			});
 		}
 
-		this.particles = newParticleSet;
+		return newParticleSet;
 	}
 
 	/**
