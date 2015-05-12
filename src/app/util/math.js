@@ -3,7 +3,6 @@
  * @param  {float} mean mean
  * @param  {float} sd   standard deviation
  * @return {float}
- * @todo  rename sd to var      
  */
 export function randn(mean, sd) {
 
@@ -19,6 +18,17 @@ export function randn(mean, sd) {
 	} while (q > 0.27597 && (q > 0.27846 || v * v > -4 * Math.log(u) * u * u));
 
 	return (v/u) * sd + mean;
+}
+
+/**
+ * pdf for a normal distribution
+ * @param  {Number} x
+ * @param  {Number} mean
+ * @param  {Number} sd
+ * @return {Number}
+ */
+export function pdfn(x, mean, sd) {
+    return (1 / (sd * Math.sqrt(2 * Math.PI))) * Math.exp(- (Math.pow(x - mean, 2)) / (2 * sd * sd));
 }
 
 /**

@@ -1,10 +1,10 @@
-import randn from '../util/math';
-import polarToCartesian from '../util/coordinate-system';
+import { randn, pdfn } from '../util/math';
+import { polarToCartesian } from '../util/coordinate-system';
 
 class LandmarkParticleSet {
-	constructor(nParticles, varRange) {
+	constructor(nParticles, stdRange) {
 		this.nParticles = nParticles;
-		this.varRange = varRange;
+		this.stdRange = stdRange;
 		this.measurements = 0;
 		this.particles = [];
 	}
@@ -51,16 +51,15 @@ class LandmarkParticleSet {
 	 */
 	_initSet(x, y, r) {
 
-		const deltaTheta = 2 * Math.PI / nParticles;
+		const deltaTheta = 2 * Math.PI / this.nParticles;
 		this.particles = [];
 
 		for (let i = 0; i < this.nParticles; i++) {
 			const theta = i * deltaTheta;
-			const r = r + randn(0, this.varRange);
+			const range = r + randn(0, this.stdRange);
+			const {dx, dy} = polarToCartesian(range, theta);
 
-			const {x, y} = polarToCartesian(r, theta);
-
-			this.particles.push({x, y, weight: 1});
+			this.particles.push({x: x + dx, y: y + dy, weight: 1});
 		}
 	}
 
@@ -77,12 +76,13 @@ class LandmarkParticleSet {
 
 			//Calculate distance estimate
 			const dist = Math.sqrt(Math.pow(p.x - x, 2) + Math.pow(p.y - y, 2))
+			//const normalisedDist = dist / this.stdRange;
 
 			//What is the probability of r given dist? p(r|dist)
 			//Update the weight accordingly
 			//p(r) = N(r|dist,sd)
 
-			const weight = 1;
+			const weight = pdfn(r, dist, this.stdRange);
 
 			p.weight = p.weight * weight;
 		});
