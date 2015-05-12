@@ -125,6 +125,16 @@ gulp.task('default', ['clean'], function() {
 });
 
 /*
+Test task used by Travis
+ */
+gulp.task('test', function() {
+	return gulp.src(scripts)
+		.pipe(cached(scripts))
+		.pipe(jshint())
+		.pipe(jscs())
+});
+
+/*
 Watch for changes and rebuild when necessary
  */
 gulp.task('serve', ['default'], function() {
