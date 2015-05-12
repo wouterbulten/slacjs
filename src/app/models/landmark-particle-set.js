@@ -7,6 +7,7 @@ class LandmarkParticleSet {
 		this.stdRange = stdRange;
 		this.measurements = 0;
 		this.particles = [];
+		this.effectiveParticleThreshold = 20;
 	}
 
 	/**
@@ -17,11 +18,16 @@ class LandmarkParticleSet {
 	 */
 	addMeasurement(x, y, r) {
 
-		if(this.measurements == 0) {
+		if (this.measurements == 0) {
 			this._initSet(x, y, r);
 		}
 		else {
 			this._updateWeights(x, y, r);
+
+			if(this._numberOfEffectiveParticles() < this.effectiveParticleThreshold) {
+				console.log('resample')
+				this._lowVarianceSampling();
+			}
 		}
 
 		this.measurements++;
@@ -89,11 +95,24 @@ class LandmarkParticleSet {
 	}
 
 	/**
+	 * Calculate the effective number of particles
+	 * @see http://en.wikipedia.org/wiki/Particle_filter#Sequential_importance_resampling_.28SIR.29
+	 * @return {Number}
+	 */
+	_numberOfEffectiveParticles() {
+		const sumOfWeights = this.particles.reduce((total, p) => total + p.weight, 0);
+		const weights = this.particles.map((p) => p.weight / sumOfWeights);
+
+		return 1 / weights.reduce((total, w) => total + (w * w));
+	}
+
+	/**
 	 * Samples a new particle set
 	 */
 	_lowVarianceSampling() {
 		const M = this.particles.length;
 		const weights = this._calculateStackedWeights();
+		console.log(weights)
 		const rand = Math.random() * (1 / M);
 
 		let c = weights[0];
