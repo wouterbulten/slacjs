@@ -22,7 +22,7 @@ var none = function () { this.emit('end'); };
 var reload = browserSync.reload;
 
 var entry = "./src/app/app.js";
-var entries = ["./src/app/app.js", "./src/app/tests/voting.js"];
+var entries = ["./src/app/app.js", "./src/app/tests/voting.js", "./src/app/tests/landmark-init.js"];
 var scripts = "src/app/**/*.js";
 var styles = "src/styles/**/*.css";
 var index = "src/public/**/*.html";
