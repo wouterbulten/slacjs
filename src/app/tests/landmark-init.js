@@ -20,8 +20,8 @@ window.test.landmarkInit = {
 	initialize: function() {
 
 		//Init random landmark
-		this.lX = Math.random() * 50 - 25;
-		this.lY = Math.random() * 50 - 25;
+		this.lX = Math.random() * 30 - 15;
+		this.lY = Math.random() * 30 - 15;
 		
 		this.landmarkSet = new LandmarkInitializationSet();
 		this.canvas = document.getElementById("test-content");

@@ -2,13 +2,22 @@ import { randn, pdfn } from '../util/math';
 import { polarToCartesian } from '../util/coordinate-system';
 
 class LandmarkParticleSet {
-	constructor(nParticles, stdRange, effectiveParticleThreshold = 30, randomParticles = 5) {
+	/**
+	 * Create a new particle set for finding the initial position of a landmark
+	 * @param  {Number} nParticles                 Number of particles
+	 * @param  {Number} stdRange                   SD of range measurements
+	 * @param  {Number} randomParticles            Number of random particles to use each update
+	 * @param  {Number} effectiveParticleThreshold Threshold for resampling
+	 * @return {LandmarkParticleSet}
+	 */
+	constructor(nParticles, stdRange, randomParticles, effectiveParticleThreshold) {
 		this.nParticles = nParticles;
 		this.stdRange = stdRange;
-		this.measurements = 0;
-		this.particles = [];
 		this.effectiveParticleThreshold = effectiveParticleThreshold;
 		this.randomParticles = randomParticles;
+
+		this.measurements = 0;
+		this.particles = [];
 	}
 
 	/**
@@ -20,17 +29,25 @@ class LandmarkParticleSet {
 	addMeasurement(x, y, r) {
 
 		if (this.measurements == 0) {
+
+			//Init the particle set by adding particles
 			this._initSet(x, y, r);
 		}
 		else {
 			this._updateWeights(x, y, r);
 
+			//Determine whether resampling is effective now
+			//Is based on the normalised weights
+			console.log(this._numberOfEffectiveParticles())
 			if(this._numberOfEffectiveParticles() < this.effectiveParticleThreshold) {
-				const set = this._lowVarianceSampling(this.nParticles - this.randomParticles);
 
-				//@todo, add random samples here
-				
-				this.particles = set;
+				//Use low variance resampling to generate a set of new particles
+				//Returns a list of N-randomParticles particles
+				let set = this._lowVarianceSampling(this.nParticles - this.randomParticles);
+
+				//Add new uniformly distributed particles tot the set
+				//Random particles are distributed around the current position
+				this.particles = set.concat(this._randomParticles(this.randomParticles, x, y, r));
 			}
 		}
 
@@ -49,6 +66,22 @@ class LandmarkParticleSet {
 	}
 
 	/**
+	 * Return the particle with the heighest weight
+	 * @return {Particle}
+	 */
+	bestParticle() {
+		let best = this.particleList[0];
+
+		this.particleList.forEach((p) => {
+			if (p.weight > best.weight) {
+				best = p;
+			}
+		});
+
+		return best;
+	}
+
+	/**
 	 * Init the particle set
 	 *
 	 * Creates a set of particles distributed around x,y at a distance
@@ -62,17 +95,43 @@ class LandmarkParticleSet {
 	_initSet(x, y, r) {
 
 		const deltaTheta = 2 * Math.PI / this.nParticles;
-		this.particles = [];
+		const particles = [];
 
-		for (let i = 0; i < this.nParticles; i++) {
+		for (let i = 0; i < (this.nParticles - this.randomParticles); i++) {
 			const theta = i * deltaTheta;
 			const range = r + randn(0, this.stdRange);
 			const {dx, dy} = polarToCartesian(range, theta);
 
-			this.particles.push({x: x + dx, y: y + dy, weight: 1});
+			particles.push({x: x + dx, y: y + dy, weight: 1});
 		}
+
+		//Add random portion
+		this.particles = particles.concat(this._randomParticles(this.randomParticles, x, y, r));
 	}
 
+	/**
+	 * Return n random particles
+	 * Uniformly distributed around x,y with range r
+	 * @param  {Number} n Number of particles to return
+	 * @param  {Number} x Center
+	 * @param  {Number} y Center
+	 * @param  {Number} r Range
+	 * @return {Array}
+	 */
+	_randomParticles(n, x, y, r) {
+		const particles = [];
+
+		for (let i = 0; i < n; i++) {
+
+			particles.push({
+				x: x + ((Math.random() * r) - (0.5 * r)),
+				y: y + ((Math.random() * r) - (0.5 * r)),
+				weight: 1
+			});
+		}
+
+		return particles;
+	}
 	/**
 	 * Update each particle by updating their weights
 	 * @param  {Number} x
@@ -135,7 +194,7 @@ class LandmarkParticleSet {
 			newParticleSet.push({
 				x: this.particles[i].x,
 				y: this.particles[i].y,
-				weight: this.particles[i].weight
+				weight: 1
 			});
 		}
 
