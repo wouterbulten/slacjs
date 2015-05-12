@@ -42,23 +42,8 @@ class SimulatedUser extends User {
 
 		const {dx, dy} = polarToCartesian(r, addTheta(theta, this.theta));
 
-		let newX = lastX + dx;
-		let newY = lastY + dy;
-
-		//Constrain the user position and compute the actual dx,dy values
-		if (newX > (this.xRange - this.padding)) {
-			newX = this.xRange - this.padding;
-		}
-		else if (newX < (-this.xRange + this.padding)) {
-			newX = -this.xRange + this.padding;
-		}
-
-		if (newY > (this.yRange - this.padding)) {
-			newY = this.yRange - this.padding;
-		}
-		else if (newY < (-this.yRange + this.padding)) {
-			newY = -this.yRange + this.padding;
-		}
+		const newX = this._constrainCoordinate(lastX + dx, this.xRange - this.padding, -this.xRange + this.padding);
+		const newY = this._constrainCoordinate(lastY + dy, this.yRange - this.padding, -this.yRange + this.padding);
 
 		//Compute the new control
 		let control = cartesianToPolar(newX - lastX, newY - lastY);
@@ -78,6 +63,23 @@ class SimulatedUser extends User {
 		return this.lastControl;
 	}
 
+	/**
+	 * Constrain a value using a max,min value
+	 * @param  {Number} value
+	 * @param  {Number} max
+	 * @param  {Number} min
+	 * @return {Number}
+	 */
+	_constrainCoordinate(value, max, min) {
+		if (value > max) {
+			return max;
+		}
+		else if (value < min) {
+			return min;
+		}
+
+		return value;
+	}
 	/**
 	 * Generate a new step
 	 * @return {object}
