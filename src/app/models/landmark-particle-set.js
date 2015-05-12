@@ -9,6 +9,12 @@ class LandmarkParticleSet {
 		this.particles = [];
 	}
 
+	/**
+	 * Integrate a new measurement in the particle set
+	 * @param {Number} x
+	 * @param {Number} y
+	 * @param {Number} r
+	 */
 	addMeasurement(x, y, r) {
 
 		if(this.measurements == 0) {
@@ -22,6 +28,10 @@ class LandmarkParticleSet {
 		return this;
 	}
 
+	/**
+	 * Return the current estimate of this landmark's position
+	 * @return {Object}
+	 */
 	positionEstimate() {
 		if(this.measurements < 3) {
 			return {estimate: 0, x: 0, y: 0};
@@ -72,7 +82,10 @@ class LandmarkParticleSet {
 			//Update the weight accordingly
 			//p(r) = N(r|dist,sd)
 
-		})
+			const weight = 1;
+
+			p.weight = p.weight * weight;
+		});
 	}
 
 	/**
@@ -97,13 +110,13 @@ class LandmarkParticleSet {
 			}
 
 			newParticleSet.push({
-				x: this.particles[i].x
-				y: this.particles[i].y
+				x: this.particles[i].x,
+				y: this.particles[i].y,
 				weight: this.particles[i].weight
 			});
 		}
 
-		this.particleList = newParticleSet;
+		this.particles = newParticleSet;
 	}
 
 	/**
