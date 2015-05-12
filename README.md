@@ -1,4 +1,7 @@
 # SLACjs
+
+[![Build Status](https://travis-ci.org/wouterbulten/slacjs.svg)](https://travis-ci.org/wouterbulten/slacjs)
+
 Simultaneous Localisation and Configuration for Wireless Sensor Networks in indoor environments using FastSLAM.
 
 ## Installation
