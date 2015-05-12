@@ -22,11 +22,11 @@ window.test.landmarkInit = {
 		//Init random landmark
 		this.lX = Math.random() * 30 - 15;
 		this.lY = Math.random() * 30 - 15;
-		
+
 		this.landmarkSet = new LandmarkInitializationSet();
-		this.canvas = document.getElementById("test-content");
+		this.canvas = document.getElementById('test-content');
 		this.ctx = this.canvas.getContext('2d');
-		this.ctx.scale(10,10);
+		this.ctx.scale(10, 10);
 
 		this.userTrace.push({x: this.userX, y: this.userY});
 	},
@@ -46,12 +46,12 @@ window.test.landmarkInit = {
 	},
 
 	_draw: function() {
-		
-		this.ctx.clearRect ( 0 , 0 , this.canvas.width, this.canvas.height );
+
+		this.ctx.clearRect (0, 0, this.canvas.width, this.canvas.height);
 		this.ctx.fillStyle = '#000000';
 
 		this.landmarkSet.particles.get('uid').particles.forEach((p) => {
-			
+
 			const x = this._tx(p.x);
 			const y = this._ty(p.y);
 

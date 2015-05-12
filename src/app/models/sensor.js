@@ -93,6 +93,7 @@ class Sensor {
 		const timeDiff = Math.max(this.iteration - previousIteration, 1);
 
 		const timeFactor = 1 - (1 / (Math.pow(timeDiff, 1.5) + 1));
+
 		//const rssiFactor = Math.min(1, 1 - (0.5 * ((-10 - rssi) / 60)));
 
 		return timeFactor;

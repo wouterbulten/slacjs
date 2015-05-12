@@ -40,7 +40,7 @@ export function polarToCartesian(r, theta) {
 export function cartesianToPolar(dx, dy) {
 
 	const r = Math.sqrt((dx * dx) + (dy * dy));
-	
+
 	let theta;
 
 	//Theta can be computed using tan^-1 when x != 0
@@ -57,10 +57,10 @@ export function cartesianToPolar(dx, dy) {
 	}
 	else {
 		if (dy >= 0) {
-			theta = 0
+			theta = 0;
 		}
 		else {
-			theta = - Math.PI;
+			theta = -Math.PI;
 		}
 	}
 

@@ -45,17 +45,17 @@ class ParticleSet {
 		if (obs !== {}) {
 
 			const { uid, r } = obs;
-			
+
 			if (this.initialisedLandmarks.indexOf(uid) == -1) {
-				
+
 				const {x: uX, y: uY} = this.userEstimate();
 
 				this.landmarkInitSet.addMeasurement(uid, uX, uY, r);
 
 				const {estimate, x, y} = this.landmarkInitSet.estimate(uid);
 
-				if(estimate > 0.6) {
-					
+				if (estimate > 0.6) {
+
 					this.particleList.forEach((p) => {
 						p.addLandmark({uid, r}, {x, y});
 					});
@@ -63,10 +63,9 @@ class ParticleSet {
 					this.initialisedLandmarks.push(uid);
 					this.landmarkInitSet.remove(uid);
 				}
-				
 			}
 			else {
-				//this.particleList.forEach((p) => p.processObservation({uid, r}));
+				this.particleList.forEach((p) => p.processObservation({uid, r}));
 			}
 		}
 
@@ -155,7 +154,7 @@ class ParticleSet {
 	 * @return {float}
 	 */
 	_weightVariance() {
-		if(this.particleList.length < 2) {
+		if (this.particleList.length < 2) {
 			return false;
 		}
 
@@ -164,7 +163,7 @@ class ParticleSet {
 		const mean = sum / weights.length;
 
 		return weights.reduce((total, w) => {
-			return total + ((w - mean) * (w - mean))
+			return total + ((w - mean) * (w - mean));
 
 		}, 0) / weights.length;
 	}

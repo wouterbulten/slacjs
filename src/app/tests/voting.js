@@ -57,11 +57,12 @@ window.test.voting = {
 						const color = 'background-color: rgba(0, 0, 0, ' + (cell / 50) + ');';
 						const id = rowN + '' + columnN;
 
-						return rowOutput + 
-								'<td id="' + id + '" style="' + color + '">' 
-								+ cell + 
+						return rowOutput +
+								'<td id="' + id + '" style="' + color + '">'
+								+ cell +
 								'</td>';
 					}, '')
+
 					+ '</tr>';
 		}, '');
 
@@ -73,6 +74,7 @@ window.test.voting = {
 	_displayLandmark: function() {
 		document.getElementById(this.lR + '' + this.lC).style.backgroundColor = 'red';
 	},
+
 	_displayUser: function() {
 		this.trace.forEach((pos) => {
 			const {row, column} = this.votes._cartesianToCell(pos.x, pos.y);

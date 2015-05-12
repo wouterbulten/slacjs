@@ -2,6 +2,15 @@ import { log, randn } from '../util/math';
 
 export class SimulatedLandmarkSet {
 
+	/**
+	 * Create simulated landmarks
+	 * @param  {Number} N              Amount of landmarks
+	 * @param  {Number} options.xRange Max x
+	 * @param  {Number} options.yRange Max y
+	 * @param  {Number} updateRate     Refresh rate
+	 * @param  {Object} landmarkConfig Landmark config
+	 * @return {SimulatedLandmarkSet}
+	 */
 	constructor(N, {xRange, yRange}, updateRate, landmarkConfig) {
 		this.landmarks = [];
 		this.xRange = xRange;
@@ -15,13 +24,23 @@ export class SimulatedLandmarkSet {
 		}
 	}
 
+	/**
+	 * Start broadcasting landmark data
+	 * @param  {Sensor} sensor
+	 * @param  {User} user
+	 * @return {void}
+	 */
 	startBroadcast(sensor, user) {
 		this.broadcastId = window.setTimeout(() => this._broadCast(sensor, user), this.updateRate);
 	}
 
+	/**
+	 * Stop broadcast of landmark data
+	 * @return {void}
+	 */
 	stopBroadCast() {
-		if(this.broadcastId !== undefined) {
-			window.clearTimeout(this.broadcastId)
+		if (this.broadcastId !== undefined) {
+			window.clearTimeout(this.broadcastId);
 		}
 	}
 
@@ -60,7 +79,7 @@ export class SimulatedLandmarkSet {
 
 		if (landmarks.length > 0) {
 			const landmark = landmarks[Math.floor(Math.random() * landmarks.length)];
-			
+
 			return {uid: landmark.uid, rssi: landmark.rssiAt(x, y)};
 		}
 	}
@@ -96,9 +115,9 @@ export class SimulatedLandmarkSet {
 	 * @return {void}
 	 */
 	_broadCast(sensor, user) {
-		
+
 		const measurement = this.randomMeasurementAtPoint(user.x, user.y);
-		
+
 		if (measurement !== undefined) {
 			sensor.addObservation(measurement);
 		}
@@ -112,8 +131,8 @@ export class SimulatedLandmarkSet {
 	 * @return {Landmark}
 	 */
 	landmarkByUid(uid) {
-		for(let i = 0; i < this.landmarks.length; i++) {
-			if(this.landmarks[i].uid == uid) {
+		for (let i = 0; i < this.landmarks.length; i++) {
+			if (this.landmarks[i].uid == uid) {
 				return this.landmarks[i];
 			}
 		}
@@ -169,7 +188,7 @@ class Landmark {
 	 * @return {float} RSSI value
 	 */
 	rssiAtRaw(x, y) {
-		return this.txPower -(10 * this.n) *  log(Math.max(this.distanceTo(x, y), 0.1), 10);
+		return this.txPower - ((10 * this.n) *  log(Math.max(this.distanceTo(x, y), 0.1), 10));
 	}
 
 	/**

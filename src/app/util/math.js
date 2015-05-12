@@ -7,7 +7,12 @@
 export function randn(mean, sd) {
 
 	//Retrieved from jStat
-	let u, v, x, y, q, mat;
+	let u;
+	let v;
+	let x;
+	let y;
+	let q;
+	let mat;
 
 	do {
 		u = Math.random();
@@ -17,7 +22,7 @@ export function randn(mean, sd) {
 		q = x * x + y * (0.19600 * y - 0.25472 * x);
 	} while (q > 0.27597 && (q > 0.27846 || v * v > -4 * Math.log(u) * u * u));
 
-	return (v/u) * sd + mean;
+	return (v / u) * sd + mean;
 }
 
 /**
@@ -28,14 +33,13 @@ export function randn(mean, sd) {
  * @return {Number}
  */
 export function pdfn(x, mean, sd) {
-    return (1 / (sd * Math.sqrt(2 * Math.PI))) * Math.exp(- (Math.pow(x - mean, 2)) / (2 * sd * sd));
+	return (1 / (sd * Math.sqrt(2 * Math.PI))) * Math.exp(-(Math.pow(x - mean, 2)) / (2 * sd * sd));
 }
 
 /**
  * Compute the log with a given base
  *
  * Used primarily as log10 is not implemented yet on mobile browsers
- * 
  * @param  {int}
  * @param  {int}
  * @return {float}
@@ -57,8 +61,8 @@ export function eigenvv(cov) {
 	var d = cov[1][1];
 
 	var A = 1;
-	var B = - (a + d);
-	var C = (a*d) - (c*b);
+	var B = -(a + d);
+	var C = (a * d) - (c * b);
 
 	var L1 = (-B + Math.sqrt((Math.pow(a - d, 2) + (4 * c * d))) / 2 * A);
 	var L2 = (-B - Math.sqrt((Math.pow(a - d, 2) + (4 * c * d))) / 2 * A);
@@ -69,7 +73,7 @@ export function eigenvv(cov) {
 	var mag2 = Math.sqrt(1 + (y2 * y2));
 
 	return {
-		values: [L1, L2], 
-		vectors: [[1 / mag1, y1 / mag1], [1/mag2, y2/mag2]]
+		values: [L1, L2],
+		vectors: [[1 / mag1, y1 / mag1], [1 / mag2, y2 / mag2]]
 	};
 }

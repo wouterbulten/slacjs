@@ -28,7 +28,7 @@ class VoteAccumulator {
 		y = y - this.centerY;
 
 		if (!this._inRange(x, y)) {
-			console.error(	'Coordinates not in range of VoteAccumulator internal cell matrix ' +
+			console.error('Coordinates not in range of VoteAccumulator internal cell matrix ' +
 							`with x:${x}, y:${y} and centerX:${this.centerX}, centerY:${this.centerY}.`);
 		}
 
@@ -49,7 +49,7 @@ class VoteAccumulator {
 	}
 
 	positionEstimate() {
-		if(this.measurements < 3) {
+		if (this.measurements < 3) {
 			return {estimate: 0, x: 0, y: 0};
 		}
 
@@ -76,7 +76,7 @@ class VoteAccumulator {
 		return {
 			estimate: (firstValue / (firstValue + secondValue)),
 			x, y
-		}
+		};
 	}
 
 	/**
@@ -86,7 +86,7 @@ class VoteAccumulator {
 	toString() {
 		return this.votes.reduce((output, row) => {
 			return output + row.reduce((rowOutput, cell) => {
-				if(cell > 9) {
+				if (cell > 9) {
 					return rowOutput + cell + ' ';
 				}
 				else {
@@ -104,10 +104,10 @@ class VoteAccumulator {
 	 */
 	_inRange(x, y) {
 		return (
-				x >= (-0.5 * this.dimension)
-			&&	x <= (0.5 * this.dimension)
-			&&	y >= (-0.5 * this.dimension)
-			&&	y <= (0.5 * this.dimension)
+				x >= (-0.5 * this.dimension) &&
+				x <= (0.5 * this.dimension) &&
+				y >= (-0.5 * this.dimension) &&
+				y <= (0.5 * this.dimension)
 		);
 	}
 
@@ -125,14 +125,14 @@ class VoteAccumulator {
 		let radiusError = 1 - x;
 
 		while (x >= y) {
-			this._vote( y + row,  x + column);
-			this._vote( y + row, -x + column);
+			this._vote(y + row,  x + column);
+			this._vote(y + row, -x + column);
 			this._vote(-y + row, -x + column);
 			this._vote(-y + row,  x + column);
-			
+
 			if (x != y) {
-				this._vote( x + row,  y + column);
-				this._vote( x + row, -y + column);
+				this._vote(x + row,  y + column);
+				this._vote(x + row, -y + column);
 				this._vote(-x + row, -y + column);
 				this._vote(-x + row,  y + column);
 			}
@@ -147,7 +147,7 @@ class VoteAccumulator {
 				radiusError += 2 * (y - x) + 1;
 			}
 		}
-		
+
 		//At the ends of the cross, we have double votes, substract these
 		this._vote(row + r, column, -1);
 		this._vote(row - r, column, -1);
@@ -163,7 +163,7 @@ class VoteAccumulator {
 	 */
 	_vote(row, column, value = 1) {
 
-		if(row >= this.size || column >= this.size || row < 0 || column < 0) {
+		if (row >= this.size || column >= this.size || row < 0 || column < 0) {
 			return;
 		}
 

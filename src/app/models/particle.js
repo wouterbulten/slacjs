@@ -16,7 +16,7 @@ class Particle {
 			this.landmarks = this._copyMap(parent.landmarks);
 		}
 		else {
-			this.user = new User({x, y, theta});	
+			this.user = new User({x, y, theta});
 			this.landmarks = new Map();
 		}
 
@@ -32,8 +32,8 @@ class Particle {
 
 		//Do something with the control here
 		//Random values for now
-		const r = control.r //+ randn(0, 0.5);
-		const theta = control.theta //+ randn(0, 0.5);
+		const r = control.r + randn(0, 0.5);
+		const theta = control.theta + randn(0, 0.5);
 
 		this.user.move({r, theta});
 
@@ -74,7 +74,7 @@ class Particle {
 		//Find the correct EKF
 		const l = this.landmarks.get(uid);
 
-		//Compute the difference between the predicted user position of this 
+		//Compute the difference between the predicted user position of this
 		//particle and the predicted position of the landmark.
 		const dx = this.user.x - l.x;
 		const dy = this.user.y - l.y;
@@ -92,7 +92,7 @@ class Particle {
 
 		//Compute innovation covariance
 		//covV = H * Cov_s * H^T + error
-		const HxCov = [	l.cov[0][0] * H[0] + l.cov[0][1] * H[1],
+		const HxCov = [l.cov[0][0] * H[0] + l.cov[0][1] * H[1],
 						l.cov[1][0] * H[0] + l.cov[1][1] * H[1]];
 
 		const covV = (HxCov[0] * H[0]) + (HxCov[1] * H[1]) + errorCov;
@@ -101,7 +101,7 @@ class Particle {
 		const K = [HxCov[0] * (1 / covV), HxCov[1] * (1 / covV)];
 
 		//Calculate the new position of the landmark
-		const newX = l.x + (K[0] * v); 
+		const newX = l.x + (K[0] * v);
 		const newY = l.y + (K[1] * v);
 
 		const deltaCov = (K[0] * K[0] * covV) + (K[1] * K[1] * covV);

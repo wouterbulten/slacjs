@@ -28,7 +28,7 @@ class LandmarkParticleSet {
 	 */
 	addMeasurement(x, y, r) {
 
-		if (this.measurements == 0) {
+		if (this.measurements === 0) {
 
 			//Init the particle set by adding particles
 			this._initSet(x, y, r);
@@ -38,8 +38,7 @@ class LandmarkParticleSet {
 
 			//Determine whether resampling is effective now
 			//Is based on the normalised weights
-			console.log(this._numberOfEffectiveParticles())
-			if(this._numberOfEffectiveParticles() < this.effectiveParticleThreshold) {
+			if (this._numberOfEffectiveParticles() < this.effectiveParticleThreshold) {
 
 				//Use low variance resampling to generate a set of new particles
 				//Returns a list of N-randomParticles particles
@@ -60,7 +59,7 @@ class LandmarkParticleSet {
 	 * @return {Object}
 	 */
 	positionEstimate() {
-		if(this.measurements < 10) {
+		if (this.measurements < 10) {
 			return {estimate: 0, x: 0, y: 0};
 		}
 
@@ -93,7 +92,7 @@ class LandmarkParticleSet {
 	 *
 	 * Creates a set of particles distributed around x,y at a distance
 	 * following a normal distribution with r as mean.
-	 * 
+	 *
 	 * @param  {Number} x Center x
 	 * @param  {Number} y Center y
 	 * @param  {Number} r range
@@ -151,8 +150,7 @@ class LandmarkParticleSet {
 		this.particles.forEach((p) => {
 
 			//Calculate distance estimate
-			const dist = Math.sqrt(Math.pow(p.x - x, 2) + Math.pow(p.y - y, 2))
-			//const normalisedDist = dist / this.stdRange;
+			const dist = Math.sqrt(Math.pow(p.x - x, 2) + Math.pow(p.y - y, 2));
 
 			//What is the probability of r given dist? p(r|dist)
 			//Update the weight accordingly

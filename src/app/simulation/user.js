@@ -90,10 +90,10 @@ class SimulatedUser extends User {
 
 				return step;
 			}
-			else if(this.iteration == this.distances.length) {
+			else if (this.iteration == this.distances.length) {
+				console.debug('Simulater reached end of trace data');
+
 				return {r: 0, theta: 0};
-				
-				console.error("Simulater reached end of trace data");
 			}
 
 			this.iteration++;

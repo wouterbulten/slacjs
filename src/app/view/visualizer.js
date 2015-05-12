@@ -2,6 +2,13 @@ import { eigenvv } from '../util/math';
 
 class Visualizer {
 
+	/**
+	 * Create new visualizer
+	 * @param  {String} element Id of the canvas
+	 * @param  {Number} xMax
+	 * @param  {Number} yMax
+	 * @return {Visualizer}
+	 */
 	constructor(element, xMax, yMax) {
 		this.element = element;
 		this.xMax = xMax;
@@ -13,19 +20,25 @@ class Visualizer {
 		this._scaleCanvas();
 	}
 
+	/**
+	 * Plot the particle set
+	 * @param  {ParticleSet} particleSet
+	 * @return {Visualizer}
+	 */
 	plotParticleSet(particleSet) {
 
 		const best = particleSet.bestParticle();
 
 		//Plot user traces
 		particleSet.particles().forEach((p) => {
-			if(p !== best) {
-				this.plotUserTrace(p.user)
+			if (p !== best) {
+				this.plotUserTrace(p.user);
 			}
 		});
 
 		//Plot best last
-		this.plotUserTrace(best.user, '#11913E')
+		this.plotUserTrace(best.user, '#11913E');
+
 		//this.plotLandmarksErrors(best);
 
 		return this;
@@ -53,7 +66,7 @@ class Visualizer {
 		//		not yet been plotted.
 
 		this.ctx.lineJoin = 'round';
-		this.ctx.lineWidth = .1;
+		this.ctx.lineWidth = 0.1;
 		this.ctx.fillStyle = '#960E0E';
 		this.ctx.strokeStyle = color;
 
@@ -72,11 +85,10 @@ class Visualizer {
 		this.ctx.stroke();
 		this.ctx.closePath();
 
-		if (range !== undefined)
-		{
+		if (range !== undefined) {
 			this.ctx.strokeStyle = '#C7C7C7';
 			this.ctx.beginPath();
-			this.ctx.arc(this._tx(user.x), this._ty(user.y), range, 0, Math.PI*2,true);
+			this.ctx.arc(this._tx(user.x), this._ty(user.y), range, 0, Math.PI * 2, true);
 			this.ctx.stroke();
 			this.ctx.closePath();
 		}
@@ -142,6 +154,11 @@ class Visualizer {
 		return this;
 	}
 
+	/**
+	 * Plot elipses of the landmark errors
+	 * @param  {Particle} particle
+	 * @return {Visualizer}
+	 */
 	plotLandmarksErrors(particle) {
 
 		particle.landmarks.forEach((l, uid) => {
@@ -151,7 +168,7 @@ class Visualizer {
 			let major;
 			let minor;
 
-			if(values[0] > values[1]) {
+			if (values[0] > values[1]) {
 				major = [
 					vectors[0][0] * Math.sqrt(values[0]),
 					vectors[0][1] * Math.sqrt(values[0])
@@ -176,18 +193,18 @@ class Visualizer {
 			let beginY = 0;
 			this.ctx.beginPath();
 			this.ctx.strokeStyle = '#B06D6D';
-			for(let i = 0; i < 16; i++) {
+			for (let i = 0; i < 16; i++) {
 
-				const r = Math.PI * (i/8);
-				const x = this._tx(minor[0] * Math.cos(r) + major[0] * Math.sin(r) + l.x)
-				const y = this._ty(minor[1] * Math.cos(r) + major[1] * Math.sin(r) + l.y) 
-				
-				if(isNaN(x)) {
-					console.log({m0: minor[0], m1: minor[1], mm0: major[0], mm1: major[1]})
-					console.log({values, vectors})
+				const r = Math.PI * (i / 8);
+				const x = this._tx(minor[0] * Math.cos(r) + major[0] * Math.sin(r) + l.x);
+				const y = this._ty(minor[1] * Math.cos(r) + major[1] * Math.sin(r) + l.y);
+
+				if (isNaN(x)) {
+					console.log({m0: minor[0], m1: minor[1], mm0: major[0], mm1: major[1]});
+					console.log({values, vectors});
 				}
 
-				if(i == 0) {
+				if (i === 0) {
 					this.ctx.moveTo(x, y);
 					beginX = x;
 					beginY = y;

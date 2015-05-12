@@ -6,7 +6,7 @@ class LinkedList {
 	 */
 	constructor(base = undefined) {
 		if (base !== undefined && typeof base != 'object') {
-			console.error("Base must be a LinkedList");
+			console.error('Base must be a LinkedList');
 		}
 
 		this.list = [base];
@@ -39,10 +39,10 @@ class LinkedList {
 	 * Return the last object in the list
 	 * @return {mixed}
 	 */
-	
 	last() {
 		return this.list[this.list.length - 1];
 	}
+
 	/**
 	 * Return the base of this linked list
 	 * @return {undefined|LinkedList}
