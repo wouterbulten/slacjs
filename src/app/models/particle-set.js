@@ -1,5 +1,5 @@
 import Particle from './particle';
-import VoteSet from './vote-set';
+import LandmarkInitializationSet from './landmark-init-set';
 
 class ParticleSet {
 	/**
@@ -17,7 +17,7 @@ class ParticleSet {
 
 		//Internal list to keep track of initialised landmarks
 		this.initialisedLandmarks = [];
-		this.landmarkVoteSet = new VoteSet();
+		this.landmarkInitSet = new LandmarkInitializationSet();
 
 		for (let i = 0; i < nParticles; i++) {
 			this.particleList.push(new Particle({x, y, theta}));
@@ -50,9 +50,9 @@ class ParticleSet {
 				
 				const {x: uX, y: uY} = this.userEstimate();
 
-				this.landmarkVoteSet.addMeasurement(uid, uX, uY, r);
+				this.landmarkInitSet.addMeasurement(uid, uX, uY, r);
 
-				const {estimate, x, y} = this.landmarkVoteSet.estimate(uid);
+				const {estimate, x, y} = this.landmarkInitSet.estimate(uid);
 
 				if(estimate > 0.6) {
 					
@@ -61,7 +61,7 @@ class ParticleSet {
 					});
 
 					this.initialisedLandmarks.push(uid);
-					this.landmarkVoteSet.remove(uid);
+					this.landmarkInitSet.remove(uid);
 				}
 				
 			}

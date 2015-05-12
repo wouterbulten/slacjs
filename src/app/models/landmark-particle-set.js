@@ -60,9 +60,16 @@ class LandmarkParticleSet {
 	 * @return {Object}
 	 */
 	positionEstimate() {
-		if(this.measurements < 3) {
+		if(this.measurements < 10) {
 			return {estimate: 0, x: 0, y: 0};
 		}
+
+		const {x, y} = this.bestParticle();
+
+		return {
+			estimate: 1,
+			x, y
+		};
 	}
 
 	/**
@@ -70,9 +77,9 @@ class LandmarkParticleSet {
 	 * @return {Particle}
 	 */
 	bestParticle() {
-		let best = this.particleList[0];
+		let best = this.particles[0];
 
-		this.particleList.forEach((p) => {
+		this.particles.forEach((p) => {
 			if (p.weight > best.weight) {
 				best = p;
 			}
