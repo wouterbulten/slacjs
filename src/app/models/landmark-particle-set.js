@@ -156,18 +156,6 @@ class LandmarkParticleSet {
 			p.weight = p.weight * weight;
 		});
 	}
-
-	/**
-	 * Calculate the effective number of particles
-	 * @see http://en.wikipedia.org/wiki/Particle_filter#Sequential_importance_resampling_.28SIR.29
-	 * @return {Number}
-	 */
-	_numberOfEffectiveParticles() {
-		const sumOfWeights = this.particles.reduce((total, p) => total + p.weight, 0);
-		const weights = this.particles.map((p) => p.weight / sumOfWeights);
-
-		return 1 / weights.reduce((total, w) => total + (w * w));
-	}
 }
 
 export default LandmarkParticleSet;

@@ -126,18 +126,6 @@ class ParticleSet {
 
 		return {x: particle.user.x, y: particle.user.y};
 	}
-
-	/**
-	 * Calculate the effective number of particles
-	 * @see http://en.wikipedia.org/wiki/Particle_filter#Sequential_importance_resampling_.28SIR.29
-	 * @return {Number}
-	 */
-	_numberOfEffectiveParticles() {
-		const sumOfWeights = this.particleList.reduce((total, p) => total + p.weight, 0);
-		const weights = this.particleList.map((p) => p.weight / sumOfWeights);
-
-		return 1 / weights.reduce((total, w) => total + (w * w));
-	}
 }
 
 export default ParticleSet;
