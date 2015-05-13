@@ -27,7 +27,7 @@ class VoteSet {
 	}
 
 	remove(uid) {
-		this.voteAccumulators.remove(uid);
+		this.voteAccumulators.delete(uid);
 	}
 }
 

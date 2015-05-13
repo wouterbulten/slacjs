@@ -4,7 +4,9 @@ import SimulatedUser from './simulation/user';
 import { SimulatedLandmarkSet } from './simulation/landmark';
 import Sensor from './models/sensor';
 
-window.app = {
+window.SlacENV = 'production';
+
+window.SlacApp = {
 
 	particleSet: undefined,
 	visualizer: undefined,
@@ -61,9 +63,15 @@ window.app = {
 		this.visualizer.clearCanvas()
 						.plotUserTrace(this.user, 'blue', this.landmarkConfig.range)
 						.plotObjects(this.landmarks.landmarks)
-						.plotLandmarkPredictions(this.particleSet.particles(), this.landmarks)
 						.plotParticleSet(this.particleSet);
 
+
+		if(window.SlacENV == 'debug') {
+			this.visualizer.plotLandmarkPredictions(this.particleSet.particles(), this.landmarks);
+		}
+		else {
+			this.visualizer.plotLandmarkPredictions([this.particleSet.bestParticle()], this.landmarks);
+		}
 	},
 
 	_addSimulatedData: function() {

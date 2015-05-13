@@ -64,12 +64,12 @@ Landmark update rate
 <script type="text/javascript" src="assets/js/slacjs-app.js"></script>
 
 <script type="text/javascript">
-app.initialize();
+SlacApp.initialize();
 
 var timeout = undefined;
 
 var iteration = function() {
-	app.step();
+	SlacApp.step();
 	timeout = setTimeout(iteration, $('#time').val());
 };
 
@@ -78,11 +78,11 @@ timeout = setTimeout(iteration, 500);
 $(window).ready(function() {
 	
 	$('#step').on('click', function() {
-		app.step();
+		SlacApp.step();
 	});
 
 	$('#l-time').change(function() {
-		app.landmarks.setUpdateRate($('#l-time').val());
+		SlacApp.landmarks.setUpdateRate($('#l-time').val());
 	});
 
 	$('#toggle-simulation').on('click', function() {
@@ -92,7 +92,7 @@ $(window).ready(function() {
 			timeout = undefined;
 
 			//Disable the simulated broadcast
-			app.landmarks.stopBroadCast();
+			SlacApp.landmarks.stopBroadCast();
 
 			console.log("Paused");
 		}
@@ -100,7 +100,7 @@ $(window).ready(function() {
 			timeout = setTimeout(iteration, 500);
 
 			//Enable the broadcast again
-			app.landmarks.startBroadcast(app.sensor, app.user);
+			SlacApp.landmarks.startBroadcast(SlacApp.sensor, SlacApp.user);
 
 			console.log("Started");
 		}

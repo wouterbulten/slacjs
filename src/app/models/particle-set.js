@@ -48,7 +48,9 @@ class ParticleSet {
 
 			if (this.initialisedLandmarks.indexOf(uid) == -1) {
 
-				const {x: uX, y: uY} = this.userEstimate();
+				//const {x: uX, y: uY} = this.userEstimate();
+				const uX = window.SlacApp.user.x;
+				const uY = window.SlacApp.user.y;
 
 				this.landmarkInitSet.addMeasurement(uid, uX, uY, r);
 
@@ -61,7 +63,6 @@ class ParticleSet {
 					});
 
 					this.initialisedLandmarks.push(uid);
-					this.landmarkInitSet.remove(uid);
 				}
 			}
 			else {
@@ -79,9 +80,8 @@ class ParticleSet {
 	 * @return {ParticleSet}
 	 */
 	resample() {
-		const variance = this._weightVariance();
 
-		if (variance > 0.02) {
+		if (this._numberOfEffectiveParticles() < (this.nParticles * 0.3)) {
 			this._lowVarianceSampling();
 		}
 
@@ -167,6 +167,19 @@ class ParticleSet {
 
 		}, 0) / weights.length;
 	}
+
+	/**
+	 * Calculate the effective number of particles
+	 * @see http://en.wikipedia.org/wiki/Particle_filter#Sequential_importance_resampling_.28SIR.29
+	 * @return {Number}
+	 */
+	_numberOfEffectiveParticles() {
+		const sumOfWeights = this.particleList.reduce((total, p) => total + p.weight, 0);
+		const weights = this.particleList.map((p) => p.weight / sumOfWeights);
+
+		return 1 / weights.reduce((total, w) => total + (w * w));
+	}
+
 
 	/**
 	 * Compute a list of normalised weights of the internal particle list

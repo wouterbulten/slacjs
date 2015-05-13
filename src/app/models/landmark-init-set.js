@@ -1,7 +1,7 @@
 import LandmarkParticleSet from './landmark-particle-set';
 
 class LandmarkInitializationSet {
-	constructor(nParticles = 20, stdRange = 2, randomParticles = 10, effectiveParticleThreshold = undefined) {
+	constructor(nParticles = 50, stdRange = 2, randomParticles = 10, effectiveParticleThreshold = undefined) {
 		this.nParticles = nParticles;
 		this.stdRange = stdRange;
 		this.randomParticles = randomParticles;
@@ -37,7 +37,7 @@ class LandmarkInitializationSet {
 	}
 
 	remove(uid) {
-		this.particles.remove(uid);
+		this.particles.delete(uid);
 	}
 }
 
