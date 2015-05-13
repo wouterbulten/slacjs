@@ -1,4 +1,4 @@
-import VoteAccumulator from '../models/vote-accumulator';
+import VoteAccumulator from '../app/models/vote-accumulator';
 
 if (window.test === undefined) {
 	window.test = {};
@@ -67,7 +67,6 @@ window.test.voting = {
 		}, '');
 
 		table += '</table>';
-		console.log(table)
 		return table;
 	},
 

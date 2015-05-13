@@ -22,8 +22,9 @@ var none = function () { this.emit('end'); };
 var reload = browserSync.reload;
 
 var entry = "./src/app/app.js";
-var entries = ["./src/app/app.js", "./src/app/tests/voting.js", "./src/app/tests/landmark-init.js"];
+var entries = ["./src/app/app.js", "./src/tests/voting.js", "./src/tests/landmark-init.js"];
 var scripts = "src/app/**/*.js";
+var tests = "src/tests/*.js";
 var styles = "src/styles/**/*.css";
 var index = "src/public/**/*.html";
 var polyfill = "node_modules/babelify/node_modules/babel-core/browser-polyfill.js";
@@ -144,7 +145,8 @@ gulp.task('serve', ['default'], function() {
 
 	// Watch .js files
 	gulp.watch(scripts, ['reload-scripts']);
-
+	gulp.watch(tests, ['reload-scripts']);
+	
 	gulp.watch(index, ['reload-index']);
 
 	browserSync({

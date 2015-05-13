@@ -1,4 +1,4 @@
-import LandmarkInitializationSet from '../models/landmark-init-set';
+import LandmarkInitializationSet from '../app/models/landmark-init-set';
 
 if (window.test === undefined) {
 	window.test = {};
@@ -38,11 +38,12 @@ window.test.landmarkInit = {
 
 		this.userTrace.push({x: this.userX, y: this.userY});
 
-		const r = Math.sqrt(Math.pow(this.lX - this.userX, 2) + Math.pow(this.lY - this.userY, 2))
+		const r = Math.sqrt(Math.pow(this.lX - this.userX, 2) + Math.pow(this.lY - this.userY, 2));
 
 		this.landmarkSet.addMeasurement('uid', this.userX, this.userY, r);
 
 		this._draw();
+		console.debug(`True r: ${r}`);
 	},
 
 	_draw: function() {
@@ -72,4 +73,4 @@ window.test.landmarkInit = {
 	_ty: function(y) {
 		return this.yMax - (y + (this.yMax / 2));
 	}
-}
+};
