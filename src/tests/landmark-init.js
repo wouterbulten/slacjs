@@ -4,6 +4,31 @@ if (window.test === undefined) {
 	window.test = {};
 }
 
+/**
+ * Pattern that the user walks
+ * @yield {Number}
+ */
+function* walkPattern() {
+	const steps = 40;
+	const stepSize = 2;
+	const quarter = steps / 4;
+
+	for (let i = 0; i < steps; i++) {
+		if (i < quarter) {
+			yield {dx: stepSize, dy: 0};
+		}
+		else if (i < (2 * quarter)) {
+			yield {dx: 0, dy: stepSize};
+		}
+		else if (i < (3 * quarter)) {
+			yield {dx: -stepSize, dy: 0};
+		}
+		else if (i < steps) {
+			yield {dx: 0, dy: -stepSize}; 
+		}
+	}
+}
+
 window.test.landmarkInit = {
 
 	landmarkSet: undefined,
@@ -17,6 +42,8 @@ window.test.landmarkInit = {
 	ctx: undefined,
 	canvas: undefined,
 
+	pattern: undefined,
+
 	initialize: function() {
 
 		//Init random landmark
@@ -29,13 +56,17 @@ window.test.landmarkInit = {
 		this.ctx.scale(10, 10);
 
 		this.userTrace.push({x: this.userX, y: this.userY});
+
+		this.pattern = walkPattern();
 	},
 
 	iterate: function() {
 
-		this.userX = this.userX + Math.random();
-		this.userY = this.userY + Math.random() * 2;
+		const {dx, dy} = this.pattern.next().value;
 
+		this.userX = this.userX + dx;
+		this.userY = this.userY + dy;
+		console.log({dx, dy})
 		this.userTrace.push({x: this.userX, y: this.userY});
 
 		const r = Math.sqrt(Math.pow(this.lX - this.userX, 2) + Math.pow(this.lY - this.userY, 2));

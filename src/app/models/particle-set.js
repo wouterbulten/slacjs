@@ -1,5 +1,6 @@
 import Particle from './particle';
 import LandmarkInitializationSet from './landmark-init-set';
+import { lowVarianceSampling } from '../util/sampling';
 
 class ParticleSet {
 	/**
@@ -82,7 +83,12 @@ class ParticleSet {
 	resample() {
 
 		if (this._numberOfEffectiveParticles() < (this.nParticles * 0.3)) {
-			this._lowVarianceSampling();
+
+			const weights = this.particleList.map((p) => p.weight);
+
+			this.particleList = lowVarianceSampling(this.nParticles, weights).map((i) => {
+				return new Particle({}, this.particleList[i]);
+			});
 		}
 
 		return this;
@@ -123,52 +129,6 @@ class ParticleSet {
 	}
 
 	/**
-	 * Samples a new particle set
-	 */
-	_lowVarianceSampling() {
-		const M = this.particleList.length;
-		const weights = this._calculateStackedWeights();
-		const rand = Math.random() * (1 / M);
-
-		let c = weights[0];
-		let i = 0;
-
-		const newParticleSet = [];
-
-		for (let m = 1; m <= M; m++) {
-			const U = rand + (m - 1) * (1 / M);
-
-			while (U > c) {
-				i = i + 1;
-				c = c + weights[i];
-			}
-
-			newParticleSet.push(new Particle({}, this.particleList[i]));
-		}
-
-		this.particleList = newParticleSet;
-	}
-
-	/**
-	 * Calculates the variance of the weights
-	 * @return {float}
-	 */
-	_weightVariance() {
-		if (this.particleList.length < 2) {
-			return false;
-		}
-
-		const weights = this._calculateNormalisedWeights();
-		const sum = weights.reduce((total, w) => total + w, 0);
-		const mean = sum / weights.length;
-
-		return weights.reduce((total, w) => {
-			return total + ((w - mean) * (w - mean));
-
-		}, 0) / weights.length;
-	}
-
-	/**
 	 * Calculate the effective number of particles
 	 * @see http://en.wikipedia.org/wiki/Particle_filter#Sequential_importance_resampling_.28SIR.29
 	 * @return {Number}
@@ -178,72 +138,6 @@ class ParticleSet {
 		const weights = this.particleList.map((p) => p.weight / sumOfWeights);
 
 		return 1 / weights.reduce((total, w) => total + (w * w));
-	}
-
-
-	/**
-	 * Compute a list of normalised weights of the internal particle list
-	 * @return {Array}
-	 */
-	_calculateNormalisedWeights() {
-
-		if (this.particleList.length == 1) {
-			return [1];
-		}
-
-		const weights = this.particleList.map(p => p.weight);
-		const max = Math.max.apply(null, weights);
-		const min = Math.min.apply(null, weights);
-		const diff = max - min;
-
-		//If all weights are equal we just return an
-		//array with 1/N
-		if (diff === 0) {
-			const nw = 1 / weights.length;
-			return weights.map(() => nw);
-		}
-
-		return weights.map(w => (w - min) / diff);
-	}
-
-	/**
-	 * Calculate a list of stacked normalised weights of the internal particle list
-	 * @return {Array}
-	 */
-	_calculateStackedWeights() {
-		const weights = this.particleList.map(p => p.weight);
-		const min = Math.min.apply(null, weights);
-
-		if (min < 0) {
-			//Make sure all weights are above zero
-			weights.forEach((w, i, a) => a[i] = w - min);
-		}
-
-		let total = 0;
-		const sums = weights.map(w => {
-			total = w + total;
-			return total;
-		});
-
-		return sums.map(w => w / total);
-	}
-
-	/**
-	 * Draw a weighted sample from from a list and return the index
-	 * @param  {Array} weights
-	 * @return {int}
-	 */
-	_weightedRandomSample(weights) {
-		const rand = Math.random();
-
-		for (let m = 0; m < weights.length; m++) {
-
-			if (weights[m] > rand) {
-				return m;
-			}
-		}
-
-		console.error('Did not draw a sample');
 	}
 }
 

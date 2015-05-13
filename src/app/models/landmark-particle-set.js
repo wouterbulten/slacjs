@@ -1,4 +1,5 @@
 import { randn, pdfn } from '../util/math';
+import { lowVarianceSampling } from '../util/sampling';
 import { polarToCartesian } from '../util/coordinate-system';
 
 class LandmarkParticleSet {
@@ -42,7 +43,7 @@ class LandmarkParticleSet {
 
 				//Use low variance resampling to generate a set of new particles
 				//Returns a list of N-randomParticles particles
-				let set = this._rouletteWheelSampling(this.nParticles - this.randomParticles);
+				let set = this._resample(this.nParticles - this.randomParticles);
 
 				//Add new uniformly distributed particles tot the set
 				//Random particles are distributed around the current position
@@ -85,6 +86,23 @@ class LandmarkParticleSet {
 		});
 
 		return best;
+	}
+
+	/**
+	 * Resample the particle set and return a given number of new particles
+	 * @param  {Number} nSamples Number of particles to return
+	 * @return {Array}
+	 */
+	_resample(nSamples) {
+		const weights = this.particles.map(p => p.weight);
+
+		return lowVarianceSampling(nSamples, weights).map((i) => {
+			return {
+				x: this.particles[i].x,
+				y: this.particles[i].y,
+				weight: 1
+			};
+		});
 	}
 
 	/**
@@ -148,81 +166,6 @@ class LandmarkParticleSet {
 		const weights = this.particles.map((p) => p.weight / sumOfWeights);
 
 		return 1 / weights.reduce((total, w) => total + (w * w));
-	}
-
-	/**
-	 * Samples a new particle set
-	 * @param {Number}
-	 */
-	_lowVarianceSampling(nSamples) {
-		const M = this.particles.length;
-		const weights = this._calculateStackedWeights();
-		const rand = Math.random() * (1 / M);
-
-		let c = weights[0];
-		let i = 0;
-
-		const newParticleSet = [];
-
-		for (let m = 1; m <= nSamples; m++) {
-			const U = rand + (m - 1) * (1 / M);
-
-			while (U > c) {
-				i = i + 1;
-				c = c + weights[i];
-			}
-
-			newParticleSet.push({
-				x: this.particles[i].x,
-				y: this.particles[i].y,
-				weight: 1
-			});
-		}
-
-		return newParticleSet;
-	}
-
-	/**
-	 * Sample using roulette wheel
-	 * @param  {Number} nSamples number of samples
-	 * @return {Array}
-	 */
-	_rouletteWheelSampling(nSamples) {
-
-		const weights = this._calculateStackedWeights();
-		const newParticleSet = [];
-
-		for (let i = 0; i < nSamples; i++) {
-
-			const rand = Math.random();
-
-			for (var m = 0; m < weights.length; m++) {
-
-				if (weights[m] >= rand) {
-					newParticleSet.push(this.particles[m]);
-				}
-			}
-		}
-
-		return newParticleSet;
-	}
-
-	/**
-	 * Calculate a list of stacked normalised weights of the internal particle list
-	 * @return {Array}
-	 */
-	_calculateStackedWeights() {
-		const weights = this.particles.map(p => p.weight);
-		const totalWeight = weights.reduce((total, w) => total + w, 0);
-
-		//Normalize the weights
-		const normalisedWeights = weights.map(w => w / totalWeight);
-
-		let total = 0;
-		return normalisedWeights.map(w => {
-			total = w + total;
-			return total;
-		});
 	}
 }
 
