@@ -161,7 +161,7 @@ class Visualizer {
 	 */
 	plotLandmarksErrors(particle) {
 
-		particle.landmarks.forEach((l, uid) => {
+		particle.landmarks.forEach((l) => {
 
 			const{ values, vectors } = eigenvv(l.cov);
 

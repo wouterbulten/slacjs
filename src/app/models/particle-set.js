@@ -187,7 +187,7 @@ class ParticleSet {
 		//array with 1/N
 		if (diff === 0) {
 			const nw = 1 / weights.length;
-			return weights.map(w => nw);
+			return weights.map(() => nw);
 		}
 
 		return weights.map(w => (w - min) / diff);
@@ -205,8 +205,6 @@ class ParticleSet {
 			//Make sure all weights are above zero
 			weights.forEach((w, i, a) => a[i] = w - min);
 		}
-
-		const stackedWeights = [];
 
 		let total = 0;
 		const sums = weights.map(w => {

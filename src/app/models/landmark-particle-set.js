@@ -196,14 +196,14 @@ class LandmarkParticleSet {
 
 			const rand = Math.random();
 
-			for(var m = 0; m < weights.length; m++) {
+			for (var m = 0; m < weights.length; m++) {
 
 				if (weights[m] >= rand) {
 					newParticleSet.push(this.particles[m]);
 				}
 			}
 		}
-		
+
 		return newParticleSet;
 	}
 

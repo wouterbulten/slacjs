@@ -3,11 +3,6 @@ import Visualizer from './view/visualizer';
 import SimulatedUser from './simulation/user';
 import { SimulatedLandmarkSet } from './simulation/landmark';
 import Sensor from './models/sensor';
-import VoteAccumulator from './models/vote-accumulator';
-
- /* global window */
- /* global console */
- /* global math */
 
 window.app = {
 

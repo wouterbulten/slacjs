@@ -12,7 +12,6 @@ export function randn(mean, sd) {
 	let x;
 	let y;
 	let q;
-	let mat;
 
 	do {
 		u = Math.random();
@@ -55,22 +54,23 @@ export function log(x, base) {
  */
 export function eigenvv(cov) {
 
-	var a = cov[0][0];
-	var b = cov[0][1];
-	var c = cov[1][0];
-	var d = cov[1][1];
+	const a = cov[0][0];
+	const b = cov[0][1];
+	const c = cov[1][0];
+	const d = cov[1][1];
 
-	var A = 1;
-	var B = -(a + d);
-	var C = (a * d) - (c * b);
+	const A = 1;
+	const B = -(a + d);
 
-	var L1 = (-B + Math.sqrt((Math.pow(a - d, 2) + (4 * c * d))) / 2 * A);
-	var L2 = (-B - Math.sqrt((Math.pow(a - d, 2) + (4 * c * d))) / 2 * A);
+	//const C = (a * d) - (c * b);
 
-	var y1 = (L1 - a) / b;
-	var y2 = (L2 - a) / b;
-	var mag1 = Math.sqrt(1 + (y1 * y1));
-	var mag2 = Math.sqrt(1 + (y2 * y2));
+	const L1 = (-B + Math.sqrt((Math.pow(a - d, 2) + (4 * c * d))) / 2 * A);
+	const L2 = (-B - Math.sqrt((Math.pow(a - d, 2) + (4 * c * d))) / 2 * A);
+
+	const y1 = (L1 - a) / b;
+	const y2 = (L2 - a) / b;
+	const mag1 = Math.sqrt(1 + (y1 * y1));
+	const mag2 = Math.sqrt(1 + (y2 * y2));
 
 	return {
 		values: [L1, L2],

@@ -5,7 +5,7 @@ class LandmarkInitializationSet {
 		this.nParticles = nParticles;
 		this.stdRange = stdRange;
 		this.randomParticles = randomParticles;
-		
+
 		if (effectiveParticleThreshold === undefined) {
 			this.effectiveParticleThreshold = nParticles / 3;
 		}
@@ -37,7 +37,7 @@ class LandmarkInitializationSet {
 	}
 
 	remove(uid) {
-		console.debug('Not implemented yet');
+		this.particles.remove(uid);
 	}
 }
 

@@ -27,7 +27,7 @@ class VoteSet {
 	}
 
 	remove(uid) {
-		console.debug('Not implemented yet');
+		this.voteAccumulators.remove(uid);
 	}
 }
 
