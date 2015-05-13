@@ -4,6 +4,11 @@
 
 Simultaneous Localisation and Configuration for Wireless Sensor Networks in indoor environments using FastSLAM.
 
+## Demo's
+
+* [Full demonstration with simulated data](https://wouterbulten.nl/slacjs)
+* [Landmark initialisation example](https://wouterbulten.nl/slacjs/tests/landmark-init.html)
+
 ## Installation
 
 SLACjs uses *bower* and *gulp* to manage dependencies and build the project. Make sure that you have *npm* installed and then run:

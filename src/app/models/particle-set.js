@@ -81,7 +81,7 @@ class ParticleSet {
 	 * @return {ParticleSet}
 	 */
 	resample() {
-		
+
 		const weights = this.particleList.map(p => p.weight);
 		if (numberOfEffectiveParticles(weights) < (this.nParticles * 0.3)) {
 
