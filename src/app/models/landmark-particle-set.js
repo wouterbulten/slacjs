@@ -1,5 +1,5 @@
 import { randn, pdfn } from '../util/math';
-import { lowVarianceSampling } from '../util/sampling';
+import { lowVarianceSampling, numberOfEffectiveParticles } from '../util/sampling';
 import { polarToCartesian } from '../util/coordinate-system';
 
 class LandmarkParticleSet {
@@ -39,7 +39,8 @@ class LandmarkParticleSet {
 
 			//Determine whether resampling is effective now
 			//Is based on the normalised weights
-			if (this._numberOfEffectiveParticles() < this.effectiveParticleThreshold) {
+			const weights = this.particles.map(p => p.weight);
+			if (numberOfEffectiveParticles(weights) < this.effectiveParticleThreshold) {
 
 				//Use low variance resampling to generate a set of new particles
 				//Returns a list of N-randomParticles particles

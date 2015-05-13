@@ -9,7 +9,7 @@ class LandmarkInitializationSet {
 	 * @param  {Number} effectiveParticleThreshold Threshold of effective particles
 	 * @return {LandmarkInitializationSet}
 	 */
-	constructor(nParticles = 500, stdRange = 2, randomParticles = 10, effectiveParticleThreshold = undefined) {
+	constructor(nParticles = 500, stdRange = 4, randomParticles = 10, effectiveParticleThreshold = undefined) {
 		this.nParticles = nParticles;
 		this.stdRange = stdRange;
 		this.randomParticles = randomParticles;

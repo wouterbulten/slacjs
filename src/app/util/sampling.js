@@ -84,3 +84,14 @@ export function rouletteWheelSampling(nSamples, weights) {
 
 	return set;
 }
+
+/**
+ * Calculate the effective number of particles
+ * @see http://en.wikipedia.org/wiki/Particle_filter#Sequential_importance_resampling_.28SIR.29
+ * @return {Number}
+ */
+export function numberOfEffectiveParticles(weights) {
+	const normalisedWeights = normalizeWeights(weights);
+
+	return 1 / normalisedWeights.reduce((total, w) => total + (w * w));
+}

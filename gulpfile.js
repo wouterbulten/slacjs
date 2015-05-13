@@ -1,3 +1,5 @@
+/*jshint undef:true */
+
 var gulp = require("gulp"),
 	sourcemaps = require("gulp-sourcemaps"),
 	concat = require("gulp-concat"),
@@ -6,8 +8,8 @@ var gulp = require("gulp"),
 	jshint = require('gulp-jshint'),
 	minifycss = require('gulp-minify-css'),
 	stylish = require('jshint-stylish'),
-	browserSync = require('browser-sync')
-	clean = require('gulp-clean')
+	browserSync = require('browser-sync'),
+	clean = require('gulp-clean'),
 	mainBowerFiles = require('main-bower-files'),
 	babelify = require('babelify'),
 	browserify = require('browserify'),
@@ -101,7 +103,7 @@ gulp.task("polyfill", function() {
 	return gulp.src(polyfill)
 		.pipe(changed(distJs))
 		.pipe(gulp.dest(distJs))
-})
+});
 
 /*
 Clean up dist directory

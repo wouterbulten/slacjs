@@ -1,6 +1,6 @@
 import Particle from './particle';
 import LandmarkInitializationSet from './landmark-init-set';
-import { lowVarianceSampling } from '../util/sampling';
+import { lowVarianceSampling, numberOfEffectiveParticles } from '../util/sampling';
 
 class ParticleSet {
 	/**
@@ -81,10 +81,9 @@ class ParticleSet {
 	 * @return {ParticleSet}
 	 */
 	resample() {
-
-		if (this._numberOfEffectiveParticles() < (this.nParticles * 0.3)) {
-
-			const weights = this.particleList.map((p) => p.weight);
+		
+		const weights = this.particleList.map(p => p.weight);
+		if (numberOfEffectiveParticles(weights) < (this.nParticles * 0.3)) {
 
 			this.particleList = lowVarianceSampling(this.nParticles, weights).map((i) => {
 				return new Particle({}, this.particleList[i]);
