@@ -1,31 +1,29 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
-var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var _ParticleSet = require('./models/particle-set');
+var _modelsParticleSet = require('./models/particle-set');
 
-var _ParticleSet2 = _interopRequireWildcard(_ParticleSet);
+var _modelsParticleSet2 = _interopRequireDefault(_modelsParticleSet);
 
-var _Visualizer = require('./view/visualizer');
+var _viewVisualizer = require('./view/visualizer');
 
-var _Visualizer2 = _interopRequireWildcard(_Visualizer);
+var _viewVisualizer2 = _interopRequireDefault(_viewVisualizer);
 
-var _SimulatedUser = require('./simulation/user');
+var _simulationUser = require('./simulation/user');
 
-var _SimulatedUser2 = _interopRequireWildcard(_SimulatedUser);
+var _simulationUser2 = _interopRequireDefault(_simulationUser);
 
-var _SimulatedLandmarkSet = require('./simulation/landmark');
+var _simulationLandmark = require('./simulation/landmark');
 
-var _Sensor = require('./models/sensor');
+var _modelsSensor = require('./models/sensor');
 
-var _Sensor2 = _interopRequireWildcard(_Sensor);
+var _modelsSensor2 = _interopRequireDefault(_modelsSensor);
 
-/* global window */
-/* global console */
-/* global math */
+window.SlacENV = 'production';
 
-window.app = {
+window.SlacApp = {
 
 	particleSet: undefined,
 	visualizer: undefined,
@@ -43,11 +41,15 @@ window.app = {
 	initialize: function initialize() {
 		'use strict';
 
-		this.particleSet = new _ParticleSet2['default'](40, { x: 0, y: 0, theta: 0 });
-		this.visualizer = new _Visualizer2['default']('slac-map', 100, 100);
-		this.user = new _SimulatedUser2['default']({ x: 0, y: 0, theta: 0 }, 2, { xRange: 50, yRange: 50, padding: 5 });
-		this.landmarks = new _SimulatedLandmarkSet.SimulatedLandmarkSet(10, { xRange: 50, yRange: 50 }, 50, this.landmarkConfig);
-		this.sensor = new _Sensor2['default'](this.landmarkConfig);
+		this.particleSet = new _modelsParticleSet2['default'](40, { x: 0, y: 0, theta: 0 });
+		this.visualizer = new _viewVisualizer2['default']('slac-map', 100, 100);
+		this.user = new _simulationUser2['default']({ x: 0, y: 0, theta: 0 }, 2, { xRange: 50, yRange: 50, padding: 5 });
+
+		//Add simulated data to the user object
+		//this._addSimulatedData();
+
+		this.landmarks = new _simulationLandmark.SimulatedLandmarkSet(40, { xRange: 50, yRange: 50 }, 50, this.landmarkConfig);
+		this.sensor = new _modelsSensor2['default'](this.landmarkConfig);
 
 		//Start broadcasting of the simulated landmarks
 		//Broadcasts are sent to the sensor, the user object is used to find nearby landmarks
@@ -83,26 +85,632 @@ window.app = {
 		this.particleSet.resample();
 
 		//Update the canvas
-		this.visualizer.clearCanvas().plotUserTrace(this.user, 'blue', this.landmarkConfig.range).plotParticleSet(this.particleSet).plotObjects(this.landmarks.landmarks).plotLandmarkPredictions(this.particleSet.particles(), this.landmarks);
+		this.visualizer.clearCanvas().plotUserTrace(this.user, 'blue', this.landmarkConfig.range).plotObjects(this.landmarks.landmarks).plotParticleSet(this.particleSet);
+
+		if (window.SlacENV == 'debug') {
+			this.visualizer.plotLandmarkPredictions(this.particleSet.particles(), this.landmarks);
+		} else {
+			this.visualizer.plotLandmarkPredictions([this.particleSet.bestParticle()], this.landmarks);
+		}
+	},
+
+	_addSimulatedData: function _addSimulatedData() {
+		var thetas = [0, 0, 0, 0, 0, 0, 0.08099418560036185, 0, 0, 0, 0, 0, 0, 0, -0.002454369260617026, 0, 0, 0, 0, 0, 0, -0.000818123086872342, 0, 0, 0, 0, 0, 0, 0, 0.000545415391248228, 0, 0, 0, 0, 0, 0, 0, 0.001636246173744684, 0, 0, 0, 0, 0, 0, -0.000272707695624114, 0, 0, 0, 0, 0, 0, 0, 0.000272707695624114, 0, 0, 0, 0, 0, 0, 0.004363323129985824, 0, 0, 0, 0, 0, 0, 0, 0.006544984694978736, 0, 0, 0, 0, 0, 0, -0.0029997846518652537, 0, 0, 0, 0, 0, 0, 0, -0.0029997846518652537, 0, 0, 0, 0, 0, 0, 0.001908953869368798, 0, 0, 0, 0, 0, 0, 0, 0.000818123086872342, 0, 0, 0, 0, 0, 0, -0.006272276999354622, 0, 0, 0, 0, 0, 0, 0, -0.001090830782496456, 0, 0, 0, 0, 0, 0, 0.08290313946973066, 0, 0, 0, 0, 0, 0, -0.00545415391248228, 0, 0, 0, 0, 0, 0, -0.11344640137963143, 0, 0, 0, 0, 0, 0, 0, -0.09272061651219876, 0, 0, 0, 0, 0, 0, 0, -0.007363107781851078, 0, 0, 0, 0, 0, 0, -0.20453077171808548, 0, 0, 0, 0, 0, 0, 0, -0.1598067096357308, 0, 0, 0, 0, 0, 0, 0, -0.1990766178056032, 0, 0, 0, 0, 0, 0, -0.241619018322965, 0, 0, 0, 0, 0, 0, 0, -0.1562615095926173, 0, 0, 0, 0, 0, 0, -0.22552926428114228, 0, 0, 0, 0, 0, 0, 0, -0.23425591054111392, 0, 0, 0, 0, 0, 0, -0.31334114227210697, 0, 0, 0, 0, 0, 0, -0.22362031041177347, 0, 0, 0, 0, 0, 0, 0, -0.0681769239060285, 0, 0, 0, 0, 0, 0, -0.12871803233458182, 0, 0, 0, 0, 0, 0, 0, -0.08426667794785123, 0, 0, 0, 0, 0, 0, 0, 0.0995383089028016, 0, 0, 0, 0, 0, 0, 0.006544984694978736, 0, 0, 0, 0, 0, 0, 0, 0.00272707695624114, 0, 0, 0, 0, 0, 0, -0.000818123086872342, 0, 0, 0, 0, 0, 0, 0, 0.0029997846518652537, 0, 0, 0, 0, 0, 0, 0, 0.003272492347489368, 0, 0, 0, 0, 0, 0, 0, 0.06899504699290084, 0, 0, 0, 0, 0, 0, 0.06599526234103559, 0, 0, 0, 0, 0, 0, 0, 0.0719948316447661, 0, 0, 0, 0, 0, 0, 0.007090400086226964, 0, 0, 0, 0, 0, 0, 0, -0.0029997846518652537, 0, 0, 0, 0, 0, 0, -0.13199052468207118, 0, 0, 0, 0, 0, 0, 0, -0.12408200150897186, 0, 0, 0, 0, 0, 0, 0, -0.1892591407631351, 0, 0, 0, 0, 0, 0, -0.13335406316019174, 0, 0, 0, 0, 0, 0, 0, -0.13717197089892932, 0, 0, 0, 0, 0, 0, 0, -0.13799009398580167, 0, 0, 0, 0, 0, 0, -0.10471975511965978, 0, 0, 0, 0, 0, 0, 0, -0.10608329359778035, 0, 0, 0, 0, 0, 0, -0.0703585854710214, 0, 0, 0, 0, 0, 0, 0, -0.004363323129985824, 0, 0, 0, 0, 0, 0, 0, 0.001090830782496456, 0, 0, 0, 0, 0, 0, 0, 0.004636030825609938, 0, 0, 0, 0, 0, 0, 0.08699375490409236, 0, 0, 0, 0, 0, 0, 0, 0.00545415391248228, 0, 0, 0, 0, 0, 0, 0.004908738521234052, 0, 0, 0, 0, 0, 0, 0, 0.002181661564992912, 0, 0, 0, 0, 0, 0, 0.000818123086872342, 0, 0, 0, 0, 0, 0, -0.001908953869368798, 0, 0, 0, 0, 0, 0, 0, -0.002181661564992912, 0, 0, 0, 0, 0, 0, 0, -0.0029997846518652537, 0, 0, 0, 0, 0, 0, -0.005726861608106394, 0, 0, 0, 0, 0, 0, -0.06463172386291502, 0, 0, 0, 0, 0, 0, 0, -0.08835729338221293, 0, 0, 0, 0, 0, 0, -0.06844963160165261, 0, 0, 0, 0, 0, 0, -0.007090400086226964, 0, 0, 0, 0, 0, 0, 0, -0.004908738521234052, 0, 0, 0, 0, 0, 0, -0.00136353847812057, 0, 0, 0, 0, 0, 0, 0.08235772407848242, 0, 0, 0, 0, 0, 0, 0, 0.09844747812030515, 0, 0, 0, 0, 0, 0, 0.17862354063379465, 0, 0, 0, 0, 0, 0, 0, 0.275162064884731, 0, 0, 0, 0, 0, 0, 0.2519819107566813, 0, 0, 0, 0, 0, 0, 0, 0.41369757426178094, 0, 0, 0, 0, 0, 0, 0.37879098922189436, 0, 0, 0, 0, 0, 0, 0, 0.5162356678164478, 0, 0, 0, 0, 0, 0, 0.4955098829490151, 0, 0, 0, 0, 0, 0, 0, 0.32288591161895097, 0, 0, 0, 0, 0, 0, 0.25443628001729834, 0, 0, 0, 0, 0, 0, 0, 0.14862569411514212, 0, 0, 0, 0, 0, 0, 0.11017390903214205, 0, 0, 0, 0, 0, 0, 0, 0.0859029241215959, 0, 0, 0, 0, 0, 0, 0.007090400086226964, 0, 0, 0, 0, 0, 0, 0, 0.007635815477475192, 0, 0, 0, 0, 0, 0, 0.007635815477475192, 0, 0, 0, 0, 0, 0, 0, 0.007363107781851078, 0, 0, 0, 0, 0, 0, 0.0029997846518652537, 0, 0, 0, 0, 0, 0, 0, -0.000272707695624114, 0, 0, 0, 0, 0, 0, -0.0719948316447661, 0, 0, 0, 0, 0, 0, 0, -0.07308566242726255, 0, 0, 0, 0, 0, 0, 0, -0.1366265555076811, 0, 0, 0, 0, 0, 0, -0.11671889372712078, 0, 0, 0, 0, 0, 0, 0, -0.07526732399225546, 0, 0, 0, 0, 0, 0, -0.001636246173744684, 0, 0, 0, 0, 0, 0, 0, 0.003817907738737596, 0, 0, 0, 0, 0, 0, 0.24461880297483024, 0, 0, 0, 0, 0, 0, 0.3239767424014474, 0, 0, 0, 0, 0, 0, 0, 0.26207209549477356, 0, 0, 0, 0, 0, 0, 0, 0.28197975727533386, 0, 0, 0, 0, 0, 0, 0.19144080232812802, 0, 0, 0, 0, 0, 0, 0, 0.13880821707267402, 0, 0, 0, 0, 0, 0, 0, 0.07063129316664553, 0, 0, 0, 0, 0, 0, 0, 0.0040906154343617095, 0, 0, 0, 0, 0, 0, 0.0040906154343617095, 0, 0, 0, 0, 0, 0, 0.00272707695624114, 0, 0, 0, 0, 0, 0, -0.001636246173744684, 0, 0, 0, 0, 0, 0, 0, -0.001908953869368798, 0, 0, 0, 0, 0, 0, -0.001636246173744684, 0, 0, 0, 0, 0, 0, 0, -0.003272492347489368, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.06299547768917033, 0, 0, 0, 0, 0, 0, 0, 0.00545415391248228, 0, 0, 0, 0, 0, 0, 0.003545200043113482, 0, 0, 0, 0, 0, 0, 0, 0.007090400086226964, 0, 0, 0, 0, 0, 0, 0.07635815477475191, 0, 0, 0, 0, 0, 0, 0, 0.09272061651219876, 0, 0, 0, 0, 0, 0, 0.20398535632683726, 0, 0, 0, 0, 0, 0, 0, 0.18953184845875923, 0, 0, 0, 0, 0, 0, 0.20153098706622025, 0, 0, 0, 0, 0, 0.1502619402888868, 0, 0, 0, 0, 0, 0, 0, 0, 0.15162547876700738, 0, 0, 0, 0, 0, 0, -6.149013120932523, 0, 0, 0, 0, 0, 0, 0.09626581655531224, 0, 0, 0, 0, 0, 0, 0, 0.09326603190344698, 0, 0, 0, 0, 0, 0, 0.007635815477475192, 0, 0, 0, 0, 0, 0, 0.007363107781851078, 0, 0, 0, 0, 0, 0, 0, 0.003817907738737596, 0, 0, 0, 0, 0, 0, 0, 0.00272707695624114, 0, 0, 0, 0, 0, 0, 0.00272707695624114, 0];
+		var distances = thetas.map(function () {
+			return 0.16;
+		});
+
+		this.user.setPath(distances, thetas);
 	}
 };
 
-},{"./models/particle-set":2,"./models/sensor":4,"./simulation/landmark":6,"./simulation/user":7,"./view/visualizer":11}],2:[function(require,module,exports){
+},{"./models/particle-set":6,"./models/sensor":8,"./simulation/landmark":11,"./simulation/user":12,"./view/visualizer":17}],2:[function(require,module,exports){
 'use strict';
 
-var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
+var marked0$0 = [walkPattern].map(regeneratorRuntime.mark);
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _appModelsLandmarkInitSet = require('../app/models/landmark-init-set');
+
+var _appModelsLandmarkInitSet2 = _interopRequireDefault(_appModelsLandmarkInitSet);
+
+if (window.test === undefined) {
+	window.test = {};
+}
+
+/**
+ * Pattern that the user walks
+ * @yield {Number}
+ */
+function walkPattern() {
+	var steps, stepSize, quarter, i;
+	return regeneratorRuntime.wrap(function walkPattern$(context$1$0) {
+		while (1) switch (context$1$0.prev = context$1$0.next) {
+			case 0:
+				steps = 40;
+				stepSize = 2;
+				quarter = steps / 4;
+				i = 0;
+
+			case 4:
+				if (!(i < steps)) {
+					context$1$0.next = 26;
+					break;
+				}
+
+				if (!(i < quarter)) {
+					context$1$0.next = 10;
+					break;
+				}
+
+				context$1$0.next = 8;
+				return { dx: stepSize, dy: 0 };
+
+			case 8:
+				context$1$0.next = 23;
+				break;
+
+			case 10:
+				if (!(i < 2 * quarter)) {
+					context$1$0.next = 15;
+					break;
+				}
+
+				context$1$0.next = 13;
+				return { dx: 0, dy: stepSize };
+
+			case 13:
+				context$1$0.next = 23;
+				break;
+
+			case 15:
+				if (!(i < 3 * quarter)) {
+					context$1$0.next = 20;
+					break;
+				}
+
+				context$1$0.next = 18;
+				return { dx: -stepSize, dy: 0 };
+
+			case 18:
+				context$1$0.next = 23;
+				break;
+
+			case 20:
+				if (!(i < steps)) {
+					context$1$0.next = 23;
+					break;
+				}
+
+				context$1$0.next = 23;
+				return { dx: 0, dy: -stepSize };
+
+			case 23:
+				i++;
+				context$1$0.next = 4;
+				break;
+
+			case 26:
+			case 'end':
+				return context$1$0.stop();
+		}
+	}, marked0$0[0], this);
+}
+
+window.test.landmarkInit = {
+
+	landmarkSet: undefined,
+	userX: 0,
+	userY: 0,
+	lX: 0,
+	lY: 0,
+	userTrace: [],
+	xMax: 50,
+	yMax: 50,
+	ctx: undefined,
+	canvas: undefined,
+
+	pattern: undefined,
+
+	initialize: function initialize() {
+
+		//Init random landmark
+		this.lX = Math.random() * 30 - 15;
+		this.lY = Math.random() * 30 - 15;
+
+		this.landmarkSet = new _appModelsLandmarkInitSet2['default']();
+		this.canvas = document.getElementById('test-content');
+		this.ctx = this.canvas.getContext('2d');
+		this.ctx.scale(10, 10);
+
+		this.userTrace.push({ x: this.userX, y: this.userY });
+
+		this.pattern = walkPattern();
+	},
+
+	iterate: function iterate() {
+		var _pattern$next$value = this.pattern.next().value;
+		var dx = _pattern$next$value.dx;
+		var dy = _pattern$next$value.dy;
+
+		this.userX = this.userX + dx;
+		this.userY = this.userY + dy;
+		console.log({ dx: dx, dy: dy });
+		this.userTrace.push({ x: this.userX, y: this.userY });
+
+		var r = Math.sqrt(Math.pow(this.lX - this.userX, 2) + Math.pow(this.lY - this.userY, 2));
+
+		this.landmarkSet.addMeasurement('uid', this.userX, this.userY, r);
+
+		this._draw();
+		console.debug('True r: ' + r);
+	},
+
+	_draw: function _draw() {
+		var _this = this;
+
+		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+		this.ctx.fillStyle = '#000000';
+
+		this.landmarkSet.particles.get('uid').particles.forEach(function (p) {
+
+			var x = _this._tx(p.x);
+			var y = _this._ty(p.y);
+
+			_this.ctx.fillRect(x, y, 0.3, 0.3);
+		});
+
+		this.ctx.fillStyle = '#ff0000';
+		this.userTrace.forEach(function (t) {
+			return _this.ctx.fillRect(_this._tx(t.x), _this._ty(t.y), 0.5, 0.5);
+		});
+
+		this.ctx.fillStyle = '#00ff00';
+		this.ctx.fillRect(this._tx(this.lX), this._ty(this.lY), 0.5, 0.5);
+	},
+
+	_tx: function _tx(x) {
+		return x + this.xMax / 2;
+	},
+
+	_ty: function _ty(y) {
+		return this.yMax - (y + this.yMax / 2);
+	}
+};
+
+},{"../app/models/landmark-init-set":4}],3:[function(require,module,exports){
+'use strict';
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _appModelsVoteAccumulator = require('../app/models/vote-accumulator');
+
+var _appModelsVoteAccumulator2 = _interopRequireDefault(_appModelsVoteAccumulator);
+
+if (window.test === undefined) {
+	window.test = {};
+}
+
+window.test.voting = {
+
+	votes: undefined,
+	userX: 0,
+	userY: 0,
+	trace: [],
+
+	lX: -5,
+	lY: 10,
+
+	lR: 0,
+	lC: 0,
+
+	initialize: function initialize() {
+		this.votes = new _appModelsVoteAccumulator2['default'](75, 5);
+
+		var _votes$_cartesianToCell = this.votes._cartesianToCell(this.lX, this.lY);
+
+		var row = _votes$_cartesianToCell.row;
+		var column = _votes$_cartesianToCell.column;
+
+		this.lR = row;
+		this.lC = column;
+
+		//Create a table to show the votes
+		document.getElementById('test-content').innerHTML = this._createOutputTable();
+		this._displayLandmark();
+	},
+
+	iterate: function iterate() {
+
+		this.userX += Math.random() * 4 - 2;
+		this.userY += Math.random() * 6 - 3;
+
+		this.trace.push({ x: this.userX, y: this.userY });
+
+		var r = Math.sqrt(Math.pow(this.lX - this.userX, 2) + Math.pow(this.lY - this.userY, 2)) + (Math.random() * 6 - 3);
+
+		this.votes.addMeasurement(this.userX, this.userY, r);
+
+		document.getElementById('test-content').innerHTML = '';
+		document.getElementById('test-content').innerHTML = this._createOutputTable();
+		this._displayLandmark();
+		this._displayUser();
+	},
+
+	_createOutputTable: function _createOutputTable() {
+
+		var table = '<table>';
+
+		table += this.votes.votes.reduce(function (output, row, rowN) {
+			return output + '<tr>' + row.reduce(function (rowOutput, cell, columnN) {
+				var color = 'background-color: rgba(0, 0, 0, ' + cell / 50 + ');';
+				var id = rowN + '' + columnN;
+
+				return rowOutput + '<td id="' + id + '" style="' + color + '">' + cell + '</td>';
+			}, '') + '</tr>';
+		}, '');
+
+		table += '</table>';
+		return table;
+	},
+
+	_displayLandmark: function _displayLandmark() {
+		document.getElementById(this.lR + '' + this.lC).style.backgroundColor = 'red';
+	},
+
+	_displayUser: function _displayUser() {
+		var _this = this;
+
+		this.trace.forEach(function (pos) {
+			var _votes$_cartesianToCell2 = _this.votes._cartesianToCell(pos.x, pos.y);
+
+			var row = _votes$_cartesianToCell2.row;
+			var column = _votes$_cartesianToCell2.column;
+
+			document.getElementById(row + '' + column).style.backgroundColor = 'green';
+		});
+	}
+};
+
+},{"../app/models/vote-accumulator":10}],4:[function(require,module,exports){
+'use strict';
 
 Object.defineProperty(exports, '__esModule', {
 	value: true
 });
 
-var _Particle = require('./particle');
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _Particle2 = _interopRequireWildcard(_Particle);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var _landmarkParticleSet = require('./landmark-particle-set');
+
+var _landmarkParticleSet2 = _interopRequireDefault(_landmarkParticleSet);
+
+var LandmarkInitializationSet = (function () {
+	/**
+  * Set containing multiple particle sets for initalisation of landmarks
+  * @param  {Number} nParticles                 Number of particles in each set
+  * @param  {Number} stdRange                   sd of range measurements
+  * @param  {Number} randomParticles            Number of random particles
+  * @param  {Number} effectiveParticleThreshold Threshold of effective particles
+  * @return {LandmarkInitializationSet}
+  */
+
+	function LandmarkInitializationSet() {
+		var nParticles = arguments[0] === undefined ? 500 : arguments[0];
+		var stdRange = arguments[1] === undefined ? 4 : arguments[1];
+		var randomParticles = arguments[2] === undefined ? 10 : arguments[2];
+		var effectiveParticleThreshold = arguments[3] === undefined ? undefined : arguments[3];
+
+		_classCallCheck(this, LandmarkInitializationSet);
+
+		this.nParticles = nParticles;
+		this.stdRange = stdRange;
+		this.randomParticles = randomParticles;
+
+		if (effectiveParticleThreshold === undefined) {
+			this.effectiveParticleThreshold = nParticles / 3;
+		} else {
+			this.effectiveParticleThreshold = effectiveParticleThreshold;
+		}
+
+		this.particles = new Map();
+	}
+
+	_createClass(LandmarkInitializationSet, [{
+		key: 'addMeasurement',
+
+		/**
+   * Integrate a new measurement
+   * @param {String} uid UID of landmark
+   * @param {Number} x   Position of user
+   * @param {Number} y   Position of user
+   * @param {Number} r   Range measurement
+   */
+		value: function addMeasurement(uid, x, y, r) {
+			if (!this.has(uid)) {
+				this.particles.set(uid, new _landmarkParticleSet2['default'](this.nParticles, this.stdRange, this.randomParticles, this.effectiveParticleThreshold));
+			}
+
+			this.particles.get(uid).addMeasurement(x, y, r);
+
+			return this;
+		}
+	}, {
+		key: 'has',
+
+		/**
+   * Returns true when there is a particle set for a landmark
+   * @param  {String}  uid
+   * @return {Boolean}
+   */
+		value: function has(uid) {
+			return this.particles.has(uid);
+		}
+	}, {
+		key: 'estimate',
+
+		/**
+   * Returns best position estimate for a landmark
+   * @param  {String} uid
+   * @return {Object}
+   */
+		value: function estimate(uid) {
+			return this.particles.get(uid).positionEstimate();
+		}
+	}, {
+		key: 'remove',
+
+		/**
+   * Remove a particle set
+   * @param  {String} uid
+   * @return {void}
+   */
+		value: function remove(uid) {
+			this.particles['delete'](uid);
+		}
+	}]);
+
+	return LandmarkInitializationSet;
+})();
+
+exports['default'] = LandmarkInitializationSet;
+module.exports = exports['default'];
+
+},{"./landmark-particle-set":5}],5:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+	value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var _utilMath = require('../util/math');
+
+var _utilSampling = require('../util/sampling');
+
+var _utilCoordinateSystem = require('../util/coordinate-system');
+
+var LandmarkParticleSet = (function () {
+	/**
+  * Create a new particle set for finding the initial position of a landmark
+  * @param  {Number} nParticles                 Number of particles
+  * @param  {Number} stdRange                   SD of range measurements
+  * @param  {Number} randomParticles            Number of random particles to use each update
+  * @param  {Number} effectiveParticleThreshold Threshold for resampling
+  * @return {LandmarkParticleSet}
+  */
+
+	function LandmarkParticleSet(nParticles, stdRange, randomParticles, effectiveParticleThreshold) {
+		_classCallCheck(this, LandmarkParticleSet);
+
+		this.nParticles = nParticles;
+		this.stdRange = stdRange;
+		this.effectiveParticleThreshold = effectiveParticleThreshold;
+		this.randomParticles = randomParticles;
+
+		this.measurements = 0;
+		this.particles = [];
+	}
+
+	_createClass(LandmarkParticleSet, [{
+		key: 'addMeasurement',
+
+		/**
+   * Integrate a new measurement in the particle set
+   * @param {Number} x
+   * @param {Number} y
+   * @param {Number} r
+   */
+		value: function addMeasurement(x, y, r) {
+
+			if (this.measurements === 0) {
+
+				//Init the particle set by adding random particles around the user
+				this.particles = this._randomParticles(this.nParticles, x, y, r);
+			} else {
+				this._updateWeights(x, y, r);
+
+				//Determine whether resampling is effective now
+				//Is based on the normalised weights
+				var weights = this.particles.map(function (p) {
+					return p.weight;
+				});
+				if (_utilSampling.numberOfEffectiveParticles(weights) < this.effectiveParticleThreshold) {
+
+					//Use low variance resampling to generate a set of new particles
+					//Returns a list of N-randomParticles particles
+					var set = this._resample(this.nParticles - this.randomParticles);
+
+					//Add new uniformly distributed particles tot the set
+					//Random particles are distributed around the current position
+					this.particles = set.concat(this._randomParticles(this.randomParticles, x, y, r));
+				}
+			}
+
+			this.measurements++;
+			return this;
+		}
+	}, {
+		key: 'positionEstimate',
+
+		/**
+   * Return the current estimate of this landmark's position
+   * @return {Object}
+   */
+		value: function positionEstimate() {
+			if (this.measurements < 10) {
+				return { estimate: 0, x: 0, y: 0 };
+			}
+
+			var _bestParticle = this.bestParticle();
+
+			var x = _bestParticle.x;
+			var y = _bestParticle.y;
+
+			return {
+				estimate: 1,
+				x: x, y: y
+			};
+		}
+	}, {
+		key: 'bestParticle',
+
+		/**
+   * Return the particle with the heighest weight
+   * @return {Particle}
+   */
+		value: function bestParticle() {
+			var best = this.particles[0];
+
+			this.particles.forEach(function (p) {
+				if (p.weight > best.weight) {
+					best = p;
+				}
+			});
+
+			return best;
+		}
+	}, {
+		key: '_resample',
+
+		/**
+   * Resample the particle set and return a given number of new particles
+   * @param  {Number} nSamples Number of particles to return
+   * @return {Array}
+   */
+		value: function _resample(nSamples) {
+			var _this = this;
+
+			var weights = this.particles.map(function (p) {
+				return p.weight;
+			});
+
+			return _utilSampling.lowVarianceSampling(nSamples, weights).map(function (i) {
+				return {
+					x: _this.particles[i].x,
+					y: _this.particles[i].y,
+					weight: 1
+				};
+			});
+		}
+	}, {
+		key: '_randomParticles',
+
+		/**
+   * Init the particle set
+   *
+   * Creates a set of particles distributed around x,y at a distance
+   * following a normal distribution with r as mean.
+   *
+   * @param  {Number} x Center x
+   * @param  {Number} y Center y
+   * @param  {Number} r range
+   * @return {void}
+   */
+		value: function _randomParticles(n, x, y, r) {
+
+			var deltaTheta = 2 * Math.PI / n;
+			var particles = [];
+
+			for (var i = 0; i < n; i++) {
+				var theta = i * deltaTheta;
+				var range = r + _utilMath.randn(0, this.stdRange);
+
+				var _polarToCartesian = _utilCoordinateSystem.polarToCartesian(range, theta);
+
+				var dx = _polarToCartesian.dx;
+				var dy = _polarToCartesian.dy;
+
+				particles.push({ x: x + dx, y: y + dy, weight: 1 });
+			}
+
+			return particles;
+		}
+	}, {
+		key: '_updateWeights',
+
+		/**
+   * Update each particle by updating their weights
+   * @param  {Number} x
+   * @param  {Number} y
+   * @param  {Number} r
+   * @return {void}
+   */
+		value: function _updateWeights(x, y, r) {
+			var _this2 = this;
+
+			this.particles.forEach(function (p) {
+
+				//Calculate distance estimate
+				var dist = Math.sqrt(Math.pow(p.x - x, 2) + Math.pow(p.y - y, 2));
+
+				//What is the probability of r given dist? p(r|dist)
+				//Update the weight accordingly
+				//p(r) = N(r|dist,sd)
+
+				var weight = _utilMath.pdfn(r, dist, _this2.stdRange);
+
+				p.weight = p.weight * weight;
+			});
+		}
+	}]);
+
+	return LandmarkParticleSet;
+})();
+
+exports['default'] = LandmarkParticleSet;
+module.exports = exports['default'];
+
+},{"../util/coordinate-system":13,"../util/math":15,"../util/sampling":16}],6:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+	value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var _particle = require('./particle');
+
+var _particle2 = _interopRequireDefault(_particle);
+
+var _landmarkInitSet = require('./landmark-init-set');
+
+var _landmarkInitSet2 = _interopRequireDefault(_landmarkInitSet);
+
+var _utilSampling = require('../util/sampling');
 
 var ParticleSet = (function () {
 	/**
@@ -125,8 +733,12 @@ var ParticleSet = (function () {
 
 		this.particleList = [];
 
+		//Internal list to keep track of initialised landmarks
+		this.initialisedLandmarks = [];
+		this.landmarkInitSet = new _landmarkInitSet2['default']();
+
 		for (var i = 0; i < nParticles; i++) {
-			this.particleList.push(new _Particle2['default']({ x: x, y: y, theta: theta }));
+			this.particleList.push(new _particle2['default']({ x: x, y: y, theta: theta }));
 		}
 	}
 
@@ -154,11 +766,44 @@ var ParticleSet = (function () {
    * @return {ParticleSet}
    */
 		value: function processObservation(obs) {
+			var _this = this;
 
 			if (obs !== {}) {
-				this.particleList.forEach(function (p) {
-					return p.processObservation(obs);
-				});
+				var _landmarkInitSet$estimate;
+
+				(function () {
+					var uid = obs.uid;
+					var r = obs.r;
+
+					if (_this.initialisedLandmarks.indexOf(uid) == -1) {
+						(function () {
+
+							//const {x: uX, y: uY} = this.userEstimate();
+							var uX = window.SlacApp.user.x;
+							var uY = window.SlacApp.user.y;
+
+							_this.landmarkInitSet.addMeasurement(uid, uX, uY, r);
+
+							_landmarkInitSet$estimate = _this.landmarkInitSet.estimate(uid);
+							var estimate = _landmarkInitSet$estimate.estimate;
+							var x = _landmarkInitSet$estimate.x;
+							var y = _landmarkInitSet$estimate.y;
+
+							if (estimate > 0.6) {
+
+								_this.particleList.forEach(function (p) {
+									p.addLandmark({ uid: uid, r: r }, { x: x, y: y });
+								});
+
+								_this.initialisedLandmarks.push(uid);
+							}
+						})();
+					} else {
+						_this.particleList.forEach(function (p) {
+							return p.processObservation({ uid: uid, r: r });
+						});
+					}
+				})();
 			}
 
 			return this;
@@ -173,15 +818,18 @@ var ParticleSet = (function () {
    * @return {ParticleSet}
    */
 		value: function resample() {
-			var variance = this._weightVariance();
-			console.log(variance);
-			if (variance > 100) {
-				this._lowVarianceSampling();
+			var _this2 = this;
+
+			var weights = this.particleList.map(function (p) {
+				return p.weight;
+			});
+			if (_utilSampling.numberOfEffectiveParticles(weights) < this.nParticles * 0.3) {
+
+				this.particleList = _utilSampling.lowVarianceSampling(this.nParticles, weights).map(function (i) {
+					return new _particle2['default']({}, _this2.particleList[i]);
+				});
 			}
 
-			console.log(this.particleList.map(function (p) {
-				return p.weight;
-			}));
 			return this;
 		}
 	}, {
@@ -213,151 +861,16 @@ var ParticleSet = (function () {
 			return best;
 		}
 	}, {
-		key: '_lowVarianceSampling',
+		key: 'userEstimate',
 
 		/**
-   * Samples a new particle set
+   * Get the best estimate of the current user position
+   * @return {object}
    */
-		value: function _lowVarianceSampling() {
-			var M = this.particleList.length;
-			var weights = this._calculateStackedWeights();
-			var rand = Math.random() * (1 / M);
+		value: function userEstimate() {
+			var particle = this.bestParticle();
 
-			var c = weights[0];
-			var i = 0;
-
-			var newParticleSet = [];
-
-			for (var m = 1; m <= M; m++) {
-				var U = rand + (m - 1) * (1 / M);
-
-				while (U > c) {
-					i = i + 1;
-					c = c + weights[i];
-				}
-
-				newParticleSet.push(new _Particle2['default']({}, this.particleList[i]));
-			}
-
-			this.particleList = newParticleSet;
-		}
-	}, {
-		key: '_weightVariance',
-
-		/**
-   * Calculates the variance of the weights
-   * @return {float}
-   */
-		value: function _weightVariance() {
-			if (this.particleList.length < 2) {
-				return false;
-			}
-
-			var weights = this.particleList.map(function (p) {
-				return p.weight;
-			});
-			var sum = weights.reduce(function (w, total) {
-				return total + w;
-			}, 0);
-			var mean = sum / weights.length;
-			console.log(mean);
-			return weights.reduce(function (w, total) {
-				console.log((w - mean) * (w - mean));
-				return total + (w - mean) * (w - mean);
-			}, 0) / weights.length;
-		}
-	}, {
-		key: '_calculateNormalisedWeights',
-
-		/**
-   * Compute a list of normalised weights of the internal particle list
-   * @return {Array}
-   */
-		value: function _calculateNormalisedWeights() {
-
-			if (this.particleList.length == 1) {
-				return [1];
-			}
-
-			var weights = this.particleList.map(function (p) {
-				return p.weight;
-			});
-			var max = Math.max.apply(null, weights);
-			var min = Math.min.apply(null, weights);
-			var diff = max - min;
-
-			//If all weights are equal we just return an
-			//array with 1/N
-			if (diff === 0) {
-				var _ret = (function () {
-					var nw = 1 / weights.length;
-					return {
-						v: weights.map(function (w) {
-							return nw;
-						})
-					};
-				})();
-
-				if (typeof _ret === 'object') {
-					return _ret.v;
-				}
-			}
-
-			return weights.map(function (w) {
-				return (w - min) / diff;
-			});
-		}
-	}, {
-		key: '_calculateStackedWeights',
-
-		/**
-   * Calculate a list of stacked normalised weights of the internal particle list
-   * @return {Array}
-   */
-		value: function _calculateStackedWeights() {
-			var weights = this.particleList.map(function (p) {
-				return p.weight;
-			});
-			var min = Math.min.apply(null, weights);
-
-			if (min < 0) {
-				//Make sure all weights are above zero
-				weights.forEach(function (w, i, a) {
-					return a[i] = w - min;
-				});
-			}
-
-			var stackedWeights = [];
-
-			var total = 0;
-			var sums = weights.map(function (w) {
-				total = w + total;
-				return total;
-			});
-
-			return sums.map(function (w) {
-				return w / total;
-			});
-		}
-	}, {
-		key: '_weightedRandomSample',
-
-		/**
-   * Draw a weighted sample from from a list and return the index
-   * @param  {Array} weights
-   * @return {int}
-   */
-		value: function _weightedRandomSample(weights) {
-			var rand = Math.random();
-
-			for (var m = 0; m < weights.length; m++) {
-
-				if (weights[m] > rand) {
-					return m;
-				}
-			}
-
-			console.error('Did not draw a sample');
+			return { x: particle.user.x, y: particle.user.y };
 		}
 	}]);
 
@@ -367,26 +880,28 @@ var ParticleSet = (function () {
 exports['default'] = ParticleSet;
 module.exports = exports['default'];
 
-},{"./particle":3}],3:[function(require,module,exports){
+},{"../util/sampling":16,"./landmark-init-set":4,"./particle":7}],7:[function(require,module,exports){
 'use strict';
-
-var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
-
-var _slicedToArray = function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } };
-
-var _toConsumableArray = function (arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } };
-
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 Object.defineProperty(exports, '__esModule', {
 	value: true
 });
 
-var _User = require('./user');
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _User2 = _interopRequireWildcard(_User);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _slicedToArray(arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var _user = require('./user');
+
+var _user2 = _interopRequireDefault(_user);
+
+var _utilMath = require('../util/math');
 
 var Particle = (function () {
 	/**
@@ -406,10 +921,10 @@ var Particle = (function () {
 		_classCallCheck(this, Particle);
 
 		if (parent !== undefined) {
-			this.user = _User2['default'].copyUser(parent.user);
+			this.user = _user2['default'].copyUser(parent.user);
 			this.landmarks = this._copyMap(parent.landmarks);
 		} else {
-			this.user = new _User2['default']({ x: x, y: y, theta: theta });
+			this.user = new _user2['default']({ x: x, y: y, theta: theta });
 			this.landmarks = new Map();
 		}
 
@@ -428,8 +943,8 @@ var Particle = (function () {
 
 			//Do something with the control here
 			//Random values for now
-			var r = control.r + (1 * Math.random() - 0.5);
-			var theta = control.theta + 1 * (Math.random() - 0.5);
+			var r = control.r + _utilMath.randn(0, 0.5);
+			var theta = control.theta + _utilMath.randn(0, 0.01);
 
 			this.user.move({ r: r, theta: theta });
 
@@ -448,66 +963,51 @@ var Particle = (function () {
 			return this;
 		}
 	}, {
-		key: 'processObservation',
-
-		/**
-   * Process a new observation for a landmark
-   * @param  {string} options.id The id of the landmark
-   * @param  {float} options.r   Range measurement to this landmark
-   * @return {Particle}
-   */
-		value: function processObservation(_ref2) {
-			var uid = _ref2.uid;
-			var r = _ref2.r;
-
-			//Update landmark
-			if (this.landmarks.has(uid)) {
-				this._updateLandmark({ uid: uid, r: r });
-			} else {
-				this._addLandmark({ uid: uid, r: r });
-			}
-
-			return this;
-		}
-	}, {
-		key: '_addLandmark',
+		key: 'addLandmark',
 
 		/**
    * Register a new landmark
    * @param {string} options.uid
-   * @param {flaot} options.r
+   * @param {float} options.r
    */
-		value: function _addLandmark(_ref3) {
-			var uid = _ref3.uid;
-			var r = _ref3.r;
-
-			var _getInitialEstimate = this._getInitialEstimate(uid, r);
-
-			var x = _getInitialEstimate.x;
-			var y = _getInitialEstimate.y;
+		value: function addLandmark(_ref2, _ref3) {
+			var uid = _ref2.uid;
+			var r = _ref2.r;
+			var x = _ref3.x;
+			var y = _ref3.y;
 
 			//@todo find better values for initial covariance
-			var cov = [[-0.01, -0.01], [-0.01, -0.01]];
+			var cov = [[0.01, 0.01], [0.01, 0.01]];
 
 			this.landmarks.set(uid, { x: x, y: y, cov: cov });
 		}
 	}, {
-		key: '_updateLandmark',
-		value: function _updateLandmark(_ref4) {
+		key: 'processObservation',
+
+		/**
+   * Update a landmark using the EKF update rule
+   * @param  {string} options.uid landmark id
+   * @param  {float} options.r    range measurement
+   * @return {void}
+   */
+		value: function processObservation(_ref4) {
 			var uid = _ref4.uid;
 			var r = _ref4.r;
 
-			var landmark = window.app.landmarks.landmarkByUid(uid);
+			//Find the correct EKF
 			var l = this.landmarks.get(uid);
+
+			//Compute the difference between the predicted user position of this
+			//particle and the predicted position of the landmark.
 			var dx = this.user.x - l.x;
 			var dy = this.user.y - l.y;
 
 			//@todo find better values for default coviarance
-			var errorCov = Math.random() - 0.5;
+			var errorCov = 0.01 * (Math.random() - 0.5);
 
-			var dist = Math.max(0.01, Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)));
+			var dist = Math.max(0.001, Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)));
 
-			//Compute innovation
+			//Compute innovation: difference between the observation and the predicted value
 			var v = r - dist;
 
 			//Compute Jacobian
@@ -522,7 +1022,7 @@ var Particle = (function () {
 			//Kalman gain
 			var K = [HxCov[0] * (1 / covV), HxCov[1] * (1 / covV)];
 
-			//Do we need to translate this? regarding robot pose
+			//Calculate the new position of the landmark
 			var newX = l.x + K[0] * v;
 			var newY = l.y + K[1] * v;
 
@@ -530,7 +1030,7 @@ var Particle = (function () {
 
 			var newCov = [[l.cov[0][0] - deltaCov, l.cov[0][1] - deltaCov], [l.cov[1][0] - deltaCov, l.cov[1][1] - deltaCov]];
 
-			//console.log(-1 * (v * (1 / covV) * v));
+			//Update the weight of the particle
 			this.weight = this.weight - v * (1 / covV) * v;
 
 			//Update particle
@@ -596,25 +1096,6 @@ var Particle = (function () {
 
 			return copy;
 		}
-	}, {
-		key: '_getInitialEstimate',
-
-		/**
-   * Get an initial estimate of a particle
-   * @param  {string} uid
-   * @param  {float} r
-   * @return {object}
-   */
-		value: function _getInitialEstimate(uid, r) {
-			//Cheat here for now to get a rough estimate
-			//Start ugly hack, should be removed when we have
-			//a good way to estimate the initial position
-			var landmark = window.app.landmarks.landmarkByUid(uid);
-			var trueX = landmark.x;
-			var trueY = landmark.y;
-
-			return { x: trueX + (3 * Math.random() - 1.5), y: trueY + (3 * Math.random() - 1.5) };
-		}
 	}]);
 
 	return Particle;
@@ -623,16 +1104,16 @@ var Particle = (function () {
 exports['default'] = Particle;
 module.exports = exports['default'];
 
-},{"./user":5}],4:[function(require,module,exports){
+},{"../util/math":15,"./user":9}],8:[function(require,module,exports){
 "use strict";
-
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Sensor = (function () {
 	/**
@@ -752,6 +1233,7 @@ var Sensor = (function () {
 			var timeDiff = Math.max(this.iteration - previousIteration, 1);
 
 			var timeFactor = 1 - 1 / (Math.pow(timeDiff, 1.5) + 1);
+
 			//const rssiFactor = Math.min(1, 1 - (0.5 * ((-10 - rssi) / 60)));
 
 			return timeFactor;
@@ -775,24 +1257,24 @@ var Sensor = (function () {
 exports["default"] = Sensor;
 module.exports = exports["default"];
 
-},{}],5:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
-
-var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
-
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 Object.defineProperty(exports, '__esModule', {
 	value: true
 });
 
-var _addTheta$polarToCartesian = require('../util/coordinate-system');
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _LinkedList = require('../util/linked-list');
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var _LinkedList2 = _interopRequireWildcard(_LinkedList);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var _utilCoordinateSystem = require('../util/coordinate-system');
+
+var _utilLinkedList = require('../util/linked-list');
+
+var _utilLinkedList2 = _interopRequireDefault(_utilLinkedList);
 
 var User = (function () {
 	/**
@@ -817,11 +1299,11 @@ var User = (function () {
 		this.theta = theta;
 
 		if (trace === undefined) {
-			this.trace = new _LinkedList2['default']().add({ x: x, y: y, theta: theta });
+			this.trace = new _utilLinkedList2['default']().add({ x: x, y: y, theta: theta });
 		} else {
 			//We use a LinkedList here to make use of the reference to the
 			//trace instead of copying the whole list
-			this.trace = new _LinkedList2['default'](trace);
+			this.trace = new _utilLinkedList2['default'](trace);
 		}
 	}
 
@@ -838,9 +1320,9 @@ var User = (function () {
 			var r = _ref2.r;
 			var theta = _ref2.theta;
 
-			var dTheta = _addTheta$polarToCartesian.addTheta(theta, this.theta);
+			var dTheta = _utilCoordinateSystem.addTheta(theta, this.theta);
 
-			var _polarToCartesian = _addTheta$polarToCartesian.polarToCartesian(r, dTheta);
+			var _polarToCartesian = _utilCoordinateSystem.polarToCartesian(r, dTheta);
 
 			var dx = _polarToCartesian.dx;
 			var dy = _polarToCartesian.dy;
@@ -876,16 +1358,279 @@ var User = (function () {
 exports['default'] = User;
 module.exports = exports['default'];
 
-},{"../util/coordinate-system":8,"../util/linked-list":9}],6:[function(require,module,exports){
+},{"../util/coordinate-system":13,"../util/linked-list":14}],10:[function(require,module,exports){
 'use strict';
-
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 Object.defineProperty(exports, '__esModule', {
 	value: true
 });
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var VoteAccumulator = (function () {
+
+	/**
+  * Create new voting system
+  * @param  {Number} dimension Size of the voting matrix coordinate system
+  * @param  {Number} precision Defines amount of cells by dimension/precision
+  * @param  {Number} startX    Center of the voting matrix
+  * @param  {Number} startY    Center of the voting matrix
+  * @return {VoteAccumulator}
+  */
+
+	function VoteAccumulator(dimension, precision) {
+		var _this = this;
+
+		var startX = arguments[2] === undefined ? 0 : arguments[2];
+		var startY = arguments[3] === undefined ? 0 : arguments[3];
+
+		_classCallCheck(this, VoteAccumulator);
+
+		this.dimension = dimension;
+		this.precision = precision;
+		this.centerX = startX;
+		this.centerY = startY;
+
+		this.measurements = 0;
+		this.size = Math.round(dimension / precision);
+
+		this.votes = new Array(this.size).fill(0).map(function () {
+			return new Array(_this.size).fill(0);
+		});
+	}
+
+	_createClass(VoteAccumulator, [{
+		key: 'addMeasurement',
+		value: function addMeasurement(x, y, r) {
+
+			this.measurements++;
+
+			x = x - this.centerX;
+			y = y - this.centerY;
+
+			if (!this._inRange(x, y)) {
+				console.error('Coordinates not in range of VoteAccumulator internal cell matrix ' + ('with x:' + x + ', y:' + y + ' and centerX:' + this.centerX + ', centerY:' + this.centerY + '.'));
+			}
+
+			if (!this._inRange(x + r, y) || !this._inRange(x, y + r)) {
+				console.error('Range measurement not in range of VoteAccumulator internal cell matrix.');
+			}
+
+			//Get the current center
+
+			var _cartesianToCell = this._cartesianToCell(x, y);
+
+			var row = _cartesianToCell.row;
+			var column = _cartesianToCell.column;
+
+			//Convert the range to cell distance
+			var dist = Math.round(r / this.precision);
+
+			//Add votes according to midpoint circle algorithm
+			this._midpointCircle(row, column, dist);
+
+			return this;
+		}
+	}, {
+		key: 'positionEstimate',
+		value: function positionEstimate() {
+			if (this.measurements < 3) {
+				return { estimate: 0, x: 0, y: 0 };
+			}
+
+			var firstValue = 0;
+			var firstCell = {};
+			var secondValue = 0;
+			var secondCell = {};
+
+			for (var row = 0; row < this.size; row++) {
+				for (var column = 0; column < this.size; column++) {
+					if (this.votes[row][column] > firstValue) {
+						firstValue = this.votes[row][column];
+						firstCell = { row: row, column: column };
+					} else if (this.votes[row][column] > secondValue) {
+						secondValue = this.votes[row][column];
+						secondCell = { row: row, column: column };
+					}
+				}
+			}
+
+			var _cellToCartesian = this._cellToCartesian(firstCell.row, firstCell.column);
+
+			var x = _cellToCartesian.x;
+			var y = _cellToCartesian.y;
+
+			return {
+				estimate: firstValue / (firstValue + secondValue),
+				x: x, y: y
+			};
+		}
+	}, {
+		key: 'toString',
+
+		/**
+   * Return a string representation of the vote matrix
+   * @return {String}
+   */
+		value: function toString() {
+			return this.votes.reduce(function (output, row) {
+				return output + row.reduce(function (rowOutput, cell) {
+					if (cell > 9) {
+						return rowOutput + cell + ' ';
+					} else {
+						return rowOutput + cell + '  ';
+					}
+				}) + '\n';
+			}, '\n');
+		}
+	}, {
+		key: '_inRange',
+
+		/**
+   * Return true when an cartesian coordinate is in range
+   * @param  {Number} x
+   * @param  {Number} y
+   * @return {Boolean}
+   */
+		value: function _inRange(x, y) {
+			return x >= -0.5 * this.dimension && x <= 0.5 * this.dimension && y >= -0.5 * this.dimension && y <= 0.5 * this.dimension;
+		}
+	}, {
+		key: '_midpointCircle',
+
+		/**
+   * Place votes based on the midpoint circle algorithm
+   * @param  {Number} row    Center
+   * @param  {Number} column Center
+   * @param  {Number} r      Radius
+   * @return {void}
+   */
+		value: function _midpointCircle(row, column, r) {
+
+			var x = r;
+			var y = 0;
+			var radiusError = 1 - x;
+
+			while (x >= y) {
+				this._vote(y + row, x + column);
+				this._vote(y + row, -x + column);
+				this._vote(-y + row, -x + column);
+				this._vote(-y + row, x + column);
+
+				if (x != y) {
+					this._vote(x + row, y + column);
+					this._vote(x + row, -y + column);
+					this._vote(-x + row, -y + column);
+					this._vote(-x + row, y + column);
+				}
+
+				y++;
+
+				if (radiusError < 0) {
+					radiusError += 2 * y + 1;
+				} else {
+					x--;
+					radiusError += 2 * (y - x) + 1;
+				}
+			}
+
+			//At the ends of the cross, we have double votes, substract these
+			this._vote(row + r, column, -1);
+			this._vote(row - r, column, -1);
+			this._vote(row, column + r, -1);
+			this._vote(row, column - r, -1);
+		}
+	}, {
+		key: '_vote',
+
+		/**
+   * Increase votes at a specific cell
+   * @param  {Number} row
+   * @param  {Number} column
+   * @return {void}
+   */
+		value: function _vote(row, column) {
+			var value = arguments[2] === undefined ? 1 : arguments[2];
+
+			if (row >= this.size || column >= this.size || row < 0 || column < 0) {
+				return;
+			}
+
+			this.votes[row][column] += value;
+
+			/*if (row > 0) {
+   	this.votes[row - 1][column] += value;
+   		if (column > 0) {
+   		this.votes[row - 1][column - 1] += value;
+   	}
+   	if (column < (this.size - 1)) {
+   		this.votes[row - 1][column + 1] += value;
+   	}
+   }
+   	if (row < (this.size - 1)) {
+   	this.votes[row + 1][column] += value;
+   		if (column > 0) {
+   		this.votes[row + 1][column - 1] += value;
+   	}
+   	if (column < (this.size - 1)) {
+   		this.votes[row + 1][column + 1] += value;
+   	}
+   }
+   	if (column > 0) {
+   	this.votes[row][column - 1] += value;
+   }
+   	if (column < (this.size - 1)) {
+   	this.votes[row][column + 1] += value;
+   }*/
+		}
+	}, {
+		key: '_cartesianToCell',
+
+		/**
+   * Convert a cartesian coordinate to a specific cell
+   * @param  {float} x
+   * @param  {float} y
+   * @return {object}
+   */
+		value: function _cartesianToCell(x, y) {
+			return {
+				column: Math.floor((x + 0.5 * this.dimension) / this.precision),
+				row: Math.floor((y + 0.5 * this.dimension) / this.precision)
+			};
+		}
+	}, {
+		key: '_cellToCartesian',
+
+		/**
+   * Convert a cell to cartesian coordinates
+   * @param  {int} row
+   * @param  {int} column
+   * @return {object}
+   */
+		value: function _cellToCartesian(row, column) {
+			return {
+				x: (column + 0.5) * this.precision - 0.5 * this.dimension,
+				y: (row + 0.5) * this.precision - 0.5 * this.dimension
+			};
+		}
+	}]);
+
+	return VoteAccumulator;
+})();
+
+exports['default'] = VoteAccumulator;
+module.exports = exports['default'];
+
+},{}],11:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+	value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 /**
  * Convert RSSI to distance
@@ -895,9 +1640,22 @@ Object.defineProperty(exports, '__esModule', {
  */
 exports.rssiToDistance = rssiToDistance;
 
-var _log$randn = require('../util/math');
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var _utilMath = require('../util/math');
 
 var SimulatedLandmarkSet = (function () {
+
+	/**
+  * Create simulated landmarks
+  * @param  {Number} N              Amount of landmarks
+  * @param  {Number} options.xRange Max x
+  * @param  {Number} options.yRange Max y
+  * @param  {Number} updateRate     Refresh rate
+  * @param  {Object} landmarkConfig Landmark config
+  * @return {SimulatedLandmarkSet}
+  */
+
 	function SimulatedLandmarkSet(N, _ref, updateRate, landmarkConfig) {
 		var xRange = _ref.xRange;
 		var yRange = _ref.yRange;
@@ -918,6 +1676,13 @@ var SimulatedLandmarkSet = (function () {
 
 	_createClass(SimulatedLandmarkSet, [{
 		key: 'startBroadcast',
+
+		/**
+   * Start broadcasting landmark data
+   * @param  {Sensor} sensor
+   * @param  {User} user
+   * @return {void}
+   */
 		value: function startBroadcast(sensor, user) {
 			var _this = this;
 
@@ -927,6 +1692,11 @@ var SimulatedLandmarkSet = (function () {
 		}
 	}, {
 		key: 'stopBroadCast',
+
+		/**
+   * Stop broadcast of landmark data
+   * @return {void}
+   */
 		value: function stopBroadCast() {
 			if (this.broadcastId !== undefined) {
 				window.clearTimeout(this.broadcastId);
@@ -1120,7 +1890,7 @@ var Landmark = (function () {
    * @return {float} RSSI value
    */
 		value: function rssiAtRaw(x, y) {
-			return -(10 * this.n) * _log$randn.log(Math.max(this.distanceTo(x, y), 0.1), 10) + this.txPower;
+			return this.txPower - 10 * this.n * _utilMath.log(Math.max(this.distanceTo(x, y), 0.1), 10);
 		}
 	}, {
 		key: 'rssiAt',
@@ -1132,7 +1902,7 @@ var Landmark = (function () {
    * @return {float}
    */
 		value: function rssiAt(x, y) {
-			return this.rssiAtRaw(x, y) + _log$randn.randn(0, this.noise);
+			return this.rssiAtRaw(x, y) + _utilMath.randn(0, this.noise);
 		}
 	}]);
 
@@ -1143,30 +1913,32 @@ function rssiToDistance(rssi, landmarkConfig) {
 	return Math.pow(10, (rssi - landmarkConfig.txPower) / (-10 * landmarkConfig.n));
 }
 
-},{"../util/math":10}],7:[function(require,module,exports){
+},{"../util/math":15}],12:[function(require,module,exports){
 'use strict';
-
-var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
-
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
 
 Object.defineProperty(exports, '__esModule', {
 	value: true
 });
 
-var _User2 = require('../models/user');
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _User3 = _interopRequireWildcard(_User2);
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { desc = parent = getter = undefined; _again = false; var object = _x,
+    property = _x2,
+    receiver = _x3; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
-var _randn = require('../util/math');
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var _polarToCartesian$cartesianToPolar$addTheta = require('../util/coordinate-system');
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
+var _modelsUser = require('../models/user');
+
+var _modelsUser2 = _interopRequireDefault(_modelsUser);
+
+var _utilMath = require('../util/math');
+
+var _utilCoordinateSystem = require('../util/coordinate-system');
 
 var SimulatedUser = (function (_User) {
 	/**
@@ -1194,11 +1966,18 @@ var SimulatedUser = (function (_User) {
 		this.padding = padding;
 
 		this.lastControl = { r: 0, theta: 0 };
+		this.iteration = 0;
 	}
 
 	_inherits(SimulatedUser, _User);
 
 	_createClass(SimulatedUser, [{
+		key: 'setPath',
+		value: function setPath(distances, angles) {
+			this.distances = distances;
+			this.angles = angles;
+		}
+	}, {
 		key: 'randomWalk',
 
 		/**
@@ -1206,36 +1985,25 @@ var SimulatedUser = (function (_User) {
    * @return {SimulatedUser}
    */
 		value: function randomWalk() {
-			var r = Math.abs(_randn.randn(this.v, 1));
-			var theta = _randn.randn(0.1, 0.2);
+			var _newStep = this._newStep();
+
+			var r = _newStep.r;
+			var theta = _newStep.theta;
 
 			//Save the current x,y locally
 			var lastX = this.x;
 			var lastY = this.y;
 
-			var _polarToCartesian = _polarToCartesian$cartesianToPolar$addTheta.polarToCartesian(r, _polarToCartesian$cartesianToPolar$addTheta.addTheta(theta, this.theta));
+			var _polarToCartesian = _utilCoordinateSystem.polarToCartesian(r, _utilCoordinateSystem.addTheta(theta, this.theta));
 
 			var dx = _polarToCartesian.dx;
 			var dy = _polarToCartesian.dy;
 
-			var newX = lastX + dx;
-			var newY = lastY + dy;
-
-			//Constrain the user position and compute the actual dx,dy values
-			if (newX > this.xRange - this.padding) {
-				newX = this.xRange - this.padding;
-			} else if (newX < -this.xRange + this.padding) {
-				newX = -this.xRange + this.padding;
-			}
-
-			if (newY > this.yRange - this.padding) {
-				newY = this.yRange - this.padding;
-			} else if (newY < -this.yRange + this.padding) {
-				newY = -this.yRange + this.padding;
-			}
+			var newX = this._constrainCoordinate(lastX + dx, this.xRange - this.padding, -this.xRange + this.padding);
+			var newY = this._constrainCoordinate(lastY + dy, this.yRange - this.padding, -this.yRange + this.padding);
 
 			//Compute the new control
-			var control = _polarToCartesian$cartesianToPolar$addTheta.cartesianToPolar(newX - lastX, newY - lastY);
+			var control = _utilCoordinateSystem.cartesianToPolar(newX - lastX, newY - lastY);
 
 			//Update theta by substracting the current pose
 			control.theta -= this.theta;
@@ -1252,15 +2020,59 @@ var SimulatedUser = (function (_User) {
 		value: function getLastControl() {
 			return this.lastControl;
 		}
+	}, {
+		key: '_constrainCoordinate',
+
+		/**
+   * Constrain a value using a max,min value
+   * @param  {Number} value
+   * @param  {Number} max
+   * @param  {Number} min
+   * @return {Number}
+   */
+		value: function _constrainCoordinate(value, max, min) {
+			if (value > max) {
+				return max;
+			} else if (value < min) {
+				return min;
+			}
+
+			return value;
+		}
+	}, {
+		key: '_newStep',
+
+		/**
+   * Generate a new step
+   * @return {object}
+   */
+		value: function _newStep() {
+			if (this.distances !== undefined && this.angles !== undefined) {
+				if (this.iteration < this.distances.length) {
+					var step = { r: this.distances[this.iteration], theta: this.angles[this.iteration] };
+					this.iteration++;
+
+					return step;
+				} else if (this.iteration == this.distances.length) {
+					console.debug('Simulater reached end of trace data');
+
+					return { r: 0, theta: 0 };
+				}
+
+				this.iteration++;
+			}
+
+			return { r: Math.abs(_utilMath.randn(this.v, 1)), theta: _utilMath.randn(0.1, 0.2) };
+		}
 	}]);
 
 	return SimulatedUser;
-})(_User3['default']);
+})(_modelsUser2['default']);
 
 exports['default'] = SimulatedUser;
 module.exports = exports['default'];
 
-},{"../models/user":5,"../util/coordinate-system":8,"../util/math":10}],8:[function(require,module,exports){
+},{"../models/user":9,"../util/coordinate-system":13,"../util/math":15}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1337,16 +2149,16 @@ function cartesianToPolar(dx, dy) {
 	return { r: r, theta: theta };
 }
 
-},{}],9:[function(require,module,exports){
-"use strict";
+},{}],14:[function(require,module,exports){
+'use strict';
 
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
 	value: true
 });
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var LinkedList = (function () {
 	/**
@@ -1360,38 +2172,28 @@ var LinkedList = (function () {
 
 		_classCallCheck(this, LinkedList);
 
-		if (base !== undefined && typeof base != "object") {
-			console.error("Base must be a LinkedList");
+		if (base !== undefined && typeof base != 'object') {
+			console.error('Base must be a LinkedList');
 		}
 
 		this.list = [base];
 	}
 
 	_createClass(LinkedList, [{
-		key: "add",
+		key: 'add',
 		value: function add(element) {
 			this.list.push(element);
 
 			return this;
 		}
 	}, {
-		key: "values",
+		key: 'values',
 
 		/**
    * Return a flat array of the linked list
    * @return {Array}
    */
-		value: (function (_values) {
-			function values() {
-				return _values.apply(this, arguments);
-			}
-
-			values.toString = function () {
-				return _values.toString();
-			};
-
-			return values;
-		})(function () {
+		value: function values() {
 			var values = [];
 
 			//First element of the list is another list or undefined
@@ -1402,20 +2204,19 @@ var LinkedList = (function () {
 			values = values.concat(this.list.slice(1));
 
 			return values;
-		})
+		}
 	}, {
-		key: "last",
+		key: 'last',
 
 		/**
    * Return the last object in the list
    * @return {mixed}
    */
-
 		value: function last() {
 			return this.list[this.list.length - 1];
 		}
 	}, {
-		key: "getBase",
+		key: 'getBase',
 
 		/**
    * Return the base of this linked list
@@ -1429,71 +2230,246 @@ var LinkedList = (function () {
 	return LinkedList;
 })();
 
-exports["default"] = LinkedList;
-module.exports = exports["default"];
+exports['default'] = LinkedList;
+module.exports = exports['default'];
 
-},{}],10:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+	value: true
 });
 /**
  * Random following normal distribution
  * @param  {float} mean mean
  * @param  {float} sd   standard deviation
- * @return {float}      
+ * @return {float}
  */
 exports.randn = randn;
+
+/**
+ * pdf for a normal distribution
+ * @param  {Number} x
+ * @param  {Number} mean
+ * @param  {Number} sd
+ * @return {Number}
+ */
+exports.pdfn = pdfn;
 
 /**
  * Compute the log with a given base
  *
  * Used primarily as log10 is not implemented yet on mobile browsers
- * 
  * @param  {int}
  * @param  {int}
  * @return {float}
  */
 exports.log = log;
 
+/**
+ * Calculates two eigenvalues and eigenvectors from a 2x2 covariance matrix
+ * @param  {Array} cov
+ * @return {object}
+ */
+exports.eigenvv = eigenvv;
+
 function randn(mean, sd) {
 
-  //Retrieved from jStat
-  var u = undefined,
-      v = undefined,
-      x = undefined,
-      y = undefined,
-      q = undefined,
-      mat = undefined;
+	//Retrieved from jStat
+	var u = undefined;
+	var v = undefined;
+	var x = undefined;
+	var y = undefined;
+	var q = undefined;
 
-  do {
-    u = Math.random();
-    v = 1.7156 * (Math.random() - 0.5);
-    x = u - 0.449871;
-    y = Math.abs(v) + 0.386595;
-    q = x * x + y * (0.196 * y - 0.25472 * x);
-  } while (q > 0.27597 && (q > 0.27846 || v * v > -4 * Math.log(u) * u * u));
+	do {
+		u = Math.random();
+		v = 1.7156 * (Math.random() - 0.5);
+		x = u - 0.449871;
+		y = Math.abs(v) + 0.386595;
+		q = x * x + y * (0.196 * y - 0.25472 * x);
+	} while (q > 0.27597 && (q > 0.27846 || v * v > -4 * Math.log(u) * u * u));
 
-  return v / u * sd + mean;
+	return v / u * sd + mean;
+}
+
+function pdfn(x, mean, sd) {
+	return 1 / (sd * Math.sqrt(2 * Math.PI)) * Math.exp(-Math.pow(x - mean, 2) / (2 * sd * sd));
 }
 
 function log(x, base) {
-  return Math.log(x) / Math.log(base);
+	return Math.log(x) / Math.log(base);
 }
 
-},{}],11:[function(require,module,exports){
+function eigenvv(cov) {
+
+	var a = cov[0][0];
+	var b = cov[0][1];
+	var c = cov[1][0];
+	var d = cov[1][1];
+
+	var A = 1;
+	var B = -(a + d);
+
+	//const C = (a * d) - (c * b);
+
+	var L1 = -B + Math.sqrt(Math.pow(a - d, 2) + 4 * c * d) / 2 * A;
+	var L2 = -B - Math.sqrt(Math.pow(a - d, 2) + 4 * c * d) / 2 * A;
+
+	var y1 = (L1 - a) / b;
+	var y2 = (L2 - a) / b;
+	var mag1 = Math.sqrt(1 + y1 * y1);
+	var mag2 = Math.sqrt(1 + y2 * y2);
+
+	return {
+		values: [L1, L2],
+		vectors: [[1 / mag1, y1 / mag1], [1 / mag2, y2 / mag2]]
+	};
+}
+
+},{}],16:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+/**
+ * Normalize a set of weights
+ * @param  {Array} weights
+ * @return {Array}
+ */
+exports.normalizeWeights = normalizeWeights;
+
+/**
+ * Convert an array of weights to an cumulative sum array
+ * @param  {Array} weights
+ * @return {Array}
+ */
+exports.weightedCumulativeSum = weightedCumulativeSum;
+
+/**
+ * Samples a new set using a low variance sampler from a array of weights
+ * @param {Number} nSamples Number of samples to sample
+ * @param {Array} weights 	Weight array
+ * @return {Array} An array with indices corresponding to the selected weights
+ */
+exports.lowVarianceSampling = lowVarianceSampling;
+
+/**
+ * Sample using roulette wheel sampler from a array of weights
+ * @param {Number} nSamples Number of samples to sample
+ * @param {Array} weights 	Weight array
+ * @return {Array} An array with indices corresponding to the selected weights
+ */
+exports.rouletteWheelSampling = rouletteWheelSampling;
+
+/**
+ * Calculate the effective number of particles
+ * @see http://en.wikipedia.org/wiki/Particle_filter#Sequential_importance_resampling_.28SIR.29
+ * @return {Number}
+ */
+exports.numberOfEffectiveParticles = numberOfEffectiveParticles;
+
+function normalizeWeights(weights) {
+	var totalWeight = weights.reduce(function (total, w) {
+		return total + w;
+	}, 0);
+
+	return weights.map(function (w) {
+		return w / totalWeight;
+	});
+}
+
+function weightedCumulativeSum(weights) {
+
+	var normalisedWeights = normalizeWeights(weights);
+
+	var total = 0;
+	return normalisedWeights.map(function (w) {
+		total = w + total;
+		return total;
+	});
+}
+
+function lowVarianceSampling(nSamples, weights) {
+
+	var M = weights.length;
+	var normalizedWeights = normalizeWeights(weights);
+
+	var rand = Math.random() * (1 / M);
+
+	var c = normalizedWeights[0];
+	var i = 0;
+
+	var set = [];
+
+	for (var m = 1; m <= nSamples; m++) {
+		var U = rand + (m - 1) * (1 / M);
+
+		while (U > c) {
+			i = i + 1;
+			c = c + normalizedWeights[i];
+		}
+
+		set.push(i);
+	}
+
+	return set;
+}
+
+function rouletteWheelSampling(nSamples, weights) {
+
+	var stackedWeights = weightedCumulativeSum(weights);
+	var set = [];
+
+	for (var i = 0; i < nSamples; i++) {
+
+		var rand = Math.random();
+
+		for (var m = 0; m < stackedWeights.length; m++) {
+
+			if (stackedWeights[m] >= rand) {
+				set.push(m);
+
+				break;
+			}
+		}
+	}
+
+	return set;
+}
+
+function numberOfEffectiveParticles(weights) {
+	var normalisedWeights = normalizeWeights(weights);
+
+	return 1 / normalisedWeights.reduce(function (total, w) {
+		return total + w * w;
+	});
+}
+
+},{}],17:[function(require,module,exports){
 'use strict';
-
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 Object.defineProperty(exports, '__esModule', {
 	value: true
 });
 
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var _utilMath = require('../util/math');
+
 var Visualizer = (function () {
+
+	/**
+  * Create new visualizer
+  * @param  {String} element Id of the canvas
+  * @param  {Number} xMax
+  * @param  {Number} yMax
+  * @return {Visualizer}
+  */
+
 	function Visualizer(element, xMax, yMax) {
 		_classCallCheck(this, Visualizer);
 
@@ -1509,6 +2485,12 @@ var Visualizer = (function () {
 
 	_createClass(Visualizer, [{
 		key: 'plotParticleSet',
+
+		/**
+   * Plot the particle set
+   * @param  {ParticleSet} particleSet
+   * @return {Visualizer}
+   */
 		value: function plotParticleSet(particleSet) {
 			var _this = this;
 
@@ -1523,6 +2505,8 @@ var Visualizer = (function () {
 
 			//Plot best last
 			this.plotUserTrace(best.user, '#11913E');
+
+			//this.plotLandmarksErrors(best);
 
 			return this;
 		}
@@ -1604,13 +2588,13 @@ var Visualizer = (function () {
 			var fillStyle = arguments[1] === undefined ? '#000000' : arguments[1];
 
 			this.ctx.fillStyle = fillStyle;
-			var size = 0.5;
+			var size = 0.35;
 
 			objects.forEach(function (o) {
 
 				//Compensate for landmark size
-				var x = _this3._tx(o.x) - 0.5 * size;
-				var y = _this3._ty(o.y) - 0.5 * size;
+				var x = _this3._tx(o.x) - 0.35 * size;
+				var y = _this3._ty(o.y) - 0.35 * size;
 
 				_this3.ctx.fillRect(x, y, size, size);
 			});
@@ -1619,6 +2603,14 @@ var Visualizer = (function () {
 		}
 	}, {
 		key: 'plotLandmarkPredictions',
+
+		/**
+   * Plot the predictions of each landmark
+   * @param  {Array} particles
+   * @param  {Array} landmarks
+   * @param  {String} fillStyle
+   * @return {Visualizer}
+   */
 		value: function plotLandmarkPredictions(particles) {
 			var _this4 = this;
 
@@ -1649,6 +2641,67 @@ var Visualizer = (function () {
 					}
 				});
 			});
+
+			return this;
+		}
+	}, {
+		key: 'plotLandmarksErrors',
+
+		/**
+   * Plot elipses of the landmark errors
+   * @param  {Particle} particle
+   * @return {Visualizer}
+   */
+		value: function plotLandmarksErrors(particle) {
+			var _this5 = this;
+
+			particle.landmarks.forEach(function (l) {
+				var _eigenvv = _utilMath.eigenvv(l.cov);
+
+				var values = _eigenvv.values;
+				var vectors = _eigenvv.vectors;
+
+				var major = undefined;
+				var minor = undefined;
+
+				if (values[0] > values[1]) {
+					major = [vectors[0][0] * Math.sqrt(values[0]), vectors[0][1] * Math.sqrt(values[0])];
+					minor = [vectors[1][0] * Math.sqrt(values[1]), vectors[1][1] * Math.sqrt(values[1])];
+				} else {
+					major = [vectors[1][0] * Math.sqrt(values[1]), vectors[1][1] * Math.sqrt(values[1])];
+					minor = [vectors[0][0] * Math.sqrt(values[0]), vectors[0][1] * Math.sqrt(values[0])];
+				}
+
+				var beginX = 0;
+				var beginY = 0;
+				_this5.ctx.beginPath();
+				_this5.ctx.strokeStyle = '#B06D6D';
+				for (var i = 0; i < 16; i++) {
+
+					var r = Math.PI * (i / 8);
+					var x = _this5._tx(minor[0] * Math.cos(r) + major[0] * Math.sin(r) + l.x);
+					var y = _this5._ty(minor[1] * Math.cos(r) + major[1] * Math.sin(r) + l.y);
+
+					if (isNaN(x)) {
+						console.log({ m0: minor[0], m1: minor[1], mm0: major[0], mm1: major[1] });
+						console.log({ values: values, vectors: vectors });
+					}
+
+					if (i === 0) {
+						_this5.ctx.moveTo(x, y);
+						beginX = x;
+						beginY = y;
+					} else {
+						_this5.ctx.lineTo(x, y);
+					}
+				}
+
+				_this5.ctx.lineTo(beginX, beginY);
+				_this5.ctx.stroke();
+				_this5.ctx.closePath();
+			});
+
+			return this;
 		}
 	}, {
 		key: '_scaleCanvas',
@@ -1695,7 +2748,7 @@ var Visualizer = (function () {
 exports['default'] = Visualizer;
 module.exports = exports['default'];
 
-},{}]},{},[1])
+},{"../util/math":15}]},{},[1,3,2])
 
 
 //# sourceMappingURL=slacjs-app.js.map
