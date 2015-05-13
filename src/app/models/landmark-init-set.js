@@ -1,11 +1,18 @@
 import LandmarkParticleSet from './landmark-particle-set';
 
 class LandmarkInitializationSet {
-	constructor(nParticles = 50, stdRange = 2, randomParticles = 10, effectiveParticleThreshold = 20) {
+	constructor(nParticles = 20, stdRange = 2, randomParticles = 10, effectiveParticleThreshold = undefined) {
 		this.nParticles = nParticles;
 		this.stdRange = stdRange;
 		this.randomParticles = randomParticles;
-		this.effectiveParticleThreshold = effectiveParticleThreshold;
+		
+		if (effectiveParticleThreshold === undefined) {
+			this.effectiveParticleThreshold = nParticles / 3;
+		}
+		else {
+			this.effectiveParticleThreshold = effectiveParticleThreshold;
+		}
+
 		this.particles = new Map();
 	}
 

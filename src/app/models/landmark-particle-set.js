@@ -30,8 +30,8 @@ class LandmarkParticleSet {
 
 		if (this.measurements === 0) {
 
-			//Init the particle set by adding particles
-			this._initSet(x, y, r);
+			//Init the particle set by adding random particles around the user
+			this.particles = this._randomParticles(this.nParticles, x, y, r);
 		}
 		else {
 			this._updateWeights(x, y, r);
@@ -42,7 +42,7 @@ class LandmarkParticleSet {
 
 				//Use low variance resampling to generate a set of new particles
 				//Returns a list of N-randomParticles particles
-				let set = this._lowVarianceSampling(this.nParticles - this.randomParticles);
+				let set = this._rouletteWheelSampling(this.nParticles - this.randomParticles);
 
 				//Add new uniformly distributed particles tot the set
 				//Random particles are distributed around the current position
@@ -98,12 +98,12 @@ class LandmarkParticleSet {
 	 * @param  {Number} r range
 	 * @return {void}
 	 */
-	_initSet(x, y, r) {
+	_randomParticles(n, x, y, r) {
 
-		const deltaTheta = 2 * Math.PI / this.nParticles;
+		const deltaTheta = 2 * Math.PI / n;
 		const particles = [];
 
-		for (let i = 0; i < (this.nParticles - this.randomParticles); i++) {
+		for (let i = 0; i < n; i++) {
 			const theta = i * deltaTheta;
 			const range = r + randn(0, this.stdRange);
 			const {dx, dy} = polarToCartesian(range, theta);
@@ -111,33 +111,9 @@ class LandmarkParticleSet {
 			particles.push({x: x + dx, y: y + dy, weight: 1});
 		}
 
-		//Add random portion
-		this.particles = particles.concat(this._randomParticles(this.randomParticles, x, y, r));
-	}
-
-	/**
-	 * Return n random particles
-	 * Uniformly distributed around x,y with range r
-	 * @param  {Number} n Number of particles to return
-	 * @param  {Number} x Center
-	 * @param  {Number} y Center
-	 * @param  {Number} r Range
-	 * @return {Array}
-	 */
-	_randomParticles(n, x, y, r) {
-		const particles = [];
-
-		for (let i = 0; i < n; i++) {
-
-			particles.push({
-				x: x + ((Math.random() * r) - (0.5 * r)),
-				y: y + ((Math.random() * r) - (0.5 * r)),
-				weight: 1
-			});
-		}
-
 		return particles;
 	}
+
 	/**
 	 * Update each particle by updating their weights
 	 * @param  {Number} x
@@ -207,22 +183,46 @@ class LandmarkParticleSet {
 	}
 
 	/**
+	 * Sample using roulette wheel
+	 * @param  {Number} nSamples number of samples
+	 * @return {Array}
+	 */
+	_rouletteWheelSampling(nSamples) {
+
+		const weights = this._calculateStackedWeights();
+		const newParticleSet = [];
+
+		for (let i = 0; i < nSamples; i++) {
+
+			const rand = Math.random();
+
+			for(var m = 0; m < weights.length; m++) {
+
+				if (weights[m] >= rand) {
+					newParticleSet.push(this.particles[m]);
+				}
+			}
+		}
+		
+		return newParticleSet;
+	}
+
+	/**
 	 * Calculate a list of stacked normalised weights of the internal particle list
 	 * @return {Array}
 	 */
 	_calculateStackedWeights() {
 		const weights = this.particles.map(p => p.weight);
-		const min = Math.min.apply(null, weights);
+		const totalWeight = weights.reduce((total, w) => total + w, 0);
 
-		const stackedWeights = [];
+		//Normalize the weights
+		const normalisedWeights = weights.map(w => w / totalWeight);
 
 		let total = 0;
-		const sums = weights.map(w => {
+		return normalisedWeights.map(w => {
 			total = w + total;
 			return total;
 		});
-
-		return sums.map(w => w / total);
 	}
 }
 
