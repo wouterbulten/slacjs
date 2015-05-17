@@ -18,7 +18,8 @@ var gulp = require("gulp"),
 	gutil = require('gulp-util'),
 	cached = require('gulp-cached'),
 	jscs = require('gulp-jscs'),
-	jscsStylish = require('gulp-jscs-stylish');
+	jscsStylish = require('gulp-jscs-stylish'),
+	nodemon = require('gulp-nodemon');
 
 var none = function () { this.emit('end'); };
 var reload = browserSync.reload;
@@ -125,6 +126,16 @@ gulp.task('build-server', function() {
 		.pipe(gulp.dest(dist))
 });
 
+/**
+ * Run the node server
+ */
+gulp.task('run-server', function() {
+	nodemon({
+		script: serverEntry, 
+		env: { 'NODE_ENV': 'development' }
+	});
+});
+
 /*
 Reload browser
  */
@@ -152,7 +163,7 @@ gulp.task('test', function() {
 /*
 Watch for changes and rebuild when necessary
  */
-gulp.task('serve', ['default'], function() {
+gulp.task('serve', ['default', 'run-server'], function() {
 
 	// Watch .css files
 	gulp.watch(styles, ['reload-styles']);
