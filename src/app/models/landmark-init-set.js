@@ -15,7 +15,7 @@ class LandmarkInitializationSet {
 		this.randomParticles = randomParticles;
 
 		if (effectiveParticleThreshold === undefined) {
-			this.effectiveParticleThreshold = nParticles / 3;
+			this.effectiveParticleThreshold = nParticles / 2;
 		}
 		else {
 			this.effectiveParticleThreshold = effectiveParticleThreshold;
