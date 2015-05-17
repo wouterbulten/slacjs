@@ -25,6 +25,7 @@ var reload = browserSync.reload;
 
 var entry = "./src/app/app.js";
 var entries = ["./src/app/app.js", "./src/tests/voting.js", "./src/tests/landmark-init.js"];
+var serverEntry = "./src/server/server.js";
 var scripts = "src/app/**/*.js";
 var tests = "src/tests/*.js";
 var styles = "src/styles/**/*.css";
@@ -32,9 +33,11 @@ var index = "src/public/**/*.html";
 var polyfill = "node_modules/babelify/node_modules/babel-core/browser-polyfill.js";
 
 var dist = "dist/";
-var distStyles = dist + "assets/css/";
-var distJs = dist + "assets/js/";
-var distVendor = dist + "vendor/";
+var distPublic = dist + "public/";
+
+var distStyles = distPublic + "assets/css/";
+var distJs = distPublic + "assets/js/";
+var distVendor = distPublic + "vendor/";
 
 gulp.task("styles", function() {
 	return gulp.src(styles)
@@ -95,8 +98,8 @@ Move the index file to the dist directory
  */
 gulp.task("index", function() {
 	return gulp.src(index)
-		.pipe(changed(dist))
-		.pipe(gulp.dest(dist))
+		.pipe(changed(distPublic))
+		.pipe(gulp.dest(distPublic))
 });
 
 gulp.task("polyfill", function() {
@@ -114,6 +117,15 @@ gulp.task('clean', function(cb) {
 });
 
 /*
+Build the nodejs server
+ */
+gulp.task('build-server', function() {
+	return gulp.src(serverEntry)
+		.pipe(changed(dist))
+		.pipe(gulp.dest(dist))
+});
+
+/*
 Reload browser
  */
 gulp.task('reload-styles', ['styles'], browserSync.reload);
@@ -124,7 +136,7 @@ gulp.task('reload-index', ['index'], browserSync.reload);
 Default task running all sub task in the right order
  */
 gulp.task('default', ['clean'], function() {
-	gulp.start('lint', 'modules', 'vendor', 'polyfill', 'styles', 'index');
+	gulp.start('lint', 'modules', 'vendor', 'polyfill', 'styles', 'build-server', 'index');
 });
 
 /*
@@ -151,7 +163,11 @@ gulp.task('serve', ['default'], function() {
 	
 	gulp.watch(index, ['reload-index']);
 
+	gulp.watch(serverEntry, ['build-server']);
+
 	browserSync({
-		server: "./dist"
+		server: "./dist/public"
 	});
 });
+
+gulp.task('build', ['default']);
