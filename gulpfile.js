@@ -18,10 +18,8 @@ gulp.task('lint', getTask('lint'));
 gulp.task('clean', getTask('clean'));
 gulp.task('test', ['lint']); //Used by Travis
 
-//@todo Sometimes html build task breaks style build task
-gulp.task('build', ['clean'], function() {
-	gulp.start('build-js', 'build-vendor', 'build-polyfill', 'build-styles', 'build-html');
-});
+gulp.task('build', ['build-js', 'build-vendor', 'build-polyfill', 'build-html', 'build-styles']);
+
 gulp.task('build-html', getTask('html'));
 gulp.task('build-js', getTask('transpile'));
 gulp.task('build-styles', getTask('styles'));
