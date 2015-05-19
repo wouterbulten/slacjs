@@ -58,7 +58,7 @@ class Particle {
 	addLandmark({uid, r}, {x, y}) {
 
 		//@todo find better values for initial covariance
-		let cov = [[0.01, 0.01], [0.01, 0.01]];
+		let cov = [[0.1, 0], [0, 0.1]];
 
 		this.landmarks.set(uid, {x, y, cov});
 	}
@@ -80,7 +80,7 @@ class Particle {
 		const dy = this.user.y - l.y;
 
 		//@todo find better values for default coviarance
-		const errorCov = 0.01 * (Math.random() - 0.5);
+		const errorCov = 0.09;
 
 		const dist = Math.max(0.001, Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)));
 

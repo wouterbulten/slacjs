@@ -4,7 +4,7 @@ import SimulatedUser from './simulation/user';
 import { SimulatedLandmarkSet } from './simulation/landmark';
 import Sensor from './models/sensor';
 
-window.SlacENV = 'production';
+window.SlacENV = 'debug';
 
 window.SlacApp = {
 
