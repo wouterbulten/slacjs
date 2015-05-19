@@ -5,7 +5,7 @@
   "authors": [
     "Wouter Bulten <slacjs@wouterbulten.nl>"
   ],
-  "description": "Simultaneously Localisation and Configuration for Wireless Sensor Networks in indoor environments",
+  "description": "Simultaneous Localisation and Configuration for Wireless Sensor Networks in indoor environments",
   "main": "public/index.html",
   "moduleType": [
     "es6"
