@@ -20,6 +20,7 @@ module.exports = {
 			styles: "src/public/styles/**/*.css",
 			scripts: "src/app/**/*.js",
 			html: "src/public/**/*.html",
+			tests: "src/tests/**/*.js",
 			polyfill: "node_modules/babelify/node_modules/babel-core/browser-polyfill.js"
 		},
 
