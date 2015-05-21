@@ -68,6 +68,7 @@ class Particle {
 	 * @param  {string} options.uid landmark id
 	 * @param  {float} options.r    range measurement
 	 * @return {void}
+	 * @see http://en.wikipedia.org/wiki/Extended_Kalman_filter#Discrete-time_predict_and_update_equations
 	 */
 	processObservation({uid, r}) {
 
@@ -76,41 +77,60 @@ class Particle {
 
 		//Compute the difference between the predicted user position of this
 		//particle and the predicted position of the landmark.
+		//The movement model for landmarks is static, i.e. x_t = x_t-1
 		const dx = this.user.x - l.x;
 		const dy = this.user.y - l.y;
 
-		//@todo find better values for default coviarance
-		const errorCov = 0.09;
+		// predictCov = I * cov * I + Rt
+		// = cov + Rt
+		const RtSd = 0.1;
+		//const predictCov = [[l.cov[0][0] + randn(0, RtSd), l.cov[0][1] + randn(0, RtSd)],
+		//					[l.cov[1][0] + randn(0, RtSd), l.cov[1][1] + randn(0, RtSd)]];
+		const predictCov = [[1 + randn(0, RtSd), 0 + randn(0, RtSd)],
+							[0 + randn(0, RtSd), 1 + randn(0, RtSd)]];
 
+		// h(x_t) = sqrt((ux - lx)^2 + (uy - ly)^2)
 		const dist = Math.max(0.001, Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)));
 
 		//Compute innovation: difference between the observation and the predicted value
+		//v = z - h(x_t) where z=r
 		const v = r - dist;
 
 		//Compute Jacobian
+		//This is the partial derivate of h in x and y
 		const H = [-dx / dist, -dy / dist];
 
-		//Compute innovation covariance
-		//covV = H * Cov_s * H^T + error
-		const HxCov = [l.cov[0][0] * H[0] + l.cov[0][1] * H[1],
-						l.cov[1][0] * H[0] + l.cov[1][1] * H[1]];
+		//Compute the covariance of the innovation
+		//covInv = H * predictCov * H^T + Qt
+		const QtSd = 0.1;
+		const HxCov = [H[0] * predictCov[0][0] + H[1] * predictCov[1][0],
+						H[0] * predictCov[0][1] + H[1] * predictCov[1][1]];
 
-		const covV = (HxCov[0] * H[0]) + (HxCov[1] * H[1]) + errorCov;
+		const covInv = HxCov[0] * H[0] + HxCov[1] * H[1] + randn(0, QtSd);
 
-		//Kalman gain
-		const K = [HxCov[0] * (1 / covV), HxCov[1] * (1 / covV)];
+		//Calculate the Kalmain gain
+		//K = predictCov * H^T * (covInv)^-1
+		let K = [predictCov[0][0] * H[0] + predictCov[0][1] * H[1],
+					predictCov[1][0] * H[0] + predictCov[1][1] * H[1]];
+		K = [K[0] / covInv, K[1] / covInv];
 
-		//Calculate the new position of the landmark
+		//Update x,y according to state_t = state_t-1 + K*v
 		const newX = l.x + (K[0] * v);
-		const newY = l.y + (K[1] * v);
+		const newY = l.y + (K[0] * v);
 
-		const deltaCov = (K[0] * K[0] * covV) + (K[1] * K[1] * covV);
-
-		const newCov = [[l.cov[0][0] - deltaCov, l.cov[0][1] - deltaCov],
-						[l.cov[1][0] - deltaCov, l.cov[1][1] - deltaCov]];
+		//Update covariance with cov_t = (I - KH) cov_t-1
+		const KH = K[0] * H[0] + K[1] + H[1];
+		const IKH = [[1 - KH, 0 - KH],
+					[0 - KH, 1 - KH]];
+		const newCov = [[	l.cov[0][0] * IKH[0][0] + l.cov[0][1] * IKH[1][0],
+							l.cov[0][0] * IKH[0][1] + l.cov[0][1] * IKH[1][1]
+						],[
+							l.cov[1][0] * IKH[0][0] + l.cov[1][1] * IKH[1][0],
+							l.cov[1][0] * IKH[0][1] + l.cov[1][1] * IKH[1][1]
+						]];
 
 		//Update the weight of the particle
-		this.weight = this.weight - (v * (1 / covV) * v);
+		this.weight = this.weight - (v * (1 / covInv) * v);
 
 		//Update particle
 		l.x = newX;
