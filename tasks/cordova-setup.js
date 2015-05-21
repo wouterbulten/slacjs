@@ -7,6 +7,10 @@ module.exports = function(gulp) {
 			return 'cordova plugin add ' + plugin;
 		});
 
+		commands = commands.concat(config.cordova.platforms.map(function(platform) {
+			return 'cordova platform add ' + platform;
+		}))
+
 		var dir = process.cwd() + '/' + config.dir.mobile.base;
 
 		return gulp.src('')

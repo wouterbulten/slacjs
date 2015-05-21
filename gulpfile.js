@@ -40,7 +40,7 @@ gulp.task('mobile-build-js', getTask(
 ));
 gulp.task('mobile-clean', getTask('mobile-clean'));
 gulp.task('mobile-resources', getTask('mobile-resources'));
-gulp.task('mobile-install-plugins', getTask('cordova-plugins'));
+gulp.task('mobile-setup', getTask('cordova-setup'));
 
 //Tasks for local testing and reloading the browser
 gulp.task('reload-styles', ['build-styles'], browserSync.reload);

@@ -48,6 +48,11 @@ module.exports = {
 			'org.apache.cordova.dialogs',
 			'org.apache.cordova.console',
 			'org.apache.cordova.device-orientation'
+		],
+
+		platforms: [
+			'ios',
+			'android'
 		]
 	}
 };
