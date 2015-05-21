@@ -12,11 +12,12 @@ var reload = browserSync.reload;
 gulp.task('help', taskListing);
 gulp.task('default', ['help']);
 
-//var none = function () { this.emit('end'); };
-//var reload = browserSync.reload;
-
+//Function passes on all arguments to a separate component
 function getTask(task) {
-    return require('./tasks/' + task)(gulp);
+	var argArray = [].slice.call(arguments);
+	argArray[0] = gulp; //Replace first element with a gulp reference
+
+    return require('./tasks/' + task).apply(this, argArray);
 }
 
 gulp.task('lint', getTask('lint'));
@@ -26,11 +27,19 @@ gulp.task('test', ['lint']); //Used by Travis
 gulp.task('build', ['build-js', 'build-vendor', 'build-polyfill', 'build-html', 'build-styles']);
 
 gulp.task('build-html', getTask('html'));
-gulp.task('build-js', getTask('transpile'));
+gulp.task('build-js', getTask(
+	'transpile', config.entries.local, config.dir.dist.scripts, (config.env == 'development'))
+);
 gulp.task('build-styles', getTask('styles'));
 gulp.task('build-vendor', getTask('vendor'));
 gulp.task('build-polyfill', getTask('polyfill'));
 
+//Mobile build tasks
+gulp.task('build-js-mobile', getTask(
+	'transpile', config.entries.mobile, config.dir.mobile.scripts, false
+));
+
+//Tasks for local testing and reloading the browser
 gulp.task('reload-styles', ['build-styles'], browserSync.reload);
 gulp.task('reload-scripts', ['lint', 'build-js'], browserSync.reload);
 gulp.task('reload-index', ['build-html'], browserSync.reload);

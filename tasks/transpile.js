@@ -9,19 +9,17 @@ var gutil = require('gulp-util');
 
 var development = (config.env == 'development');
 
-module.exports = function (gulp) {
+module.exports = function (gulp, entries, outputDir, includeTests) {
 	return function () {
 
-		var entries = config.entries;
-
-		if(development) {
+		if(includeTests) {
 			entries = entries.concat(config.tests);
 		}
 
 		// set up the browserify instance on a task basis
 		var b = browserify({
 			entries: entries,
-			debug: (config.env == 'development'),
+			debug: development,
 			transform: [babelify]
 		});
 
@@ -35,9 +33,9 @@ module.exports = function (gulp) {
 					.pipe(sourcemaps.write('.'));
 		}
 		else {
-			pipe = pipe(uglify());
+			pipe = pipe.pipe(uglify());
 		}
 			
-		return pipe.pipe(gulp.dest(config.dir.dist.scripts));
+		return pipe.pipe(gulp.dest(outputDir));
 	};
 };
