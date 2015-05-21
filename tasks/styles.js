@@ -3,7 +3,7 @@ var minify = require('gulp-minify-css');
 
 module.exports = function (gulp) {
     return function () {
-        gulp.src(config.dir.src.styles)
+        return gulp.src(config.dir.src.styles)
             .pipe(minify())
             .pipe(gulp.dest(config.dir.dist.styles));
     };

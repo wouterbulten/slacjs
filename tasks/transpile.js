@@ -38,6 +38,6 @@ module.exports = function (gulp) {
 			pipe = pipe(uglify());
 		}
 			
-		pipe.pipe(gulp.dest(config.dir.dist.scripts));
+		return pipe.pipe(gulp.dest(config.dir.dist.scripts));
 	};
 };

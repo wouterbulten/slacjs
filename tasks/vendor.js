@@ -6,7 +6,7 @@ var concat = require("gulp-concat");
 
 module.exports = function(gulp) {
 	return function() {
-		gulp.src(mainBowerFiles())
+		return gulp.src(mainBowerFiles())
 			.pipe(cached(config.dir.dist.vendor))
 			.pipe(sourcemaps.init())
 			.pipe(concat("vendor.js"))

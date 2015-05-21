@@ -7,7 +7,7 @@ var cached = require('gulp-cached');
 
 module.exports = function(gulp) {
 	return function() {
-		gulp.src(config.dir.src.scripts)
+		return gulp.src(config.dir.src.scripts)
 			.pipe(cached(config.dir.src.scripts))
 			.pipe(jshint())
 			.pipe(jscs())
