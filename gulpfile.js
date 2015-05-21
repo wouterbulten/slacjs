@@ -35,9 +35,12 @@ gulp.task('build-vendor', getTask('vendor'));
 gulp.task('build-polyfill', getTask('polyfill'));
 
 //Mobile build tasks
-gulp.task('build-js-mobile', getTask(
+gulp.task('mobile-build-js', getTask(
 	'transpile', config.entries.mobile, config.dir.mobile.scripts, false
 ));
+gulp.task('mobile-clean', getTask('mobile-clean'));
+gulp.task('mobile-resources', getTask('mobile-resources'));
+gulp.task('mobile-install-plugins', getTask('cordova-plugins'));
 
 //Tasks for local testing and reloading the browser
 gulp.task('reload-styles', ['build-styles'], browserSync.reload);

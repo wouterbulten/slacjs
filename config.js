@@ -18,9 +18,10 @@ module.exports = {
 
 	dir: {
 		src: {
-			styles: 'src/public/styles/**/*.css',
+			styles: 'src/local/styles/**/*.css',
 			scripts: 'src/app/**/*.js',
-			html: 'src/public/**/*.html',
+			html: 'src/local/**/*.html',
+			mobile: 'src/mobile/**/*.html',
 			tests: 'src/tests/**/*.js',
 			polyfill: 'node_modules/babelify/node_modules/babel-core/browser-polyfill.js'
 		},
@@ -34,7 +35,19 @@ module.exports = {
 		},
 
 		mobile: {
-			scripts: 'mobile/www/js'
+			base: 'mobile/',
+			scripts: 'mobile/www/js/',
+			www: 'mobile/www/'
 		}
+	},
+
+	cordova: {
+		plugins: [
+			'org.apache.cordova.device-motion',
+			'com.randdusing.bluetoothle',
+			'org.apache.cordova.dialogs',
+			'org.apache.cordova.console',
+			'org.apache.cordova.device-orientation'
+		]
 	}
 };
