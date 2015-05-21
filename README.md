@@ -11,17 +11,44 @@ Simultaneous Localisation and Configuration for Wireless Sensor Networks in indo
 
 ## Installation
 
-SLACjs uses *bower* and *gulp* to manage dependencies and build the project. Make sure that you have *npm* installed and then run:
+SLACjs uses *bower* and *gulp* to manage dependencies and build the project; both can be installed using *npm*. Make sure that you have *npm* installed and then run:
 
-`npm install --global gulp` (Only required if you do not have gulp installed)
+1. Install gulp globally (only do this if you do not have gulp installed yet):
+	`npm install --global gulp` 
+2. Install project dependencies:
+	`npm install`
+3. Install all bower dependencies:
+	`bower install`
 
-`npm install`
+## Running SLACjs locally
 
-`bower install`
+A local version of SLACjs with simulated data can be run using:
 
 `gulp serve`
 
-This will install all dependencies and start a development server on localhost:3000. All ES6 modules are compiled to a single ES5 compatible javascript file (including sourcemaps for development).
+This will start a development server on localhost:3000 using *BrowserSync*. All ES6 modules are compiled to a single ES5 compatible javascript file (including sourcemaps for development).
+
+## Building & tools
+
+To just build the files, without running the server, the following can be used:
+
+`gulp build`
+
+The previous build can be cleared using:
+
+`gulp clean`
+
+Individual parts of the project can be built using one of the sub tasks:
+
+`gulp build-html`
+
+`gulp build-js`
+
+`gulp build-polyfill`
+
+`gulp build-styles`
+
+`gulp build-vendor`
 
 ## Libraries & Third-party software
 
