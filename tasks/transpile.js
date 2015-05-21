@@ -2,7 +2,7 @@ var browserify = require('browserify');
 var babelify = require('babelify');
 var uglify = require('gulp-uglify');
 var config = require('../config');
-var	source = require('vinyl-source-stream');
+var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var sourcemaps = require("gulp-sourcemaps");
 var gutil = require('gulp-util');
@@ -10,13 +10,13 @@ var gutil = require('gulp-util');
 var development = (config.env == 'development');
 
 module.exports = function (gulp) {
-    return function () {
+	return function () {
 
-    	var entries = config.entries;
+		var entries = config.entries;
 
-    	if(development) {
-    		entries = entries.concat(config.tests);
-    	}
+		if(development) {
+			entries = entries.concat(config.tests);
+		}
 
 		// set up the browserify instance on a task basis
 		var b = browserify({
