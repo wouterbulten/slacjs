@@ -42,7 +42,7 @@ gulp.task('mobile-build-js', getTask(
 ));
 gulp.task('mobile-clean', getTask('mobile-clean'));
 gulp.task('mobile-resources', getTask('mobile-resources'));
-gulp.task('mobile-setup', getTask('cordova-setup'));
+gulp.task('mobile-setup', ['mobile-resources'], getTask('cordova-setup'));
 gulp.task('mobile-vendor', getTask('vendor', config.dir.mobile.vendor));
 
 //Tasks for local testing and reloading the browser
