@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="nl.wouterbulten.slacjs" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>slacjs-app</name>
+    <name>SLACjs App</name>
     <description>
         Simultaneous Localisation and Configuration (SLAC) for Wireless Sensor Networks in indoor environments using FastSLAM.
     </description>
@@ -10,6 +10,6 @@
     <content src="index.html" />
     <access origin="*" />
 
-     <preference name="Orientation" value="landscape" />
-     <preference name="Fullscreen" value="true" />
+    <preference name="Orientation" value="landscape" />
+    <preference name="Fullscreen" value="true" />
 </widget>

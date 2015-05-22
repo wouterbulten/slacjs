@@ -10,7 +10,7 @@ class MotionSensor {
 		this.accelerometerId = undefined;
 		this.compassId = undefined;
 		this.listenerOptions = {frequency};
-		this.compassOptions = {frequency};
+		this.compassOptions = {frequency, filter: compassFilter};
 		this.listeners = [];
 
 		this.x = 0.0;
@@ -49,10 +49,6 @@ class MotionSensor {
 	 */
 	onChange(callback) {
 		this.listeners.push(callback);
-	}
-
-	isReady() {
-		return navigator.accelerometer !== undefined;
 	}
 
 	/**

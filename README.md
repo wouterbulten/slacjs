@@ -73,15 +73,15 @@ Individual parts of the project can be built using one of the sub tasks:
 
 `gulp build-vendor`
 
-`mobile-build-js`
+`gulp mobile-build-js`
 
-`mobile-clean`
+`gulp mobile-clean`
 
-`mobile-resources`
+`gulp mobile-resources`
 
-`mobile-setup`
+`gulp mobile-setup`
 
-`mobile-vendor`
+`gulp mobile-vendor`
 
 
 ## Libraries & Third-party software
