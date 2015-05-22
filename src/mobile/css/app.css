@@ -1,0 +1,14 @@
+html, body {
+	height: 100%;
+}
+
+body { padding-bottom: 70px; }
+
+.container-fluid {
+	padding: 0;
+}
+
+.full-height, .full-height .sidebar {
+	min-height: 100%;
+	height: 100%;
+}
