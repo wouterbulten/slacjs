@@ -1,29 +1,29 @@
 {
-	"name": "SlacJS",
-	"version": "0.2.0",
-	"homepage": "https://github.com/wouterbulten/slacjs",
-	"authors": [
-		"Wouter Bulten <slacjs@wouterbulten.nl>"
-	],
-	"description": "Simultaneous Localisation and Configuration for Wireless Sensor Networks in indoor environments",
-	"main": "public/index.html",
-	"moduleType": [
-		"es6"
-	],
-	"keywords": [
-		"SLAM",
-		"JS"
-	],
-	"license": "-",
-	"ignore": [
-		"**/.*",
-		"node_modules",
-		"bower_components",
-		"test",
-		"tests"
-	],
-	"dependencies": {
-		"jquery": "~2.1.3",
-		"mathjs": "~1.5.1"
-	}
+  "name": "SlacJS",
+  "version": "0.2.0",
+  "homepage": "https://github.com/wouterbulten/slacjs",
+  "authors": [
+    "Wouter Bulten <slacjs@wouterbulten.nl>"
+  ],
+  "description": "Simultaneous Localisation and Configuration for Wireless Sensor Networks in indoor environments",
+  "main": "public/index.html",
+  "moduleType": [
+    "es6"
+  ],
+  "keywords": [
+    "SLAM",
+    "JS"
+  ],
+  "license": "-",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.3",
+    "mathjs": "~1.5.1"
+  }
 }

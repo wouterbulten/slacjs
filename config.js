@@ -21,7 +21,7 @@ module.exports = {
 			styles: 'src/local/styles/**/*.css',
 			scripts: 'src/app/**/*.js',
 			html: 'src/local/**/*.html',
-			mobile: 'src/mobile/**/*.html',
+			mobile: 'src/mobile/**/*.*',
 			tests: 'src/tests/**/*.js',
 			polyfill: 'node_modules/babelify/node_modules/babel-core/browser-polyfill.js'
 		},
@@ -37,7 +37,8 @@ module.exports = {
 		mobile: {
 			base: 'mobile/',
 			scripts: 'mobile/www/js/',
-			www: 'mobile/www/'
+			www: 'mobile/www/',
+			vendor: 'mobile/www/vendor/'
 		}
 	},
 

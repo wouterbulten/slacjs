@@ -24,15 +24,17 @@ gulp.task('lint', getTask('lint'));
 gulp.task('clean', getTask('clean'));
 gulp.task('test', ['lint']); //Used by Travis
 
-gulp.task('build', ['build-js', 'build-vendor', 'build-polyfill', 'build-html', 'build-styles']);
+gulp.task('build', ['lint', 'build-js', 'build-vendor', 'build-polyfill', 'build-html', 'build-styles']);
 
 gulp.task('build-html', getTask('html'));
 gulp.task('build-js', getTask(
 	'transpile', config.entries.local, config.dir.dist.scripts, (config.env == 'development'))
 );
 gulp.task('build-styles', getTask('styles'));
-gulp.task('build-vendor', getTask('vendor'));
+gulp.task('build-vendor', getTask('vendor', config.dir.dist.vendor));
 gulp.task('build-polyfill', getTask('polyfill'));
+
+gulp.task('mobile', ['lint', 'mobile-vendor', 'mobile-build-js', 'mobile-resources']);
 
 //Mobile build tasks
 gulp.task('mobile-build-js', getTask(
@@ -41,6 +43,7 @@ gulp.task('mobile-build-js', getTask(
 gulp.task('mobile-clean', getTask('mobile-clean'));
 gulp.task('mobile-resources', getTask('mobile-resources'));
 gulp.task('mobile-setup', getTask('cordova-setup'));
+gulp.task('mobile-vendor', getTask('vendor', config.dir.mobile.vendor));
 
 //Tasks for local testing and reloading the browser
 gulp.task('reload-styles', ['build-styles'], browserSync.reload);
