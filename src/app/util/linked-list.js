@@ -36,6 +36,22 @@ class LinkedList {
 	}
 
 	/**
+	 * Only return the elements of this list and not of its parents
+	 * @return {Array}
+	 */
+	currentValues() {
+		return this.list.slice(1);
+	}
+
+	/**
+	 * Return true when this parent has a parent list
+	 * @return {Boolean}
+	 */
+	hasParent() {
+		return this.list[0] !== undefined;
+	}
+
+	/**
 	 * Return the last object in the list
 	 * @return {mixed}
 	 */
