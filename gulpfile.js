@@ -71,7 +71,7 @@ gulp.task('serve', ['build'], function() {
 gulp.task('serve-mobile', ['mobile'], function() {
 
 	// Watch .css files and other resources
-	gulp.watch(config.dir.mobile.wwww, ['mobile-resources']);
+	gulp.watch(config.dir.src.mobile, ['mobile-resources']);
 
 	// Watch .js files
 	gulp.watch(config.dir.src.scripts, ['lint', 'mobile-build-js']);
