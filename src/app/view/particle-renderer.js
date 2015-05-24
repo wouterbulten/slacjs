@@ -14,6 +14,7 @@ class ParticleRenderer {
 
 		//Resize the canvas to improve the quality of the render on retina devices
 		this._resizeCanvas();
+
 		//Scale canvas to always show the full user path
 		this._scaleCanvas();
 	}
@@ -21,7 +22,8 @@ class ParticleRenderer {
 	render(particleSet) {
 
 		this.clearCanvas();
-		if(this.resizeOnNextRender) {
+
+		if (this.resizeOnNextRender) {
 			this._increaseCanvas();
 			this.resizeOnNextRender = false;
 		}
@@ -29,10 +31,10 @@ class ParticleRenderer {
 		particleSet.particles().forEach((p) => {
 			const resize = this._plotUserTrace(p.user);
 
-			if(resize) {
+			if (resize) {
 				this.resizeOnNextRender = true;
 			}
-		});	
+		});
 	}
 
 	/**
@@ -73,7 +75,6 @@ class ParticleRenderer {
 			}
 		});
 
-
 		this.ctx.stroke();
 		this.ctx.closePath();
 
@@ -101,8 +102,8 @@ class ParticleRenderer {
 	_resizeCanvas() {
 
 		const cs = window.getComputedStyle(this.canvas);
-   		const width = parseInt(cs.getPropertyValue('width'), 10);
-    	const height = parseInt(cs.getPropertyValue('height'), 10);
+		const width = parseInt(cs.getPropertyValue('width'), 10);
+		const height = parseInt(cs.getPropertyValue('height'), 10);
 
 		//Calcuate a factor for the resolution
 		//Use 1.99 scale on retina devices
@@ -129,7 +130,6 @@ class ParticleRenderer {
 		const scaleYMax = height / this.yMax;
 
 		const scaleFactor = Math.min(scaleXMax, scaleYMax);
-		console.log(scaleFactor)
 
 		//Recalculate the xMax and yMax as the screen is not square
 		this.yMax = this.yMax * (scaleYMax / scaleFactor);

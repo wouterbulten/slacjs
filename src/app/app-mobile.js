@@ -31,7 +31,7 @@ window.SlacApp = {
 	},
 
 	step: function() {
-		console.log('step')
+
 		this.user.randomWalk();
 
 		//Get accelerometer data
@@ -109,7 +109,8 @@ window.SlacApp = {
 };
 window.SlacApp.initialize();
 
-setInterval(function(){ window.SlacApp.step(); }, 1000);
+setInterval(function() {
 
-
+	window.SlacApp.step();
+}, 1000);
 
