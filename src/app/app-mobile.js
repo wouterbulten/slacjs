@@ -68,8 +68,6 @@ window.SlacApp = {
 			deviceCompassEnabled: $('.device-compass')
 		};
 
-		//this._startMotionSensing();
-
 		this.particleSet = new ParticleSet(40, {x: 0, y: 0, theta: 0});
 		this.user = new SimulatedUser({x: 0, y: 0, theta: 0.0}, 2, {xRange: 50, yRange: 50, padding: 5});
 
@@ -84,6 +82,13 @@ window.SlacApp = {
 		this.landmarks.startBroadcast(this.sensor, this.user);
 
 		this.renderer = new ParticleRenderer('slacjs-map');
+
+		this._startMotionSensing();
+
+		setInterval(function() {
+			window.SlacApp.step();
+		}, 1000);
+
 	},
 
 	_motionUpdate(data) {
@@ -108,9 +113,3 @@ window.SlacApp = {
 	}
 };
 window.SlacApp.initialize();
-
-setInterval(function() {
-
-	window.SlacApp.step();
-}, 1000);
-
