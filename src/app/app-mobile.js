@@ -87,6 +87,7 @@ window.SlacApp = {
 			indz: $('.motion-indicator-z'),
 			indheading: $('.motion-indicator-heading'),
 			stepCount: $('.motion-step-count'),
+			map: $('#slacjs-map'),
 
 			deviceMotionEnabled: $('.device-motion'),
 			deviceCompassEnabled: $('.device-compass')
@@ -169,6 +170,15 @@ window.SlacApp = {
 		this.uiElements.indy.html(data.y.toFixed(2));
 		this.uiElements.indz.html(data.z.toFixed(2));
 		this.uiElements.indheading.html(data.heading.toFixed(2));
+
+		const degree = - data.heading;
+
+		this.uiElements.map.css({
+			'-webkit-transform' : 'rotate('+ degree +'deg)',
+             '-moz-transform' : 'rotate('+ degree +'deg)',
+             '-ms-transform' : 'rotate('+ degree +'deg)',
+             'transform' : 'rotate('+ degree +'deg)'
+        });
 
 		//Update the pedometer
 		this.pedometer.processMeasurement(data.x, data.y, data.z);
