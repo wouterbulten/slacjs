@@ -48,9 +48,6 @@ class SimulatedUser extends User {
 		//Compute the new control
 		let control = cartesianToPolar(newX - lastX, newY - lastY);
 
-		//Update theta by substracting the current pose
-		control.theta -= this.theta;
-
 		//Move to the new position
 		this.move({r: control.r, theta: control.theta});
 
