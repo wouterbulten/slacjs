@@ -14,6 +14,8 @@ SLAC is implemented in Javascript using the ECMAScript 6 standard. See [es6featu
 * [Full demonstration with simulated data](https://wouterbulten.nl/slacjs)
 * [Landmark initialisation example](https://wouterbulten.nl/slacjs/tests/landmark-init.html)
 
+![iPad version of SLACjs](/screenshots/slac-js-1.0.PNG?raw=true "First version of SLACjs running on an iPad.")
+
 ## Installation
 
 SLACjs uses *bower* and *gulp* to manage dependencies and build the project; both can be installed using *npm*. Make sure that you have *npm* installed and then run:
