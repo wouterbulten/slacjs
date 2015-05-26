@@ -32,9 +32,9 @@ gulp.task('build-js', getTask(
 );
 gulp.task('build-styles', getTask('styles'));
 gulp.task('build-vendor', getTask('vendor', config.dir.dist.vendor));
-gulp.task('build-polyfill', getTask('polyfill'));
+gulp.task('build-polyfill', getTask('polyfill', config.dir.dist.scripts));
 
-gulp.task('mobile', ['lint', 'mobile-vendor', 'mobile-build-js', 'mobile-resources']);
+gulp.task('mobile', ['lint', 'mobile-vendor', 'mobile-build-js', 'mobile-polyfill', 'mobile-resources']);
 
 //Mobile build tasks
 gulp.task('mobile-build-js', getTask(
@@ -44,6 +44,7 @@ gulp.task('mobile-clean', getTask('mobile-clean'));
 gulp.task('mobile-resources', getTask('mobile-resources'));
 gulp.task('mobile-setup', ['mobile-resources'], getTask('cordova-setup'));
 gulp.task('mobile-vendor', getTask('vendor', config.dir.mobile.vendor));
+gulp.task('mobile-polyfill', getTask('polyfill', config.dir.mobile.vendor));
 
 //Tasks for local testing and reloading the browser
 gulp.task('reload-styles', ['build-styles'], browserSync.reload);
