@@ -5,6 +5,7 @@ import { SimulatedLandmarkSet } from './simulation/landmark';
 import Sensor from './models/sensor';
 import ParticleRenderer from './view/particle-renderer';
 import Pedometer from './device/pedometer';
+import { degreeToRadian } from './util/coordinate-system';
 
 window.SlacENV = 'debug';
 
@@ -16,6 +17,8 @@ window.SlacApp = {
 
 	motionSensor: undefined,
 	pedometer: undefined,
+
+	stepCount: 0,
 
 	uiElements: {},
 
@@ -34,19 +37,31 @@ window.SlacApp = {
 
 	step: function() {
 
-		console.log('SLACjs step');
+		console.log('[SLACjs] step');
 
-		this.user.randomWalk();
+		//Only udpate if the user has walked
+		if (this.stepCount == this.pedometer.stepCount) {
+			console.log('[SLACjs] User is not moving');
+			return false;
+		}
 
-		//Get accelerometer data
-		// ...
+		console.log('[SLACjs] User moved, running SLAM');
 
-		//Transform to angle and distance
-		//Simulate this by getting the control from the simulated user
-		const {r, theta} = this.user.getLastControl();
+		//Get difference in amount of steps
+		const steps = this.pedometer.stepCount - this.stepCount;
+		this.stepCount = this.pedometer.stepCount;
+
+		//Convert step count to distance measure
+		//@todo Make this variable
+		const dist = steps * 0.8;
+
+		//Get current heading
+		const heading = degreeToRadian(this.motionSensor.heading);
+
+		console.log(`[SLACjs] User moved, dist (m): ${dist}, heading (rad): ${heading}`);
 
 		//Sample a new pose for each particle in the set
-		this.particleSet.samplePose({r, theta});
+		this.particleSet.samplePose({r: dist, theta: heading});
 
 		//Get the latest observation
 		const observations = this.sensor.getObservations();
@@ -56,12 +71,14 @@ window.SlacApp = {
 		this.particleSet.resample();
 
 		this.renderer.render(this.particleSet);
+
+		return true;
 	},
 
 	initialize: function() {
 		'use strict';
 
-		console.log('Initialising..');
+		console.log('[SLACjs] Initialising..');
 
 		//Cache all UI elements
 		this.uiElements = {
@@ -89,10 +106,34 @@ window.SlacApp = {
 
 		this._startMotionSensing();
 
-		setInterval(function() {
-			window.SlacApp.step();
-		}, 1000);
+		//Start the slam loop
+		this.loop();
+	},
 
+	/**
+	 * Start the SLAC loop
+	 * @param  {Number} timeout Number of miliseconds between updates
+	 * @return {SlacApp}
+	 */
+	loop: function(timeout = 500) {
+
+		setTimeout(() => {
+
+			console.log('[SLACjs] Running loop');
+
+			var stepped = this.step();
+
+			if (stepped) {
+				//We performed a step, run the next step
+				this.loop(100);
+			}
+			else {
+				//Wait a bit befor running the next step
+				this.loop(250);
+			}
+		}, timeout);
+
+		return this;
 	},
 
 	/**
@@ -136,4 +177,5 @@ window.SlacApp = {
 	}
 
 };
+
 window.SlacApp.initialize();

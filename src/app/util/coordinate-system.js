@@ -66,3 +66,12 @@ export function cartesianToPolar(dx, dy) {
 
 	return {r, theta};
 }
+
+/**
+ * Convert a value in degrees to a radian value
+ * @param  {Number} degrees
+ * @return {Number}
+ */
+export function degreeToRadian(degrees) {
+	return degrees * (Math.PI / 180);
+}

@@ -32,12 +32,12 @@ class User {
 	 * @return {User}
 	 */
 	move({r, theta}) {
-		const dTheta = addTheta(theta, this.theta);
-		const {dx, dy} = polarToCartesian(r, dTheta);
+
+		const {dx, dy} = polarToCartesian(r, theta);
 
 		this.x += dx;
 		this.y += dy;
-		this.theta = dTheta;
+		this.theta = theta;
 
 		this.trace.add({x: this.x, y: this.y, theta: this.theta});
 
