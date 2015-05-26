@@ -2,16 +2,22 @@ class MotionSensor {
 
 	/**
 	 * Motion sensor
-	 * @param  {int} frequency Update rate of sensor
+	 * @param {Boolean} enableCompassUpdate Set to true to be notified of compass updates
+	 * @param {Boolean} enableAccUpdate Set to true to be notified of accelerometer updates
+	 * @param {Number} frequency Update rate of sensor
 	 * @return {MotionSensor}
 	 */
-	constructor(frequency = 100, compassFilter = 2) {
+	constructor(enableCompassUpdate = false, enableAccUpdate = true, frequency = 500, compassFilter = 2) {
 
 		this.accelerometerId = undefined;
 		this.compassId = undefined;
+		this.frequency = frequency;
 		this.listenerOptions = {frequency};
 		this.compassOptions = {frequency, filter: compassFilter};
 		this.listeners = [];
+
+		this.enableAccUpdate = enableAccUpdate;
+		this.enableCompassUpdate = enableCompassUpdate;
 
 		this.x = 0.0;
 		this.y = 0.0;
@@ -61,7 +67,9 @@ class MotionSensor {
 		this.y = acceleration.y;
 		this.z = acceleration.z;
 
-		this._changed();
+		if (this.enableAccUpdate) {
+			this._changed();
+		}
 	}
 
 	/**
@@ -72,7 +80,9 @@ class MotionSensor {
 	_updateCompass(heading) {
 		this.heading = heading.magneticHeading;
 
-		this._changed();
+		if (this.enableCompassUpdate) {
+			this._changed();
+		}
 	}
 
 	/**

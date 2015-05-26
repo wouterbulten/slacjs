@@ -4,6 +4,7 @@ import SimulatedUser from './simulation/user';
 import { SimulatedLandmarkSet } from './simulation/landmark';
 import Sensor from './models/sensor';
 import ParticleRenderer from './view/particle-renderer';
+import Pedometer from './device/pedometer';
 
 window.SlacENV = 'debug';
 
@@ -14,6 +15,7 @@ global $
 window.SlacApp = {
 
 	motionSensor: undefined,
+	pedometer: undefined,
 
 	uiElements: {},
 
@@ -31,6 +33,8 @@ window.SlacApp = {
 	},
 
 	step: function() {
+
+		console.log('SLACjs step');
 
 		this.user.randomWalk();
 
@@ -57,12 +61,15 @@ window.SlacApp = {
 	initialize: function() {
 		'use strict';
 
+		console.log('Initialising..');
+
 		//Cache all UI elements
 		this.uiElements = {
 			indx: $('.motion-indicator-x'),
 			indy: $('.motion-indicator-y'),
 			indz: $('.motion-indicator-z'),
 			indheading: $('.motion-indicator-heading'),
+			stepCount: $('.motion-step-count'),
 
 			deviceMotionEnabled: $('.device-motion'),
 			deviceCompassEnabled: $('.device-compass')
@@ -70,9 +77,6 @@ window.SlacApp = {
 
 		this.particleSet = new ParticleSet(40, {x: 0, y: 0, theta: 0});
 		this.user = new SimulatedUser({x: 0, y: 0, theta: 0.0}, 2, {xRange: 50, yRange: 50, padding: 5});
-
-		//Add simulated data to the user object
-		//this._addSimulatedData();
 
 		this.landmarks = new SimulatedLandmarkSet(40, {xRange: 50, yRange: 50}, 50, this.landmarkConfig);
 		this.sensor = new Sensor(this.landmarkConfig);
@@ -91,18 +95,23 @@ window.SlacApp = {
 
 	},
 
-	_motionUpdate(data) {
-		this.uiElements.indx.html(data.x.toFixed(2));
-		this.uiElements.indy.html(data.y.toFixed(2));
-		this.uiElements.indz.html(data.z.toFixed(2));
-		this.uiElements.indheading.html(data.heading.toFixed(2));
-	},
-
+	/**
+	 * Start the motion sensing
+	 * @return {[type]} [description]
+	 */
 	_startMotionSensing() {
+
+		//Create a new motion sensor object that listens for updates
 		this.motionSensor = new MotionSensor();
+
+		//Create new pedometer to count steps
+		this.pedometer = new Pedometer(this.motionSensor.frequency);
+
+		//Register a listener, this udpates the view and runs the pedometer
 		this.motionSensor.onChange((data) => this._motionUpdate(data));
 		const enabled = this.motionSensor.startListening();
 
+		//Update the view to indicate all sensors are working
 		if (enabled.accelerometer) {
 			this.uiElements.deviceMotionEnabled.addClass('enabled');
 		}
@@ -110,6 +119,21 @@ window.SlacApp = {
 		if (enabled.compass) {
 			this.uiElements.deviceCompassEnabled.addClass('enabled');
 		}
+	},
+
+	_motionUpdate(data) {
+
+		//Update the view
+		this.uiElements.indx.html(data.x.toFixed(2));
+		this.uiElements.indy.html(data.y.toFixed(2));
+		this.uiElements.indz.html(data.z.toFixed(2));
+		this.uiElements.indheading.html(data.heading.toFixed(2));
+
+		//Update the pedometer
+		this.pedometer.processMeasurement(data.x, data.y, data.z);
+
+		this.uiElements.stepCount.html(this.pedometer.stepCount);
 	}
+
 };
 window.SlacApp.initialize();

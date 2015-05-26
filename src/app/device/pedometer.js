@@ -19,26 +19,35 @@ class Pedometer {
 		this.threshold = -Infinity; // threshold to detect a step
 		this.sensibility = 1.0 / 30.0;  // sensibility to detect a step
 
-		this.countStep = 0;           // number of steps
+		this.stepCount = 0;           // number of steps
 		this.stepArr   = new Array(windowSize); // steps in 2 seconds
-
-		this.speed     = 0;  // instantaneous speed of the pedestrian (m/s)
-		this.meanSpeed = 0;  // mean speed of the pedestrian (m/s)
 
 		this.updateRate = updateRate; //Update rate in ms
 
 		this.filter = new KalmanFilter();
 	}
 
+	/**
+	 * Process a new accelerometer measurement
+	 * @param  {Number} x
+	 * @param  {Number} y
+	 * @param  {Number} z
+	 * @return {void}
+	 */
 	processMeasurement(x, y, z) {
 
 		const norm = this._computeNorm(x, y, z);
+
 		this.accNorm.push(norm);
 		this.accNorm.shift();
 
 		this._stepDetection();
 	}
 
+	/**
+	 * Detect whether the user has done a step
+	 * @return {void}
+	 */
 	_stepDetection() {
 
 		this._computeAccelerationVariance();
@@ -55,11 +64,12 @@ class Pedometer {
 			Math.abs(diff) >= this.sensibility &&
 
 			//Acceleration must be above the threshold, and the previous one below (i.e. a new step)
-			(this.accNorm[this.accNorm - 1] >= this.threshold) && (this.accNorm[this.accNorm.length - 2] < this.threshold) &&
+			(this.accNorm[this.accNorm.length - 1] >= this.threshold) &&
+			(this.accNorm[this.accNorm.length - 2] < this.threshold) &&
 
 			(this.stepArr[this.stepArr.length - 1] === 0)
 		) {
-			this.countStep++;
+			this.stepCount++;
 			this.stepArr.push(1);
 			this.stepArr.shift();
 		}
@@ -102,9 +112,9 @@ class Pedometer {
 			this.varAcc -= 0.5;
 		}
 
-		if (isNaN(this.varAcc) === 0) {
+		if (!isNaN(this.varAcc)) {
 			this.filter.setSignalVariance(this.varAcc);
-			this.sensibility = 2.0 * Math.sqrt(this.varAcc) / (9.80665 * 9.80665);
+			this.sensibility = 2.0 * (Math.sqrt(this.varAcc) / (9.80665 * 9.80665));
 		}
 		else {
 			this.sensibility = 1.0 / 30.0;
@@ -138,21 +148,21 @@ class KalmanFilter {
 		this.y = measurement;
 
 		if (isNaN(this.x)) {
-			this.x = 1 / this.C * this.y;
-			this.P = 1 / this.C * this.Rv * 1 / this.C;
+			this.x = (1 / this.C) * this.y;
+			this.P = (1 / this.C) * this.Rv * (1 / this.C);
 		}
 		else {
 
 			// Kalman Filter: Prediction and covariance P
-			this.x = this.A * this.x + this.B * this.u;
-			this.P = this.A * this.P * this.A + this.Rw;
+			this.x = (this.A * this.x) + (this.B * this.u);
+			this.P = ((this.A * this.P) * this.A) + this.Rw;
 
 			// Gain
-			this.G = this.P * this.C * 1 / (this.C * this.P * this.C + this.Rv);
+			this.G = this.P * this.C * (1 / ((this.C * this.P * this.C) + this.Rv));
 
 			// Correction
-			this.x = this.x + this.G * (this.y - this.C * this.x);
-			this.P = this.P - this.G * this.C * this.P;
+			this.x = this.x + this.G * (this.y - (this.C * this.x));
+			this.P = this.P - (this.G * this.C * this.P);
 		}
 
 		return this.x;
