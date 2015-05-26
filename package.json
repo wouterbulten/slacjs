@@ -23,9 +23,10 @@
     "gulp-uglify": "^1.1.0",
     "gulp-util": "^3.0.4",
     "jscs-stylish": "^0.3.1",
-    "jshint-stylish": "^1.0.2",
+    "jshint-stylish": "^2.0.0",
     "main-bower-files": "^2.6.2",
     "vinyl-buffer": "^1.0.0",
+    "vinyl-fs": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   },
   "repository": {
