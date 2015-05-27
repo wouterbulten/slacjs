@@ -77,3 +77,26 @@ export function eigenvv(cov) {
 		vectors: [[1 / mag1, y1 / mag1], [1 / mag2, y2 / mag2]]
 	};
 }
+
+/**
+ * Calculate the variance of an array given a value function
+ * @param  {Array} data
+ * @param  {Function} valueFunc Function that maps an array element to a number
+ * @return {Number}
+ */
+export function variance(data, valueFunc) {
+
+	let sum = 0;
+	let sumSq = 0;
+	const n = data.length;
+
+	data.forEach((d) => {
+
+		const value = valueFunc(d);
+
+		sum += value;
+		sumSq += (value * value);
+	});
+
+	return (sumSq - ((sum * sum) / n)) / n;
+}

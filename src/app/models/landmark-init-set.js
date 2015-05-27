@@ -9,19 +9,19 @@ class LandmarkInitializationSet {
 	 * @param  {Number} effectiveParticleThreshold Threshold of effective particles
 	 * @return {LandmarkInitializationSet}
 	 */
-	constructor(nParticles = 500, stdRange = 4, randomParticles = 10, effectiveParticleThreshold = undefined) {
+	constructor(nParticles = 500, stdRange = 4, randomParticles = 0, effectiveParticleThreshold = undefined) {
 		this.nParticles = nParticles;
 		this.stdRange = stdRange;
 		this.randomParticles = randomParticles;
 
 		if (effectiveParticleThreshold === undefined) {
-			this.effectiveParticleThreshold = nParticles / 2;
+			this.effectiveParticleThreshold = nParticles / 1.5;
 		}
 		else {
 			this.effectiveParticleThreshold = effectiveParticleThreshold;
 		}
 
-		this.particles = new Map();
+		this.particleSetMap = new Map();
 	}
 
 	/**
@@ -33,12 +33,12 @@ class LandmarkInitializationSet {
 	 */
 	addMeasurement(uid, x, y, r) {
 		if (!this.has(uid)) {
-			this.particles.set(uid, new LandmarkParticleSet(
+			this.particleSetMap.set(uid, new LandmarkParticleSet(
 				this.nParticles, this.stdRange, this.randomParticles, this.effectiveParticleThreshold
 			));
 		}
 
-		this.particles.get(uid).addMeasurement(x, y, r);
+		this.particleSetMap.get(uid).addMeasurement(x, y, r);
 
 		return this;
 	}
@@ -49,7 +49,7 @@ class LandmarkInitializationSet {
 	 * @return {Boolean}
 	 */
 	has(uid) {
-		return this.particles.has(uid);
+		return this.particleSetMap.has(uid);
 	}
 
 	/**
@@ -58,7 +58,7 @@ class LandmarkInitializationSet {
 	 * @return {Object}
 	 */
 	estimate(uid) {
-		return this.particles.get(uid).positionEstimate();
+		return this.particleSetMap.get(uid).positionEstimate();
 	}
 
 	/**
@@ -67,7 +67,15 @@ class LandmarkInitializationSet {
 	 * @return {void}
 	 */
 	remove(uid) {
-		this.particles.delete(uid);
+		this.particleSetMap.delete(uid);
+	}
+
+	/**
+	 * Return all particle sets
+	 * @return {Array}
+	 */
+	particleSets() {
+		return this.particleSetMap.values();
 	}
 }
 

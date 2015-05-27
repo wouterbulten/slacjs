@@ -133,8 +133,8 @@ class Visualizer {
 			p.landmarks.forEach((l, uid) => {
 
 				//Compensate for landmark size
-				var x = this._tx(l.x) - (0.5 * size);
-				var y = this._ty(l.y) - (0.5 * size);
+				const x = this._tx(l.x) - (0.5 * size);
+				const y = this._ty(l.y) - (0.5 * size);
 
 				this.ctx.fillRect(x, y, size, size);
 
@@ -150,6 +150,32 @@ class Visualizer {
 				}
 			});
 		});
+
+		return this;
+	}
+
+	/**
+	 * Plot a landmark initialisation particle set
+	 * @param  {LandmarkInitializationSet} landmarkSet
+	 * @param  {String} fillStyle
+	 * @return {Visualizer}
+	 */
+	plotLandmarkInitParticles(landmarkSet, fillStyle = '#2EFF3C') {
+
+		this.ctx.fillStyle = fillStyle;
+		const size = 0.5;
+
+		for (let set of landmarkSet.particleSets()) {
+
+			set.particles.forEach((p) => {
+
+				//Compensate for landmark size
+				const x = this._tx(p.x) - (0.5 * size);
+				const y = this._ty(p.y) - (0.5 * size);
+
+				this.ctx.fillRect(x, y, size, size);
+			});
+		}
 
 		return this;
 	}

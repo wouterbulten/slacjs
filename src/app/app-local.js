@@ -67,6 +67,7 @@ window.SlacApp = {
 
 		if (window.SlacENV == 'debug') {
 			this.visualizer.plotLandmarkPredictions(this.particleSet.particles(), this.landmarks);
+			this.visualizer.plotLandmarkInitParticles(this.particleSet.landmarkInitSet);
 		}
 		else {
 			this.visualizer.plotLandmarkPredictions([this.particleSet.bestParticle()], this.landmarks);

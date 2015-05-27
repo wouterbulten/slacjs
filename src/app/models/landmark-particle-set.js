@@ -1,5 +1,5 @@
-import { randn, pdfn } from '../util/math';
-import { lowVarianceSampling, numberOfEffectiveParticles } from '../util/sampling';
+import { randn, pdfn, variance } from '../util/math';
+import { lowVarianceSampling, numberOfEffectiveParticles, normalizeWeights } from '../util/sampling';
 import { polarToCartesian } from '../util/coordinate-system';
 
 class LandmarkParticleSet {
@@ -61,16 +61,28 @@ class LandmarkParticleSet {
 	 * @return {Object}
 	 */
 	positionEstimate() {
+
+		//Fast check, never return before we have at least multiple measurements
 		if (this.measurements < 10) {
 			return {estimate: 0, x: 0, y: 0};
 		}
 
-		const {x, y} = this.bestParticle();
+		const {varX, varY} = this._particleVariance();
 
-		return {
-			estimate: 1,
-			x, y
-		};
+		//@todo Make this constraint configurable
+		if (varX < 8 && varY < 8) {
+
+			//Compute a weighted average of the particles
+			const {x, y} = this.averagePosition();
+
+			return {
+				estimate: 1,
+				x, y,
+				varX, varY
+			};
+		}
+
+		return {estimate: 0, x: 0, y: 0};
 	}
 
 	/**
@@ -87,6 +99,32 @@ class LandmarkParticleSet {
 		});
 
 		return best;
+	}
+
+	/**
+	 * Return a weighted average of this particle set
+	 * @return {Object} x,y
+	 */
+	averagePosition() {
+
+		const weights = normalizeWeights(this.particles.map((p) => p.weight));
+
+		return {
+			x: this.particles.reduce((prev, p, i) => prev + (weights[i] * p.x), 0),
+			y: this.particles.reduce((prev, p, i) => prev + (weights[i] * p.x), 0)
+		};
+	}
+
+	/**
+	 * Return the particle variance in X and Y
+	 * @return {Object} varx, vary
+	 */
+	_particleVariance() {
+
+		return {
+			varX: variance(this.particles, (p) => p.x),
+			varY: variance(this.particles, (p) => p.y)
+		};
 	}
 
 	/**
