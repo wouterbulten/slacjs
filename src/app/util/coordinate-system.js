@@ -75,3 +75,16 @@ export function cartesianToPolar(dx, dy) {
 export function degreeToRadian(degrees) {
 	return degrees * (Math.PI / 180);
 }
+
+/**
+ * Finds the smallest rotation to the local north (wich is 90deg on a radial axis)
+ * @param  {Number} degrees
+ * @return {Number}
+ */
+export function rotationToLocalNorth(degrees) {
+
+	const left = degrees - 90;
+	const right = 360 - degrees + 90;
+
+	return Math.min(left, right);
+}

@@ -5,7 +5,7 @@ import { SimulatedLandmarkSet } from './simulation/landmark';
 import Sensor from './models/sensor';
 import ParticleRenderer from './view/particle-renderer';
 import Pedometer from './device/pedometer';
-import { degreeToRadian } from './util/coordinate-system';
+import { degreeToRadian, rotationToLocalNorth } from './util/coordinate-system';
 
 window.SlacENV = 'debug';
 
@@ -38,7 +38,7 @@ window.SlacApp = {
 	step: function() {
 
 		console.log('[SLACjs] step');
-
+this.pedometer.stepCount += 1
 		//Only udpate if the user has walked
 		if (this.stepCount == this.pedometer.stepCount) {
 			console.log('[SLACjs] User is not moving');
@@ -171,7 +171,8 @@ window.SlacApp = {
 		this.uiElements.indz.html(data.z.toFixed(2));
 		this.uiElements.indheading.html(data.heading.toFixed(2));
 
-		const degree = - data.heading;
+		//Find smallest rotation
+		const degree = rotationToLocalNorth(data.heading);
 
 		this.uiElements.map.css({
 			'-webkit-transform' : 'rotate('+ degree +'deg)',

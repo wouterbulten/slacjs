@@ -1,6 +1,6 @@
 class ParticleRenderer {
 
-	constructor(element, padding = 5, factor = 10, xMaxInit = 20, yMaxInit = 20) {
+	constructor(element, padding = 5, factor = 1, xMaxInit = 40, yMaxInit = 40, padding = 5) {
 		this.element = element;
 		this.canvas = document.getElementById(element);
 		this.ctx = this.canvas.getContext('2d');
@@ -44,7 +44,7 @@ class ParticleRenderer {
 	 * @param  {float} Range of the sensor
 	 * @return {Boolean} True if the canvas has to resize
 	 */
-	_plotUserTrace(user, color = '#C7C7C7') {
+	_plotUserTrace(user, color = '#4B4C54') {
 
 		this.ctx.lineJoin = 'round';
 		this.ctx.lineWidth = 0.1;
@@ -92,7 +92,8 @@ class ParticleRenderer {
 		const tX = this._tx(x);
 		const tY = this._ty(y);
 
-		return (tX < 0 || tY < 0 || tX > this.xMax || tY > this.yMax);
+		return (tX < this.padding || tY < this.padding || 
+			tX > (this.xMax - this.padding) || tY > (this.yMax - this.padding);
 	}
 
 	/**
@@ -153,7 +154,16 @@ class ParticleRenderer {
 	 * @return {ParticleRenderer}
 	 */
 	clearCanvas() {
+
+		//Save transformation matrix
+		this.ctx.save();
+
+		//Reset the transform to clear the whole canvas
+		this.ctx.setTransform(1, 0, 0, 1, 0, 0);
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+		//Restore transformation
+		this.ctx.restore();
 
 		return this;
 	}
