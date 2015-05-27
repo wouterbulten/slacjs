@@ -1,6 +1,6 @@
 class ParticleRenderer {
 
-	constructor(element, padding = 5, factor = 1, xMaxInit = 40, yMaxInit = 40, padding = 5) {
+	constructor(element, padding = 5, factor = 1, xMaxInit = 40, yMaxInit = 40) {
 		this.element = element;
 		this.canvas = document.getElementById(element);
 		this.ctx = this.canvas.getContext('2d');
@@ -19,6 +19,11 @@ class ParticleRenderer {
 		this._scaleCanvas();
 	}
 
+	/**
+	 * Render a particle set
+	 * @param  {ParticleSet} particleSet
+	 * @return {ParticleRenderer}
+	 */
 	render(particleSet) {
 
 		this.clearCanvas();
@@ -35,6 +40,8 @@ class ParticleRenderer {
 				this.resizeOnNextRender = true;
 			}
 		});
+
+		return this;
 	}
 
 	/**
@@ -92,7 +99,7 @@ class ParticleRenderer {
 		const tX = this._tx(x);
 		const tY = this._ty(y);
 
-		return (tX < this.padding || tY < this.padding || 
+		return tX < this.padding || tY < this.padding || 
 			tX > (this.xMax - this.padding) || tY > (this.yMax - this.padding);
 	}
 
