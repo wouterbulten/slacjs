@@ -58,9 +58,13 @@ class Particle {
 	addLandmark({uid, r}, {x, y}) {
 
 		//@todo find better values for initial covariance
-		let cov = [[0.1, 0], [0, 0.1]];
+		const landmark = {
+			x: x,
+			y: y, 
+			cov: [[5, 0], [0, 5]]
+		};
 
-		this.landmarks.set(uid, {x, y, cov});
+		this.landmarks.set(uid, landmark);
 	}
 
 	/**
@@ -80,7 +84,7 @@ class Particle {
 		const dy = this.user.y - l.y;
 
 		//@todo find better values for default coviarance
-		const errorCov = 0.09;
+		const errorCov = randn(0, 2);
 
 		const dist = Math.max(0.001, Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)));
 
@@ -90,7 +94,7 @@ class Particle {
 		//Compute Jacobian
 		const H = [-dx / dist, -dy / dist];
 
-		//Compute innovation covariance
+		//Compute covariance of the innovation
 		//covV = H * Cov_s * H^T + error
 		const HxCov = [l.cov[0][0] * H[0] + l.cov[0][1] * H[1],
 						l.cov[1][0] * H[0] + l.cov[1][1] * H[1]];
