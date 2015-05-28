@@ -64,7 +64,7 @@ class LandmarkParticleSet {
 
 		//Fast check, never return before we have at least multiple measurements
 		if (this.measurements < 10) {
-			return {estimate: 0, x: 0, y: 0};
+			return {estimate: 0, x: 0, y: 0, varX: 1, varY: 1};
 		}
 
 		const {varX, varY} = this._particleVariance();
@@ -82,7 +82,7 @@ class LandmarkParticleSet {
 			};
 		}
 
-		return {estimate: 0, x: 0, y: 0};
+		return {estimate: 0, x: 0, y: 0, varX: 1, varY: 1};
 	}
 
 	/**

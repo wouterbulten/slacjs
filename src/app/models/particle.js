@@ -32,8 +32,8 @@ class Particle {
 
 		//Sample a pose from the 'control'
 		//@todo Improve pose sampling
-		const r = randn(control.r, 0.3);
-		const theta = randn(control.theta, 0.05  * Math.PI);
+		const r = Math.abs(randn(control.r, 0.3));
+		const theta = randn(control.theta, 0.05 * Math.PI);
 
 		this.user.move({r, theta});
 
@@ -54,14 +54,18 @@ class Particle {
 	 * Register a new landmark
 	 * @param {string} options.uid
 	 * @param {float} options.r
+	 * @param {[type]} options.x 	Initial x position
+	 * @param {[type]} options.y    Initial y
+	 * @param {[type]} options.varX Cov in X direction
+	 * @param {[type]} options.varY Cov in Y direction
 	 */
-	addLandmark({uid, r}, {x, y}) {
+	addLandmark({uid, r}, {x, y}, {varX, varY} = {varX: 1, varY: 1}) {
 
 		//@todo find better values for initial covariance
 		const landmark = {
 			x: x,
-			y: y, 
-			cov: [[5, 0], [0, 5]]
+			y: y,
+			cov: [[varX, 0], [0, varY]]
 		};
 
 		this.landmarks.set(uid, landmark);

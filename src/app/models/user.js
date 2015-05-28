@@ -1,4 +1,4 @@
-import { addTheta, polarToCartesian } from '../util/coordinate-system';
+import { polarToCartesian } from '../util/coordinate-system';
 import LinkedList from '../util/linked-list';
 
 class User {

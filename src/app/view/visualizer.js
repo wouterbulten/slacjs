@@ -39,8 +39,6 @@ class Visualizer {
 		//Plot best last
 		this.plotUserTrace(best.user, '#11913E');
 
-		//this.plotLandmarksErrors(best);
-
 		return this;
 	}
 
@@ -149,6 +147,8 @@ class Visualizer {
 					this.ctx.closePath();
 				}
 			});
+
+			this.plotLandmarksErrors(p);
 		});
 
 		return this;

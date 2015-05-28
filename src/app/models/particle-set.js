@@ -1,6 +1,6 @@
 import Particle from './particle';
 import LandmarkInitializationSet from './landmark-init-set';
-import { lowVarianceSampling, numberOfEffectiveParticles } from '../util/sampling';
+import { lowVarianceSampling, numberOfEffectiveParticles, normalizeWeights } from '../util/sampling';
 
 class ParticleSet {
 	/**
@@ -49,9 +49,7 @@ class ParticleSet {
 
 			if (this.initialisedLandmarks.indexOf(uid) == -1) {
 
-				//const {x: uX, y: uY} = this.userEstimate();
-				const uX = window.SlacApp.user.x;
-				const uY = window.SlacApp.user.y;
+				const {x: uX, y: uY} = this.userEstimate();
 
 				this.landmarkInitSet.addMeasurement(uid, uX, uY, r);
 
@@ -83,11 +81,15 @@ class ParticleSet {
 	resample() {
 
 		const weights = this.particleList.map(p => p.weight);
-		if (numberOfEffectiveParticles(weights) < (this.nParticles * 0.3)) {
+		if (numberOfEffectiveParticles(weights) < (this.nParticles * 0.5)) {
 
 			this.particleList = lowVarianceSampling(this.nParticles, weights).map((i) => {
 				return new Particle({}, this.particleList[i]);
 			});
+		}
+		else {
+			console.log('Not resampling');
+			console.log(numberOfEffectiveParticles(weights));
 		}
 
 		return this;
@@ -122,9 +124,12 @@ class ParticleSet {
 	 * @return {object}
 	 */
 	userEstimate() {
-		const particle = this.bestParticle();
+		const weights = normalizeWeights(this.particleList.map((p) => p.weight));
 
-		return {x: particle.user.x, y: particle.user.y};
+		return {
+			x: this.particleList.reduce((prev, p, i) => prev + (weights[i] * p.user.x), 0),
+			y: this.particleList.reduce((prev, p, i) => prev + (weights[i] * p.user.y), 0)
+		};
 	}
 }
 

@@ -99,7 +99,7 @@ class ParticleRenderer {
 		const tX = this._tx(x);
 		const tY = this._ty(y);
 
-		return tX < this.padding || tY < this.padding || 
+		return tX < this.padding || tY < this.padding ||
 			tX > (this.xMax - this.padding) || tY > (this.yMax - this.padding);
 	}
 
