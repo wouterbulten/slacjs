@@ -14,7 +14,16 @@ SLAC is implemented in Javascript using the ECMAScript 6 standard. See [es6featu
 * [Full demonstration with simulated data](https://wouterbulten.nl/slacjs)
 * [Landmark initialisation example](https://wouterbulten.nl/slacjs/tests/landmark-init.html)
 
+
+## screenshots
+
 ![iPad version of SLACjs](/screenshots/slac-js-1.0.PNG?raw=true "First version of SLACjs running on an iPad.")
+
+![Local version of SLACjs](/screenshots/slacjs_local.png?raw=true "Local version of SLACjs.")
+
+![Initialising a new landmark](/screenshots/slacjs_local_init.png?raw=true "Initialising a new landmark.")
+
+![Updating landmarks after initialisation](/screenshots/slacjs_local_init2.png?raw=true "Updating landmarks after initialisation.")
 
 ## Installation
 
