@@ -2598,7 +2598,7 @@ var _modelsSensor = require('./models/sensor');
 
 var _modelsSensor2 = _interopRequireDefault(_modelsSensor);
 
-window.SlacENV = 'debug';
+window.SlacENV = 'development';
 
 window.SlacApp = {
 
@@ -2625,7 +2625,7 @@ window.SlacApp = {
 		//Add simulated data to the user object
 		//this._addSimulatedData();
 
-		this.landmarks = new _simulationLandmark.SimulatedLandmarkSet(5, { xRange: 50, yRange: 50 }, 50, this.landmarkConfig);
+		this.landmarks = new _simulationLandmark.SimulatedLandmarkSet(40, { xRange: 50, yRange: 50 }, 50, this.landmarkConfig);
 		this.sensor = new _modelsSensor2['default'](this.landmarkConfig);
 
 		//Start broadcasting of the simulated landmarks
