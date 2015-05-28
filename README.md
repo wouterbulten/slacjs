@@ -4,12 +4,15 @@
 
 Simultaneous Localisation and Configuration (SLAC) for Wireless Sensor Networks in indoor environments using FastSLAM.
 
-With SLAC we aim to simultaneously localise both the user and the devices of a system deployed in an indoor environment. The algorithm is privacy-aware and is an online localisation method; i.e. localisation starts whenever a user starts moving inside a building. Moreover, for the SLAC system we focus on a solution that can be deployed in smart spaces without additional hardware requirements besides users’ mobile phones`
- and the components of the space. By utilising a mobile phone we remove the need for a application-dependent device that the user needs to keep.
+With SLAC we aim to simultaneously localise both the user and the devices of a system deployed in an indoor environment. The algorithm is privacy-aware and is an online localisation method; i.e. localisation starts whenever a user starts moving inside a building. Moreover, for the SLAC system we focus on a solution that can be deployed in smart spaces without additional hardware requirements besides users’ mobile phones` and the components of the space. By utilising a mobile phone we remove the need for a application-dependent device that the user needs to keep.
 
 SLAC is implemented in Javascript using the ECMAScript 6 standard. See [es6features](https://github.com/lukehoban/es6features) for an overview.
 
+This project is part of a Master Thesis in Artificial Intelligence at the [Radboud University](http://www.ru.nl) and an internship at [DoBots](https://dobots.nl/) and [Almende](http://www.almende.com/).
+
 ## Demo's
+
+The following list of demo's are demo's of the local/browser version of SLACjs and use simulated data.
 
 * [Full demonstration with simulated data](https://wouterbulten.nl/slacjs)
 * [Landmark initialisation example](https://wouterbulten.nl/slacjs/tests/landmark-init.html)
@@ -49,7 +52,7 @@ For building the mobile version of SLACjs [Cordova](https://cordova.apache.org/)
 
 `gulp mobile-setup`
 
-This builds a mobile version of the project and adds all plugins and platforms as defined in `config.js`. Make sure that you run this command from the main project directory.gulpgul
+This builds a mobile version of the project and adds all plugins and platforms as defined in `config.js`. Make sure that you run this command from the main project directory.
 
 ## Running SLACjs locally
 
@@ -63,46 +66,37 @@ The main entry point of the local SLACjs version can be found in `src/app/app-lo
 
 ## Running SLACjs on a mobile platform
 
-To build a mobile version a combination of both *Gulp* and *Cordova* has to be used. First build the project and export the resources using:
+To build a mobile version a combination of both *Gulp* and *Cordova* has to be used. Build the project and export the resources using:
 
 `gulp mobile`
 
-This transpiles all javascript and exports the resources for the app to the `/mobile` directory. The `mobile` directory is a Cordova project and can be used accordingly. When you have Phonegap installed you can use the [development app](http://app.phonegap.com/) to quickly test the app by running:
+This transpiles all javascript and exports the resources for the app to the `/mobile` directory. The `mobile` directory is a Cordova project and can be used accordingly (i.e. using `cordova run ...` or `cordova prepare`). See the [Cordova docs](https://cordova.apache.org/docs/en/3.0.0/guide_cli_index.md.html) for more information about building.
+
+When you have Phonegap installed you can use the [development app](http://app.phonegap.com/) to quickly test the app by running:
 
 `phonegap serve` (Note: this must be run inside the `mobile` directory!)
+
+To automatically rebuild all resources a specific serve task is available for mobile:
+
+`gulp serve-mobile`
 
 ## Building & tools
 
 To just build the files, without running the server, the following can be used:
 
-`gulp build`
+`gulp build` (for local version)
+
+`gulp mobile` (for mobile version)
 
 The previous build can be cleared using:
 
-`gulp clean`
+`gulp clean` (for local version)
 
-Individual parts of the project can be built using one of the sub tasks:
+`gulp mobile-clean` (for mobile version)
 
-`gulp build-html`
+Individual parts of the project can be built using one of the sub tasks. Run the help task to get a list of functions:
 
-`gulp build-js`
-
-`gulp build-polyfill`
-
-`gulp build-styles`
-
-`gulp build-vendor`
-
-`gulp mobile-build-js`
-
-`gulp mobile-clean`
-
-`gulp mobile-resources`
-
-`gulp mobile-setup`
-
-`gulp mobile-vendor`
-
+`gulp help`
 
 ## Libraries & Third-party software
 
@@ -111,6 +105,16 @@ Individual parts of the project can be built using one of the sub tasks:
 3. *JSHint & JSCS:* For static code analysis and checking code guidelines. Runs automatically when using the gulp _watch_ command.
 4. *BrowserSync:* For live reloading of the development server
 
+## Cordova plugins
+
+The following Cordova plugins are used in the mobile version:
+
+* org.apache.cordova.device-motion
+* [com.randdusing.bluetoothle](https://github.com/randdusing/BluetoothLE)
+* org.apache.cordova.dialogs
+* org.apache.cordova.console
+* org.apache.cordova.device-orientation
+
 ## Browser/device support
 
-SLACjs utilises the Babel ES6 polyfill to support older browsers. 
+SLACjs utilises the Babel ES6 polyfill to support older browsers and mobile devices.
