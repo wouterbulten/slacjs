@@ -111,7 +111,7 @@ class LandmarkParticleSet {
 
 		return {
 			x: this.particles.reduce((prev, p, i) => prev + (weights[i] * p.x), 0),
-			y: this.particles.reduce((prev, p, i) => prev + (weights[i] * p.x), 0)
+			y: this.particles.reduce((prev, p, i) => prev + (weights[i] * p.y), 0)
 		};
 	}
 
