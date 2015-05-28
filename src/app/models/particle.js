@@ -84,9 +84,9 @@ class Particle {
 		const dy = this.user.y - l.y;
 
 		//@todo find better values for default coviarance
-		const errorCov = randn(0, 2);
+		const errorCov = randn(2, 0.1);
 
-		const dist = Math.max(0.001, Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)));
+		const dist = Math.max(0.001, Math.sqrt((dx * dx) + (dy * dy)));
 
 		//Compute innovation: difference between the observation and the predicted value
 		const v = r - dist;
@@ -102,19 +102,24 @@ class Particle {
 		const covV = (HxCov[0] * H[0]) + (HxCov[1] * H[1]) + errorCov;
 
 		//Kalman gain
-		const K = [HxCov[0] * (1 / covV), HxCov[1] * (1 / covV)];
+		const K = [HxCov[0] * (1 / covV), HxCov[1] * (1.0 / covV)];
 
 		//Calculate the new position of the landmark
 		const newX = l.x + (K[0] * v);
 		const newY = l.y + (K[1] * v);
 
-		const deltaCov = (K[0] * K[0] * covV) + (K[1] * K[1] * covV);
+		//Calculate the new covariance
+		//cov_t = cov_t-1 - K * covV * K^T
+		const updateCov = [
+			[K[0] * K[0] * covV, K[0] * K[1] * covV],
+			[K[1] * K[0] * covV, K[1] * K[1] * covV]
+		];
 
-		const newCov = [[l.cov[0][0] - deltaCov, l.cov[0][1] - deltaCov],
-						[l.cov[1][0] - deltaCov, l.cov[1][1] - deltaCov]];
+		const newCov = [[l.cov[0][0] - updateCov[0][0], l.cov[0][1] - updateCov[0][1]],
+						[l.cov[1][0] - updateCov[1][0], l.cov[1][1] - updateCov[1][1]]];
 
 		//Update the weight of the particle
-		this.weight = this.weight - (v * (1 / covV) * v);
+		this.weight = this.weight - (v * (1.0 / covV) * v);
 
 		//Update particle
 		l.x = newX;

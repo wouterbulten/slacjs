@@ -55,12 +55,12 @@ class ParticleSet {
 
 				this.landmarkInitSet.addMeasurement(uid, uX, uY, r);
 
-				const {estimate, x, y} = this.landmarkInitSet.estimate(uid);
+				const {estimate, x, y, varX, varY} = this.landmarkInitSet.estimate(uid);
 
 				if (estimate > 0.6) {
 
 					this.particleList.forEach((p) => {
-						p.addLandmark({uid, r}, {x, y});
+						p.addLandmark({uid, r}, {x, y}, {varX, varY});
 					});
 
 					this.initialisedLandmarks.push(uid);
