@@ -1,381 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _modelsParticleSet = require('./models/particle-set');
-
-var _modelsParticleSet2 = _interopRequireDefault(_modelsParticleSet);
-
-var _viewVisualizer = require('./view/visualizer');
-
-var _viewVisualizer2 = _interopRequireDefault(_viewVisualizer);
-
-var _simulationUser = require('./simulation/user');
-
-var _simulationUser2 = _interopRequireDefault(_simulationUser);
-
-var _simulationLandmark = require('./simulation/landmark');
-
-var _modelsSensor = require('./models/sensor');
-
-var _modelsSensor2 = _interopRequireDefault(_modelsSensor);
-
-window.SlacENV = 'production';
-
-window.SlacApp = {
-
-	particleSet: undefined,
-	visualizer: undefined,
-	user: undefined,
-	landmarks: undefined,
-	sensor: undefined,
-
-	landmarkConfig: {
-		n: 2,
-		txPower: -12,
-		noise: 2,
-		range: 20
-	},
-
-	initialize: function initialize() {
-		'use strict';
-
-		this.particleSet = new _modelsParticleSet2['default'](40, { x: 0, y: 0, theta: 0 });
-		this.visualizer = new _viewVisualizer2['default']('slac-map', 100, 100);
-		this.user = new _simulationUser2['default']({ x: 0, y: 0, theta: 0 }, 2, { xRange: 50, yRange: 50, padding: 5 });
-
-		//Add simulated data to the user object
-		//this._addSimulatedData();
-
-		this.landmarks = new _simulationLandmark.SimulatedLandmarkSet(40, { xRange: 50, yRange: 50 }, 50, this.landmarkConfig);
-		this.sensor = new _modelsSensor2['default'](this.landmarkConfig);
-
-		//Start broadcasting of the simulated landmarks
-		//Broadcasts are sent to the sensor, the user object is used to find nearby landmarks
-		this.landmarks.startBroadcast(this.sensor, this.user);
-	},
-
-	step: function step() {
-		var _this = this;
-
-		this.user.randomWalk();
-
-		//Get accelerometer data
-		// ...
-
-		//Transform to angle and distance
-		//Simulate this by getting the control from the simulated user
-
-		var _user$getLastControl = this.user.getLastControl();
-
-		var r = _user$getLastControl.r;
-		var theta = _user$getLastControl.theta;
-
-		//Sample a new pose for each particle in the set
-		this.particleSet.samplePose({ r: r, theta: theta });
-
-		//Get the latest observation
-		var observations = this.sensor.getObservations();
-
-		observations.forEach(function (obs) {
-			return _this.particleSet.processObservation(obs);
-		});
-
-		this.particleSet.resample();
-
-		//Update the canvas
-		this.visualizer.clearCanvas().plotUserTrace(this.user, 'blue', this.landmarkConfig.range).plotObjects(this.landmarks.landmarks).plotParticleSet(this.particleSet);
-
-		if (window.SlacENV == 'debug') {
-			this.visualizer.plotLandmarkPredictions(this.particleSet.particles(), this.landmarks);
-		} else {
-			this.visualizer.plotLandmarkPredictions([this.particleSet.bestParticle()], this.landmarks);
-		}
-	},
-
-	_addSimulatedData: function _addSimulatedData() {
-		var thetas = [0, 0, 0, 0, 0, 0, 0.08099418560036185, 0, 0, 0, 0, 0, 0, 0, -0.002454369260617026, 0, 0, 0, 0, 0, 0, -0.000818123086872342, 0, 0, 0, 0, 0, 0, 0, 0.000545415391248228, 0, 0, 0, 0, 0, 0, 0, 0.001636246173744684, 0, 0, 0, 0, 0, 0, -0.000272707695624114, 0, 0, 0, 0, 0, 0, 0, 0.000272707695624114, 0, 0, 0, 0, 0, 0, 0.004363323129985824, 0, 0, 0, 0, 0, 0, 0, 0.006544984694978736, 0, 0, 0, 0, 0, 0, -0.0029997846518652537, 0, 0, 0, 0, 0, 0, 0, -0.0029997846518652537, 0, 0, 0, 0, 0, 0, 0.001908953869368798, 0, 0, 0, 0, 0, 0, 0, 0.000818123086872342, 0, 0, 0, 0, 0, 0, -0.006272276999354622, 0, 0, 0, 0, 0, 0, 0, -0.001090830782496456, 0, 0, 0, 0, 0, 0, 0.08290313946973066, 0, 0, 0, 0, 0, 0, -0.00545415391248228, 0, 0, 0, 0, 0, 0, -0.11344640137963143, 0, 0, 0, 0, 0, 0, 0, -0.09272061651219876, 0, 0, 0, 0, 0, 0, 0, -0.007363107781851078, 0, 0, 0, 0, 0, 0, -0.20453077171808548, 0, 0, 0, 0, 0, 0, 0, -0.1598067096357308, 0, 0, 0, 0, 0, 0, 0, -0.1990766178056032, 0, 0, 0, 0, 0, 0, -0.241619018322965, 0, 0, 0, 0, 0, 0, 0, -0.1562615095926173, 0, 0, 0, 0, 0, 0, -0.22552926428114228, 0, 0, 0, 0, 0, 0, 0, -0.23425591054111392, 0, 0, 0, 0, 0, 0, -0.31334114227210697, 0, 0, 0, 0, 0, 0, -0.22362031041177347, 0, 0, 0, 0, 0, 0, 0, -0.0681769239060285, 0, 0, 0, 0, 0, 0, -0.12871803233458182, 0, 0, 0, 0, 0, 0, 0, -0.08426667794785123, 0, 0, 0, 0, 0, 0, 0, 0.0995383089028016, 0, 0, 0, 0, 0, 0, 0.006544984694978736, 0, 0, 0, 0, 0, 0, 0, 0.00272707695624114, 0, 0, 0, 0, 0, 0, -0.000818123086872342, 0, 0, 0, 0, 0, 0, 0, 0.0029997846518652537, 0, 0, 0, 0, 0, 0, 0, 0.003272492347489368, 0, 0, 0, 0, 0, 0, 0, 0.06899504699290084, 0, 0, 0, 0, 0, 0, 0.06599526234103559, 0, 0, 0, 0, 0, 0, 0, 0.0719948316447661, 0, 0, 0, 0, 0, 0, 0.007090400086226964, 0, 0, 0, 0, 0, 0, 0, -0.0029997846518652537, 0, 0, 0, 0, 0, 0, -0.13199052468207118, 0, 0, 0, 0, 0, 0, 0, -0.12408200150897186, 0, 0, 0, 0, 0, 0, 0, -0.1892591407631351, 0, 0, 0, 0, 0, 0, -0.13335406316019174, 0, 0, 0, 0, 0, 0, 0, -0.13717197089892932, 0, 0, 0, 0, 0, 0, 0, -0.13799009398580167, 0, 0, 0, 0, 0, 0, -0.10471975511965978, 0, 0, 0, 0, 0, 0, 0, -0.10608329359778035, 0, 0, 0, 0, 0, 0, -0.0703585854710214, 0, 0, 0, 0, 0, 0, 0, -0.004363323129985824, 0, 0, 0, 0, 0, 0, 0, 0.001090830782496456, 0, 0, 0, 0, 0, 0, 0, 0.004636030825609938, 0, 0, 0, 0, 0, 0, 0.08699375490409236, 0, 0, 0, 0, 0, 0, 0, 0.00545415391248228, 0, 0, 0, 0, 0, 0, 0.004908738521234052, 0, 0, 0, 0, 0, 0, 0, 0.002181661564992912, 0, 0, 0, 0, 0, 0, 0.000818123086872342, 0, 0, 0, 0, 0, 0, -0.001908953869368798, 0, 0, 0, 0, 0, 0, 0, -0.002181661564992912, 0, 0, 0, 0, 0, 0, 0, -0.0029997846518652537, 0, 0, 0, 0, 0, 0, -0.005726861608106394, 0, 0, 0, 0, 0, 0, -0.06463172386291502, 0, 0, 0, 0, 0, 0, 0, -0.08835729338221293, 0, 0, 0, 0, 0, 0, -0.06844963160165261, 0, 0, 0, 0, 0, 0, -0.007090400086226964, 0, 0, 0, 0, 0, 0, 0, -0.004908738521234052, 0, 0, 0, 0, 0, 0, -0.00136353847812057, 0, 0, 0, 0, 0, 0, 0.08235772407848242, 0, 0, 0, 0, 0, 0, 0, 0.09844747812030515, 0, 0, 0, 0, 0, 0, 0.17862354063379465, 0, 0, 0, 0, 0, 0, 0, 0.275162064884731, 0, 0, 0, 0, 0, 0, 0.2519819107566813, 0, 0, 0, 0, 0, 0, 0, 0.41369757426178094, 0, 0, 0, 0, 0, 0, 0.37879098922189436, 0, 0, 0, 0, 0, 0, 0, 0.5162356678164478, 0, 0, 0, 0, 0, 0, 0.4955098829490151, 0, 0, 0, 0, 0, 0, 0, 0.32288591161895097, 0, 0, 0, 0, 0, 0, 0.25443628001729834, 0, 0, 0, 0, 0, 0, 0, 0.14862569411514212, 0, 0, 0, 0, 0, 0, 0.11017390903214205, 0, 0, 0, 0, 0, 0, 0, 0.0859029241215959, 0, 0, 0, 0, 0, 0, 0.007090400086226964, 0, 0, 0, 0, 0, 0, 0, 0.007635815477475192, 0, 0, 0, 0, 0, 0, 0.007635815477475192, 0, 0, 0, 0, 0, 0, 0, 0.007363107781851078, 0, 0, 0, 0, 0, 0, 0.0029997846518652537, 0, 0, 0, 0, 0, 0, 0, -0.000272707695624114, 0, 0, 0, 0, 0, 0, -0.0719948316447661, 0, 0, 0, 0, 0, 0, 0, -0.07308566242726255, 0, 0, 0, 0, 0, 0, 0, -0.1366265555076811, 0, 0, 0, 0, 0, 0, -0.11671889372712078, 0, 0, 0, 0, 0, 0, 0, -0.07526732399225546, 0, 0, 0, 0, 0, 0, -0.001636246173744684, 0, 0, 0, 0, 0, 0, 0, 0.003817907738737596, 0, 0, 0, 0, 0, 0, 0.24461880297483024, 0, 0, 0, 0, 0, 0, 0.3239767424014474, 0, 0, 0, 0, 0, 0, 0, 0.26207209549477356, 0, 0, 0, 0, 0, 0, 0, 0.28197975727533386, 0, 0, 0, 0, 0, 0, 0.19144080232812802, 0, 0, 0, 0, 0, 0, 0, 0.13880821707267402, 0, 0, 0, 0, 0, 0, 0, 0.07063129316664553, 0, 0, 0, 0, 0, 0, 0, 0.0040906154343617095, 0, 0, 0, 0, 0, 0, 0.0040906154343617095, 0, 0, 0, 0, 0, 0, 0.00272707695624114, 0, 0, 0, 0, 0, 0, -0.001636246173744684, 0, 0, 0, 0, 0, 0, 0, -0.001908953869368798, 0, 0, 0, 0, 0, 0, -0.001636246173744684, 0, 0, 0, 0, 0, 0, 0, -0.003272492347489368, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.06299547768917033, 0, 0, 0, 0, 0, 0, 0, 0.00545415391248228, 0, 0, 0, 0, 0, 0, 0.003545200043113482, 0, 0, 0, 0, 0, 0, 0, 0.007090400086226964, 0, 0, 0, 0, 0, 0, 0.07635815477475191, 0, 0, 0, 0, 0, 0, 0, 0.09272061651219876, 0, 0, 0, 0, 0, 0, 0.20398535632683726, 0, 0, 0, 0, 0, 0, 0, 0.18953184845875923, 0, 0, 0, 0, 0, 0, 0.20153098706622025, 0, 0, 0, 0, 0, 0.1502619402888868, 0, 0, 0, 0, 0, 0, 0, 0, 0.15162547876700738, 0, 0, 0, 0, 0, 0, -6.149013120932523, 0, 0, 0, 0, 0, 0, 0.09626581655531224, 0, 0, 0, 0, 0, 0, 0, 0.09326603190344698, 0, 0, 0, 0, 0, 0, 0.007635815477475192, 0, 0, 0, 0, 0, 0, 0.007363107781851078, 0, 0, 0, 0, 0, 0, 0, 0.003817907738737596, 0, 0, 0, 0, 0, 0, 0, 0.00272707695624114, 0, 0, 0, 0, 0, 0, 0.00272707695624114, 0];
-		var distances = thetas.map(function () {
-			return 0.16;
-		});
-
-		this.user.setPath(distances, thetas);
-	}
-};
-
-},{"./models/particle-set":6,"./models/sensor":8,"./simulation/landmark":11,"./simulation/user":12,"./view/visualizer":17}],2:[function(require,module,exports){
-'use strict';
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var marked0$0 = [walkPattern].map(regeneratorRuntime.mark);
-
-var _appModelsLandmarkInitSet = require('../app/models/landmark-init-set');
-
-var _appModelsLandmarkInitSet2 = _interopRequireDefault(_appModelsLandmarkInitSet);
-
-if (window.test === undefined) {
-	window.test = {};
-}
-
-/**
- * Pattern that the user walks
- * @yield {Number}
- */
-function walkPattern() {
-	var steps, stepSize, quarter, i;
-	return regeneratorRuntime.wrap(function walkPattern$(context$1$0) {
-		while (1) switch (context$1$0.prev = context$1$0.next) {
-			case 0:
-				steps = 40;
-				stepSize = 2;
-				quarter = steps / 4;
-				i = 0;
-
-			case 4:
-				if (!(i < steps)) {
-					context$1$0.next = 26;
-					break;
-				}
-
-				if (!(i < quarter)) {
-					context$1$0.next = 10;
-					break;
-				}
-
-				context$1$0.next = 8;
-				return { dx: stepSize, dy: 0 };
-
-			case 8:
-				context$1$0.next = 23;
-				break;
-
-			case 10:
-				if (!(i < 2 * quarter)) {
-					context$1$0.next = 15;
-					break;
-				}
-
-				context$1$0.next = 13;
-				return { dx: 0, dy: stepSize };
-
-			case 13:
-				context$1$0.next = 23;
-				break;
-
-			case 15:
-				if (!(i < 3 * quarter)) {
-					context$1$0.next = 20;
-					break;
-				}
-
-				context$1$0.next = 18;
-				return { dx: -stepSize, dy: 0 };
-
-			case 18:
-				context$1$0.next = 23;
-				break;
-
-			case 20:
-				if (!(i < steps)) {
-					context$1$0.next = 23;
-					break;
-				}
-
-				context$1$0.next = 23;
-				return { dx: 0, dy: -stepSize };
-
-			case 23:
-				i++;
-				context$1$0.next = 4;
-				break;
-
-			case 26:
-			case 'end':
-				return context$1$0.stop();
-		}
-	}, marked0$0[0], this);
-}
-
-window.test.landmarkInit = {
-
-	landmarkSet: undefined,
-	userX: 0,
-	userY: 0,
-	lX: 0,
-	lY: 0,
-	userTrace: [],
-	xMax: 50,
-	yMax: 50,
-	ctx: undefined,
-	canvas: undefined,
-
-	pattern: undefined,
-
-	initialize: function initialize() {
-
-		//Init random landmark
-		this.lX = Math.random() * 30 - 15;
-		this.lY = Math.random() * 30 - 15;
-
-		this.landmarkSet = new _appModelsLandmarkInitSet2['default']();
-		this.canvas = document.getElementById('test-content');
-		this.ctx = this.canvas.getContext('2d');
-		this.ctx.scale(10, 10);
-
-		this.userTrace.push({ x: this.userX, y: this.userY });
-
-		this.pattern = walkPattern();
-	},
-
-	iterate: function iterate() {
-		var _pattern$next$value = this.pattern.next().value;
-		var dx = _pattern$next$value.dx;
-		var dy = _pattern$next$value.dy;
-
-		this.userX = this.userX + dx;
-		this.userY = this.userY + dy;
-		console.log({ dx: dx, dy: dy });
-		this.userTrace.push({ x: this.userX, y: this.userY });
-
-		var r = Math.sqrt(Math.pow(this.lX - this.userX, 2) + Math.pow(this.lY - this.userY, 2));
-
-		this.landmarkSet.addMeasurement('uid', this.userX, this.userY, r);
-
-		this._draw();
-		console.debug('True r: ' + r);
-	},
-
-	_draw: function _draw() {
-		var _this = this;
-
-		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-		this.ctx.fillStyle = '#000000';
-
-		this.landmarkSet.particles.get('uid').particles.forEach(function (p) {
-
-			var x = _this._tx(p.x);
-			var y = _this._ty(p.y);
-
-			_this.ctx.fillRect(x, y, 0.3, 0.3);
-		});
-
-		this.ctx.fillStyle = '#ff0000';
-		this.userTrace.forEach(function (t) {
-			return _this.ctx.fillRect(_this._tx(t.x), _this._ty(t.y), 0.5, 0.5);
-		});
-
-		this.ctx.fillStyle = '#00ff00';
-		this.ctx.fillRect(this._tx(this.lX), this._ty(this.lY), 0.5, 0.5);
-	},
-
-	_tx: function _tx(x) {
-		return x + this.xMax / 2;
-	},
-
-	_ty: function _ty(y) {
-		return this.yMax - (y + this.yMax / 2);
-	}
-};
-
-},{"../app/models/landmark-init-set":4}],3:[function(require,module,exports){
-'use strict';
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _appModelsVoteAccumulator = require('../app/models/vote-accumulator');
-
-var _appModelsVoteAccumulator2 = _interopRequireDefault(_appModelsVoteAccumulator);
-
-if (window.test === undefined) {
-	window.test = {};
-}
-
-window.test.voting = {
-
-	votes: undefined,
-	userX: 0,
-	userY: 0,
-	trace: [],
-
-	lX: -5,
-	lY: 10,
-
-	lR: 0,
-	lC: 0,
-
-	initialize: function initialize() {
-		this.votes = new _appModelsVoteAccumulator2['default'](75, 5);
-
-		var _votes$_cartesianToCell = this.votes._cartesianToCell(this.lX, this.lY);
-
-		var row = _votes$_cartesianToCell.row;
-		var column = _votes$_cartesianToCell.column;
-
-		this.lR = row;
-		this.lC = column;
-
-		//Create a table to show the votes
-		document.getElementById('test-content').innerHTML = this._createOutputTable();
-		this._displayLandmark();
-	},
-
-	iterate: function iterate() {
-
-		this.userX += Math.random() * 4 - 2;
-		this.userY += Math.random() * 6 - 3;
-
-		this.trace.push({ x: this.userX, y: this.userY });
-
-		var r = Math.sqrt(Math.pow(this.lX - this.userX, 2) + Math.pow(this.lY - this.userY, 2)) + (Math.random() * 6 - 3);
-
-		this.votes.addMeasurement(this.userX, this.userY, r);
-
-		document.getElementById('test-content').innerHTML = '';
-		document.getElementById('test-content').innerHTML = this._createOutputTable();
-		this._displayLandmark();
-		this._displayUser();
-	},
-
-	_createOutputTable: function _createOutputTable() {
-
-		var table = '<table>';
-
-		table += this.votes.votes.reduce(function (output, row, rowN) {
-			return output + '<tr>' + row.reduce(function (rowOutput, cell, columnN) {
-				var color = 'background-color: rgba(0, 0, 0, ' + cell / 50 + ');';
-				var id = rowN + '' + columnN;
-
-				return rowOutput + '<td id="' + id + '" style="' + color + '">' + cell + '</td>';
-			}, '') + '</tr>';
-		}, '');
-
-		table += '</table>';
-		return table;
-	},
-
-	_displayLandmark: function _displayLandmark() {
-		document.getElementById(this.lR + '' + this.lC).style.backgroundColor = 'red';
-	},
-
-	_displayUser: function _displayUser() {
-		var _this = this;
-
-		this.trace.forEach(function (pos) {
-			var _votes$_cartesianToCell2 = _this.votes._cartesianToCell(pos.x, pos.y);
-
-			var row = _votes$_cartesianToCell2.row;
-			var column = _votes$_cartesianToCell2.column;
-
-			document.getElementById(row + '' + column).style.backgroundColor = 'green';
-		});
-	}
-};
-
-},{"../app/models/vote-accumulator":10}],4:[function(require,module,exports){
-'use strict';
-
 Object.defineProperty(exports, '__esModule', {
 	value: true
 });
@@ -403,7 +28,7 @@ var LandmarkInitializationSet = (function () {
 	function LandmarkInitializationSet() {
 		var nParticles = arguments[0] === undefined ? 500 : arguments[0];
 		var stdRange = arguments[1] === undefined ? 4 : arguments[1];
-		var randomParticles = arguments[2] === undefined ? 10 : arguments[2];
+		var randomParticles = arguments[2] === undefined ? 0 : arguments[2];
 		var effectiveParticleThreshold = arguments[3] === undefined ? undefined : arguments[3];
 
 		_classCallCheck(this, LandmarkInitializationSet);
@@ -413,12 +38,12 @@ var LandmarkInitializationSet = (function () {
 		this.randomParticles = randomParticles;
 
 		if (effectiveParticleThreshold === undefined) {
-			this.effectiveParticleThreshold = nParticles / 3;
+			this.effectiveParticleThreshold = nParticles / 1.5;
 		} else {
 			this.effectiveParticleThreshold = effectiveParticleThreshold;
 		}
 
-		this.particles = new Map();
+		this.particleSetMap = new Map();
 	}
 
 	_createClass(LandmarkInitializationSet, [{
@@ -433,10 +58,10 @@ var LandmarkInitializationSet = (function () {
    */
 		value: function addMeasurement(uid, x, y, r) {
 			if (!this.has(uid)) {
-				this.particles.set(uid, new _landmarkParticleSet2['default'](this.nParticles, this.stdRange, this.randomParticles, this.effectiveParticleThreshold));
+				this.particleSetMap.set(uid, new _landmarkParticleSet2['default'](this.nParticles, this.stdRange, this.randomParticles, this.effectiveParticleThreshold));
 			}
 
-			this.particles.get(uid).addMeasurement(x, y, r);
+			this.particleSetMap.get(uid).addMeasurement(x, y, r);
 
 			return this;
 		}
@@ -449,7 +74,7 @@ var LandmarkInitializationSet = (function () {
    * @return {Boolean}
    */
 		value: function has(uid) {
-			return this.particles.has(uid);
+			return this.particleSetMap.has(uid);
 		}
 	}, {
 		key: 'estimate',
@@ -460,7 +85,7 @@ var LandmarkInitializationSet = (function () {
    * @return {Object}
    */
 		value: function estimate(uid) {
-			return this.particles.get(uid).positionEstimate();
+			return this.particleSetMap.get(uid).positionEstimate();
 		}
 	}, {
 		key: 'remove',
@@ -471,7 +96,17 @@ var LandmarkInitializationSet = (function () {
    * @return {void}
    */
 		value: function remove(uid) {
-			this.particles['delete'](uid);
+			this.particleSetMap['delete'](uid);
+		}
+	}, {
+		key: 'particleSets',
+
+		/**
+   * Return all particle sets
+   * @return {Array}
+   */
+		value: function particleSets() {
+			return this.particleSetMap.values();
 		}
 	}]);
 
@@ -481,7 +116,7 @@ var LandmarkInitializationSet = (function () {
 exports['default'] = LandmarkInitializationSet;
 module.exports = exports['default'];
 
-},{"./landmark-particle-set":5}],5:[function(require,module,exports){
+},{"./landmark-particle-set":2}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -543,7 +178,7 @@ var LandmarkParticleSet = (function () {
 				var weights = this.particles.map(function (p) {
 					return p.weight;
 				});
-				if (_utilSampling.numberOfEffectiveParticles(weights) < this.effectiveParticleThreshold) {
+				if ((0, _utilSampling.numberOfEffectiveParticles)(weights) < this.effectiveParticleThreshold) {
 
 					//Use low variance resampling to generate a set of new particles
 					//Returns a list of N-randomParticles particles
@@ -566,19 +201,35 @@ var LandmarkParticleSet = (function () {
    * @return {Object}
    */
 		value: function positionEstimate() {
+
+			//Fast check, never return before we have at least multiple measurements
 			if (this.measurements < 10) {
-				return { estimate: 0, x: 0, y: 0 };
+				return { estimate: 0, x: 0, y: 0, varX: 1, varY: 1 };
 			}
 
-			var _bestParticle = this.bestParticle();
+			var _particleVariance = this._particleVariance();
 
-			var x = _bestParticle.x;
-			var y = _bestParticle.y;
+			var varX = _particleVariance.varX;
+			var varY = _particleVariance.varY;
 
-			return {
-				estimate: 1,
-				x: x, y: y
-			};
+			//@todo Make this constraint configurable
+			if (varX < 8 && varY < 8) {
+
+				//Compute a weighted average of the particles
+
+				var _averagePosition = this.averagePosition();
+
+				var x = _averagePosition.x;
+				var y = _averagePosition.y;
+
+				return {
+					estimate: 1,
+					x: x, y: y,
+					varX: varX, varY: varY
+				};
+			}
+
+			return { estimate: 0, x: 0, y: 0, varX: 1, varY: 1 };
 		}
 	}, {
 		key: 'bestParticle',
@@ -599,6 +250,46 @@ var LandmarkParticleSet = (function () {
 			return best;
 		}
 	}, {
+		key: 'averagePosition',
+
+		/**
+   * Return a weighted average of this particle set
+   * @return {Object} x,y
+   */
+		value: function averagePosition() {
+
+			var weights = (0, _utilSampling.normalizeWeights)(this.particles.map(function (p) {
+				return p.weight;
+			}));
+
+			return {
+				x: this.particles.reduce(function (prev, p, i) {
+					return prev + weights[i] * p.x;
+				}, 0),
+				y: this.particles.reduce(function (prev, p, i) {
+					return prev + weights[i] * p.y;
+				}, 0)
+			};
+		}
+	}, {
+		key: '_particleVariance',
+
+		/**
+   * Return the particle variance in X and Y
+   * @return {Object} varx, vary
+   */
+		value: function _particleVariance() {
+
+			return {
+				varX: (0, _utilMath.variance)(this.particles, function (p) {
+					return p.x;
+				}),
+				varY: (0, _utilMath.variance)(this.particles, function (p) {
+					return p.y;
+				})
+			};
+		}
+	}, {
 		key: '_resample',
 
 		/**
@@ -613,7 +304,7 @@ var LandmarkParticleSet = (function () {
 				return p.weight;
 			});
 
-			return _utilSampling.lowVarianceSampling(nSamples, weights).map(function (i) {
+			return (0, _utilSampling.lowVarianceSampling)(nSamples, weights).map(function (i) {
 				return {
 					x: _this.particles[i].x,
 					y: _this.particles[i].y,
@@ -642,9 +333,9 @@ var LandmarkParticleSet = (function () {
 
 			for (var i = 0; i < n; i++) {
 				var theta = i * deltaTheta;
-				var range = r + _utilMath.randn(0, this.stdRange);
+				var range = r + (0, _utilMath.randn)(0, this.stdRange);
 
-				var _polarToCartesian = _utilCoordinateSystem.polarToCartesian(range, theta);
+				var _polarToCartesian = (0, _utilCoordinateSystem.polarToCartesian)(range, theta);
 
 				var dx = _polarToCartesian.dx;
 				var dy = _polarToCartesian.dy;
@@ -676,7 +367,7 @@ var LandmarkParticleSet = (function () {
 				//Update the weight accordingly
 				//p(r) = N(r|dist,sd)
 
-				var weight = _utilMath.pdfn(r, dist, _this2.stdRange);
+				var weight = (0, _utilMath.pdfn)(r, dist, _this2.stdRange);
 
 				p.weight = p.weight * weight;
 			});
@@ -689,7 +380,7 @@ var LandmarkParticleSet = (function () {
 exports['default'] = LandmarkParticleSet;
 module.exports = exports['default'];
 
-},{"../util/coordinate-system":13,"../util/math":15,"../util/sampling":16}],6:[function(require,module,exports){
+},{"../util/coordinate-system":10,"../util/math":12,"../util/sampling":13}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -769,8 +460,6 @@ var ParticleSet = (function () {
 			var _this = this;
 
 			if (obs !== {}) {
-				var _landmarkInitSet$estimate;
-
 				(function () {
 					var uid = obs.uid;
 					var r = obs.r;
@@ -784,15 +473,19 @@ var ParticleSet = (function () {
 
 							_this.landmarkInitSet.addMeasurement(uid, uX, uY, r);
 
-							_landmarkInitSet$estimate = _this.landmarkInitSet.estimate(uid);
+							var _landmarkInitSet$estimate = _this.landmarkInitSet.estimate(uid);
+
 							var estimate = _landmarkInitSet$estimate.estimate;
 							var x = _landmarkInitSet$estimate.x;
 							var y = _landmarkInitSet$estimate.y;
+							var varX = _landmarkInitSet$estimate.varX;
+							var varY = _landmarkInitSet$estimate.varY;
 
 							if (estimate > 0.6) {
 
 								_this.particleList.forEach(function (p) {
-									p.addLandmark({ uid: uid, r: r }, { x: x, y: y });
+									console.log({ varX: varX, varY: varY });
+									p.addLandmark({ uid: uid, r: r }, { x: x, y: y }, { varX: varX, varY: varY });
 								});
 
 								_this.initialisedLandmarks.push(uid);
@@ -823,11 +516,14 @@ var ParticleSet = (function () {
 			var weights = this.particleList.map(function (p) {
 				return p.weight;
 			});
-			if (_utilSampling.numberOfEffectiveParticles(weights) < this.nParticles * 0.3) {
+			if ((0, _utilSampling.numberOfEffectiveParticles)(weights) < this.nParticles * 0.5) {
 
-				this.particleList = _utilSampling.lowVarianceSampling(this.nParticles, weights).map(function (i) {
+				this.particleList = (0, _utilSampling.lowVarianceSampling)(this.nParticles, weights).map(function (i) {
 					return new _particle2['default']({}, _this2.particleList[i]);
 				});
+			} else {
+				console.log('Not resampling');
+				console.log((0, _utilSampling.numberOfEffectiveParticles)(weights));
 			}
 
 			return this;
@@ -880,7 +576,7 @@ var ParticleSet = (function () {
 exports['default'] = ParticleSet;
 module.exports = exports['default'];
 
-},{"../util/sampling":16,"./landmark-init-set":4,"./particle":7}],7:[function(require,module,exports){
+},{"../util/sampling":13,"./landmark-init-set":1,"./particle":4}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -941,10 +637,10 @@ var Particle = (function () {
    */
 		value: function samplePose(control) {
 
-			//Do something with the control here
-			//Random values for now
-			var r = control.r + _utilMath.randn(0, 0.5);
-			var theta = control.theta + _utilMath.randn(0, 0.01);
+			//Sample a pose from the 'control'
+			//@todo Improve pose sampling
+			var r = Math.abs((0, _utilMath.randn)(control.r, 0.3));
+			var theta = (0, _utilMath.randn)(control.theta, 0.05 * Math.PI);
 
 			this.user.move({ r: r, theta: theta });
 
@@ -969,6 +665,10 @@ var Particle = (function () {
    * Register a new landmark
    * @param {string} options.uid
    * @param {float} options.r
+   * @param {[type]} options.x 	Initial x position
+   * @param {[type]} options.y    Initial y
+   * @param {[type]} options.varX Cov in X direction
+   * @param {[type]} options.varY Cov in Y direction
    */
 		value: function addLandmark(_ref2, _ref3) {
 			var uid = _ref2.uid;
@@ -976,10 +676,19 @@ var Particle = (function () {
 			var x = _ref3.x;
 			var y = _ref3.y;
 
-			//@todo find better values for initial covariance
-			var cov = [[0.01, 0.01], [0.01, 0.01]];
+			var _ref4 = arguments[2] === undefined ? { varX: 1, varY: 1 } : arguments[2];
 
-			this.landmarks.set(uid, { x: x, y: y, cov: cov });
+			var varX = _ref4.varX;
+			var varY = _ref4.varY;
+
+			//@todo find better values for initial covariance
+			var landmark = {
+				x: x,
+				y: y,
+				cov: [[varX, 0], [0, varY]]
+			};
+
+			this.landmarks.set(uid, landmark);
 		}
 	}, {
 		key: 'processObservation',
@@ -990,9 +699,9 @@ var Particle = (function () {
    * @param  {float} options.r    range measurement
    * @return {void}
    */
-		value: function processObservation(_ref4) {
-			var uid = _ref4.uid;
-			var r = _ref4.r;
+		value: function processObservation(_ref5) {
+			var uid = _ref5.uid;
+			var r = _ref5.r;
 
 			//Find the correct EKF
 			var l = this.landmarks.get(uid);
@@ -1003,9 +712,9 @@ var Particle = (function () {
 			var dy = this.user.y - l.y;
 
 			//@todo find better values for default coviarance
-			var errorCov = 0.01 * (Math.random() - 0.5);
+			var errorCov = (0, _utilMath.randn)(2, 0.1);
 
-			var dist = Math.max(0.001, Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)));
+			var dist = Math.max(0.001, Math.sqrt(dx * dx + dy * dy));
 
 			//Compute innovation: difference between the observation and the predicted value
 			var v = r - dist;
@@ -1013,7 +722,7 @@ var Particle = (function () {
 			//Compute Jacobian
 			var H = [-dx / dist, -dy / dist];
 
-			//Compute innovation covariance
+			//Compute covariance of the innovation
 			//covV = H * Cov_s * H^T + error
 			var HxCov = [l.cov[0][0] * H[0] + l.cov[0][1] * H[1], l.cov[1][0] * H[0] + l.cov[1][1] * H[1]];
 
@@ -1026,9 +735,11 @@ var Particle = (function () {
 			var newX = l.x + K[0] * v;
 			var newY = l.y + K[1] * v;
 
-			var deltaCov = K[0] * K[0] * covV + K[1] * K[1] * covV;
+			//Calculate the new covariance
+			//cov_t = cov_t-1 - K * covV * K^T
+			var updateCov = [[K[0] * K[0] * covV, K[0] * K[1] * covV], [K[1] * K[0] * covV, K[1] * K[1] * covV]];
 
-			var newCov = [[l.cov[0][0] - deltaCov, l.cov[0][1] - deltaCov], [l.cov[1][0] - deltaCov, l.cov[1][1] - deltaCov]];
+			var newCov = [[l.cov[0][0] - updateCov[0][0], l.cov[0][1] - updateCov[0][1]], [l.cov[1][0] - updateCov[1][0], l.cov[1][1] - updateCov[1][1]]];
 
 			//Update the weight of the particle
 			this.weight = this.weight - v * (1 / covV) * v;
@@ -1104,7 +815,7 @@ var Particle = (function () {
 exports['default'] = Particle;
 module.exports = exports['default'];
 
-},{"../util/math":15,"./user":9}],8:[function(require,module,exports){
+},{"../util/math":12,"./user":6}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1257,7 +968,7 @@ var Sensor = (function () {
 exports["default"] = Sensor;
 module.exports = exports["default"];
 
-},{}],9:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1320,16 +1031,14 @@ var User = (function () {
 			var r = _ref2.r;
 			var theta = _ref2.theta;
 
-			var dTheta = _utilCoordinateSystem.addTheta(theta, this.theta);
-
-			var _polarToCartesian = _utilCoordinateSystem.polarToCartesian(r, dTheta);
+			var _polarToCartesian = (0, _utilCoordinateSystem.polarToCartesian)(r, theta);
 
 			var dx = _polarToCartesian.dx;
 			var dy = _polarToCartesian.dy;
 
 			this.x += dx;
 			this.y += dy;
-			this.theta = dTheta;
+			this.theta = theta;
 
 			this.trace.add({ x: this.x, y: this.y, theta: this.theta });
 
@@ -1358,7 +1067,7 @@ var User = (function () {
 exports['default'] = User;
 module.exports = exports['default'];
 
-},{"../util/coordinate-system":13,"../util/linked-list":14}],10:[function(require,module,exports){
+},{"../util/coordinate-system":10,"../util/linked-list":11}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1623,7 +1332,7 @@ var VoteAccumulator = (function () {
 exports['default'] = VoteAccumulator;
 module.exports = exports['default'];
 
-},{}],11:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1632,12 +1341,6 @@ Object.defineProperty(exports, '__esModule', {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-/**
- * Convert RSSI to distance
- * @param  {float} rssi
- * @param  {object} landmarkConfig Should at least contain a txPower and n field
- * @return {float}
- */
 exports.rssiToDistance = rssiToDistance;
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
@@ -1890,7 +1593,7 @@ var Landmark = (function () {
    * @return {float} RSSI value
    */
 		value: function rssiAtRaw(x, y) {
-			return this.txPower - 10 * this.n * _utilMath.log(Math.max(this.distanceTo(x, y), 0.1), 10);
+			return this.txPower - 10 * this.n * (0, _utilMath.log)(Math.max(this.distanceTo(x, y), 0.1), 10);
 		}
 	}, {
 		key: 'rssiAt',
@@ -1902,18 +1605,25 @@ var Landmark = (function () {
    * @return {float}
    */
 		value: function rssiAt(x, y) {
-			return this.rssiAtRaw(x, y) + _utilMath.randn(0, this.noise);
+			return this.rssiAtRaw(x, y) + (0, _utilMath.randn)(0, this.noise);
 		}
 	}]);
 
 	return Landmark;
 })();
 
+/**
+ * Convert RSSI to distance
+ * @param  {float} rssi
+ * @param  {object} landmarkConfig Should at least contain a txPower and n field
+ * @return {float}
+ */
+
 function rssiToDistance(rssi, landmarkConfig) {
 	return Math.pow(10, (rssi - landmarkConfig.txPower) / (-10 * landmarkConfig.n));
 }
 
-},{"../util/math":15}],12:[function(require,module,exports){
+},{"../util/math":12}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1922,9 +1632,7 @@ Object.defineProperty(exports, '__esModule', {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { desc = parent = getter = undefined; _again = false; var object = _x,
-    property = _x2,
-    receiver = _x3; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -1994,7 +1702,7 @@ var SimulatedUser = (function (_User) {
 			var lastX = this.x;
 			var lastY = this.y;
 
-			var _polarToCartesian = _utilCoordinateSystem.polarToCartesian(r, _utilCoordinateSystem.addTheta(theta, this.theta));
+			var _polarToCartesian = (0, _utilCoordinateSystem.polarToCartesian)(r, (0, _utilCoordinateSystem.addTheta)(theta, this.theta));
 
 			var dx = _polarToCartesian.dx;
 			var dy = _polarToCartesian.dy;
@@ -2003,10 +1711,7 @@ var SimulatedUser = (function (_User) {
 			var newY = this._constrainCoordinate(lastY + dy, this.yRange - this.padding, -this.yRange + this.padding);
 
 			//Compute the new control
-			var control = _utilCoordinateSystem.cartesianToPolar(newX - lastX, newY - lastY);
-
-			//Update theta by substracting the current pose
-			control.theta -= this.theta;
+			var control = (0, _utilCoordinateSystem.cartesianToPolar)(newX - lastX, newY - lastY);
 
 			//Move to the new position
 			this.move({ r: control.r, theta: control.theta });
@@ -2062,7 +1767,7 @@ var SimulatedUser = (function (_User) {
 				this.iteration++;
 			}
 
-			return { r: Math.abs(_utilMath.randn(this.v, 1)), theta: _utilMath.randn(0.1, 0.2) };
+			return { r: Math.abs((0, _utilMath.randn)(this.v, 1)), theta: (0, _utilMath.randn)(0.1, 0.2) };
 		}
 	}]);
 
@@ -2072,35 +1777,23 @@ var SimulatedUser = (function (_User) {
 exports['default'] = SimulatedUser;
 module.exports = exports['default'];
 
-},{"../models/user":9,"../util/coordinate-system":13,"../util/math":15}],13:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
+},{"../models/user":6,"../util/coordinate-system":10,"../util/math":12}],10:[function(require,module,exports){
 /**
  * Add two radials
  * @param {float} t1
  * @param {float} t2
  * @return {float} Sum of t1 and t2
  */
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
 exports.addTheta = addTheta;
-
-/**
- * Convert polar coordinates to cartesian coordinates
- * @param  {float} r
- * @param  {float} theta
- * @return {object}
- */
 exports.polarToCartesian = polarToCartesian;
-
-/**
- * Convert cartesian coordiantes to polar coordinates
- * @param  {float} dx  x value from 0,0
- * @param  {float} dy  y value from 0,0
- * @return {object}
- */
 exports.cartesianToPolar = cartesianToPolar;
+exports.degreeToRadian = degreeToRadian;
+exports.rotationToLocalNorth = rotationToLocalNorth;
 
 function addTheta(t1, t2) {
 	var theta = t1 + t2;
@@ -2115,12 +1808,26 @@ function addTheta(t1, t2) {
 	return theta;
 }
 
+/**
+ * Convert polar coordinates to cartesian coordinates
+ * @param  {float} r
+ * @param  {float} theta
+ * @return {object}
+ */
+
 function polarToCartesian(r, theta) {
 	var dx = r * Math.cos(theta);
 	var dy = r * Math.sin(theta);
 
 	return { dx: dx, dy: dy };
 }
+
+/**
+ * Convert cartesian coordiantes to polar coordinates
+ * @param  {float} dx  x value from 0,0
+ * @param  {float} dy  y value from 0,0
+ * @return {object}
+ */
 
 function cartesianToPolar(dx, dy) {
 
@@ -2149,7 +1856,31 @@ function cartesianToPolar(dx, dy) {
 	return { r: r, theta: theta };
 }
 
-},{}],14:[function(require,module,exports){
+/**
+ * Convert a value in degrees to a radian value
+ * @param  {Number} degrees
+ * @return {Number}
+ */
+
+function degreeToRadian(degrees) {
+	return degrees * (Math.PI / 180);
+}
+
+/**
+ * Finds the smallest rotation to the local north (wich is 90deg on a radial axis)
+ * @param  {Number} degrees
+ * @return {Number}
+ */
+
+function rotationToLocalNorth(degrees) {
+
+	var left = degrees - 90;
+	var right = 360 - degrees + 90;
+
+	return Math.min(left, right);
+}
+
+},{}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -2206,6 +1937,26 @@ var LinkedList = (function () {
 			return values;
 		}
 	}, {
+		key: 'currentValues',
+
+		/**
+   * Only return the elements of this list and not of its parents
+   * @return {Array}
+   */
+		value: function currentValues() {
+			return this.list.slice(1);
+		}
+	}, {
+		key: 'hasParent',
+
+		/**
+   * Return true when this parent has a parent list
+   * @return {Boolean}
+   */
+		value: function hasParent() {
+			return this.list[0] !== undefined;
+		}
+	}, {
 		key: 'last',
 
 		/**
@@ -2233,45 +1984,23 @@ var LinkedList = (function () {
 exports['default'] = LinkedList;
 module.exports = exports['default'];
 
-},{}],15:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
+},{}],12:[function(require,module,exports){
 /**
  * Random following normal distribution
  * @param  {float} mean mean
  * @param  {float} sd   standard deviation
  * @return {float}
  */
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
 exports.randn = randn;
-
-/**
- * pdf for a normal distribution
- * @param  {Number} x
- * @param  {Number} mean
- * @param  {Number} sd
- * @return {Number}
- */
 exports.pdfn = pdfn;
-
-/**
- * Compute the log with a given base
- *
- * Used primarily as log10 is not implemented yet on mobile browsers
- * @param  {int}
- * @param  {int}
- * @return {float}
- */
 exports.log = log;
-
-/**
- * Calculates two eigenvalues and eigenvectors from a 2x2 covariance matrix
- * @param  {Array} cov
- * @return {object}
- */
 exports.eigenvv = eigenvv;
+exports.variance = variance;
 
 function randn(mean, sd) {
 
@@ -2293,13 +2022,36 @@ function randn(mean, sd) {
 	return v / u * sd + mean;
 }
 
+/**
+ * pdf for a normal distribution
+ * @param  {Number} x
+ * @param  {Number} mean
+ * @param  {Number} sd
+ * @return {Number}
+ */
+
 function pdfn(x, mean, sd) {
 	return 1 / (sd * Math.sqrt(2 * Math.PI)) * Math.exp(-Math.pow(x - mean, 2) / (2 * sd * sd));
 }
 
+/**
+ * Compute the log with a given base
+ *
+ * Used primarily as log10 is not implemented yet on mobile browsers
+ * @param  {int}
+ * @param  {int}
+ * @return {float}
+ */
+
 function log(x, base) {
 	return Math.log(x) / Math.log(base);
 }
+
+/**
+ * Calculates two eigenvalues and eigenvectors from a 2x2 covariance matrix
+ * @param  {Array} cov
+ * @return {object}
+ */
 
 function eigenvv(cov) {
 
@@ -2327,47 +2079,45 @@ function eigenvv(cov) {
 	};
 }
 
-},{}],16:[function(require,module,exports){
-"use strict";
+/**
+ * Calculate the variance of an array given a value function
+ * @param  {Array} data
+ * @param  {Function} valueFunc Function that maps an array element to a number
+ * @return {Number}
+ */
 
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
+function variance(data, valueFunc) {
+
+	var sum = 0;
+	var sumSq = 0;
+	var n = data.length;
+
+	data.forEach(function (d) {
+
+		var value = valueFunc(d);
+
+		sum += value;
+		sumSq += value * value;
+	});
+
+	return (sumSq - sum * sum / n) / n;
+}
+
+},{}],13:[function(require,module,exports){
 /**
  * Normalize a set of weights
  * @param  {Array} weights
  * @return {Array}
  */
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
 exports.normalizeWeights = normalizeWeights;
-
-/**
- * Convert an array of weights to an cumulative sum array
- * @param  {Array} weights
- * @return {Array}
- */
 exports.weightedCumulativeSum = weightedCumulativeSum;
-
-/**
- * Samples a new set using a low variance sampler from a array of weights
- * @param {Number} nSamples Number of samples to sample
- * @param {Array} weights 	Weight array
- * @return {Array} An array with indices corresponding to the selected weights
- */
 exports.lowVarianceSampling = lowVarianceSampling;
-
-/**
- * Sample using roulette wheel sampler from a array of weights
- * @param {Number} nSamples Number of samples to sample
- * @param {Array} weights 	Weight array
- * @return {Array} An array with indices corresponding to the selected weights
- */
 exports.rouletteWheelSampling = rouletteWheelSampling;
-
-/**
- * Calculate the effective number of particles
- * @see http://en.wikipedia.org/wiki/Particle_filter#Sequential_importance_resampling_.28SIR.29
- * @return {Number}
- */
 exports.numberOfEffectiveParticles = numberOfEffectiveParticles;
 
 function normalizeWeights(weights) {
@@ -2380,6 +2130,12 @@ function normalizeWeights(weights) {
 	});
 }
 
+/**
+ * Convert an array of weights to an cumulative sum array
+ * @param  {Array} weights
+ * @return {Array}
+ */
+
 function weightedCumulativeSum(weights) {
 
 	var normalisedWeights = normalizeWeights(weights);
@@ -2390,6 +2146,13 @@ function weightedCumulativeSum(weights) {
 		return total;
 	});
 }
+
+/**
+ * Samples a new set using a low variance sampler from a array of weights
+ * @param {Number} nSamples Number of samples to sample
+ * @param {Array} weights 	Weight array
+ * @return {Array} An array with indices corresponding to the selected weights
+ */
 
 function lowVarianceSampling(nSamples, weights) {
 
@@ -2417,6 +2180,13 @@ function lowVarianceSampling(nSamples, weights) {
 	return set;
 }
 
+/**
+ * Sample using roulette wheel sampler from a array of weights
+ * @param {Number} nSamples Number of samples to sample
+ * @param {Array} weights 	Weight array
+ * @return {Array} An array with indices corresponding to the selected weights
+ */
+
 function rouletteWheelSampling(nSamples, weights) {
 
 	var stackedWeights = weightedCumulativeSum(weights);
@@ -2439,6 +2209,12 @@ function rouletteWheelSampling(nSamples, weights) {
 	return set;
 }
 
+/**
+ * Calculate the effective number of particles
+ * @see http://en.wikipedia.org/wiki/Particle_filter#Sequential_importance_resampling_.28SIR.29
+ * @return {Number}
+ */
+
 function numberOfEffectiveParticles(weights) {
 	var normalisedWeights = normalizeWeights(weights);
 
@@ -2447,7 +2223,7 @@ function numberOfEffectiveParticles(weights) {
 	});
 }
 
-},{}],17:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -2645,6 +2421,57 @@ var Visualizer = (function () {
 			return this;
 		}
 	}, {
+		key: 'plotLandmarkInitParticles',
+
+		/**
+   * Plot a landmark initialisation particle set
+   * @param  {LandmarkInitializationSet} landmarkSet
+   * @param  {String} fillStyle
+   * @return {Visualizer}
+   */
+		value: function plotLandmarkInitParticles(landmarkSet) {
+			var _this5 = this;
+
+			var fillStyle = arguments[1] === undefined ? '#2EFF3C' : arguments[1];
+
+			this.ctx.fillStyle = fillStyle;
+			var size = 0.5;
+
+			var _iteratorNormalCompletion = true;
+			var _didIteratorError = false;
+			var _iteratorError = undefined;
+
+			try {
+				for (var _iterator = landmarkSet.particleSets()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					var set = _step.value;
+
+					set.particles.forEach(function (p) {
+
+						//Compensate for landmark size
+						var x = _this5._tx(p.x) - 0.5 * size;
+						var y = _this5._ty(p.y) - 0.5 * size;
+
+						_this5.ctx.fillRect(x, y, size, size);
+					});
+				}
+			} catch (err) {
+				_didIteratorError = true;
+				_iteratorError = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion && _iterator['return']) {
+						_iterator['return']();
+					}
+				} finally {
+					if (_didIteratorError) {
+						throw _iteratorError;
+					}
+				}
+			}
+
+			return this;
+		}
+	}, {
 		key: 'plotLandmarksErrors',
 
 		/**
@@ -2653,10 +2480,10 @@ var Visualizer = (function () {
    * @return {Visualizer}
    */
 		value: function plotLandmarksErrors(particle) {
-			var _this5 = this;
+			var _this6 = this;
 
 			particle.landmarks.forEach(function (l) {
-				var _eigenvv = _utilMath.eigenvv(l.cov);
+				var _eigenvv = (0, _utilMath.eigenvv)(l.cov);
 
 				var values = _eigenvv.values;
 				var vectors = _eigenvv.vectors;
@@ -2674,13 +2501,13 @@ var Visualizer = (function () {
 
 				var beginX = 0;
 				var beginY = 0;
-				_this5.ctx.beginPath();
-				_this5.ctx.strokeStyle = '#B06D6D';
+				_this6.ctx.beginPath();
+				_this6.ctx.strokeStyle = '#B06D6D';
 				for (var i = 0; i < 16; i++) {
 
 					var r = Math.PI * (i / 8);
-					var x = _this5._tx(minor[0] * Math.cos(r) + major[0] * Math.sin(r) + l.x);
-					var y = _this5._ty(minor[1] * Math.cos(r) + major[1] * Math.sin(r) + l.y);
+					var x = _this6._tx(minor[0] * Math.cos(r) + major[0] * Math.sin(r) + l.x);
+					var y = _this6._ty(minor[1] * Math.cos(r) + major[1] * Math.sin(r) + l.y);
 
 					if (isNaN(x)) {
 						console.log({ m0: minor[0], m1: minor[1], mm0: major[0], mm1: major[1] });
@@ -2688,17 +2515,17 @@ var Visualizer = (function () {
 					}
 
 					if (i === 0) {
-						_this5.ctx.moveTo(x, y);
+						_this6.ctx.moveTo(x, y);
 						beginX = x;
 						beginY = y;
 					} else {
-						_this5.ctx.lineTo(x, y);
+						_this6.ctx.lineTo(x, y);
 					}
 				}
 
-				_this5.ctx.lineTo(beginX, beginY);
-				_this5.ctx.stroke();
-				_this5.ctx.closePath();
+				_this6.ctx.lineTo(beginX, beginY);
+				_this6.ctx.stroke();
+				_this6.ctx.closePath();
 			});
 
 			return this;
@@ -2748,7 +2575,383 @@ var Visualizer = (function () {
 exports['default'] = Visualizer;
 module.exports = exports['default'];
 
-},{"../util/math":15}]},{},[1,3,2])
+},{"../util/math":12}],15:[function(require,module,exports){
+'use strict';
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _modelsParticleSet = require('./models/particle-set');
+
+var _modelsParticleSet2 = _interopRequireDefault(_modelsParticleSet);
+
+var _viewVisualizer = require('./view/visualizer');
+
+var _viewVisualizer2 = _interopRequireDefault(_viewVisualizer);
+
+var _simulationUser = require('./simulation/user');
+
+var _simulationUser2 = _interopRequireDefault(_simulationUser);
+
+var _simulationLandmark = require('./simulation/landmark');
+
+var _modelsSensor = require('./models/sensor');
+
+var _modelsSensor2 = _interopRequireDefault(_modelsSensor);
+
+window.SlacENV = 'debug';
+
+window.SlacApp = {
+
+	particleSet: undefined,
+	visualizer: undefined,
+	user: undefined,
+	landmarks: undefined,
+	sensor: undefined,
+
+	landmarkConfig: {
+		n: 2,
+		txPower: -12,
+		noise: 2,
+		range: 20
+	},
+
+	initialize: function initialize() {
+		'use strict';
+
+		this.particleSet = new _modelsParticleSet2['default'](40, { x: 0, y: 0, theta: 0 });
+		this.visualizer = new _viewVisualizer2['default']('slac-map', 100, 100);
+		this.user = new _simulationUser2['default']({ x: 0, y: 0, theta: 0 }, 2, { xRange: 50, yRange: 50, padding: 5 });
+
+		//Add simulated data to the user object
+		//this._addSimulatedData();
+
+		this.landmarks = new _simulationLandmark.SimulatedLandmarkSet(5, { xRange: 50, yRange: 50 }, 50, this.landmarkConfig);
+		this.sensor = new _modelsSensor2['default'](this.landmarkConfig);
+
+		//Start broadcasting of the simulated landmarks
+		//Broadcasts are sent to the sensor, the user object is used to find nearby landmarks
+		this.landmarks.startBroadcast(this.sensor, this.user);
+	},
+
+	step: function step() {
+		var _this = this;
+
+		this.user.randomWalk();
+
+		//Get accelerometer data
+		// ...
+
+		//Transform to angle and distance
+		//Simulate this by getting the control from the simulated user
+
+		var _user$getLastControl = this.user.getLastControl();
+
+		var r = _user$getLastControl.r;
+		var theta = _user$getLastControl.theta;
+
+		//Sample a new pose for each particle in the set
+		this.particleSet.samplePose({ r: r, theta: theta });
+
+		//Get the latest observation
+		var observations = this.sensor.getObservations();
+
+		observations.forEach(function (obs) {
+			return _this.particleSet.processObservation(obs);
+		});
+
+		this.particleSet.resample();
+
+		//Update the canvas
+		this.visualizer.clearCanvas().plotUserTrace(this.user, 'blue', this.landmarkConfig.range).plotObjects(this.landmarks.landmarks).plotParticleSet(this.particleSet);
+
+		if (window.SlacENV == 'debug') {
+			this.visualizer.plotLandmarkPredictions(this.particleSet.particles(), this.landmarks);
+			this.visualizer.plotLandmarkInitParticles(this.particleSet.landmarkInitSet);
+		} else {
+			this.visualizer.plotLandmarkPredictions([this.particleSet.bestParticle()], this.landmarks);
+		}
+	},
+
+	_addSimulatedData: function _addSimulatedData() {
+		var thetas = [0, 0, 0, 0, 0, 0, 0.08099418560036185, 0, 0, 0, 0, 0, 0, 0, -0.002454369260617026, 0, 0, 0, 0, 0, 0, -0.000818123086872342, 0, 0, 0, 0, 0, 0, 0, 0.000545415391248228, 0, 0, 0, 0, 0, 0, 0, 0.001636246173744684, 0, 0, 0, 0, 0, 0, -0.000272707695624114, 0, 0, 0, 0, 0, 0, 0, 0.000272707695624114, 0, 0, 0, 0, 0, 0, 0.004363323129985824, 0, 0, 0, 0, 0, 0, 0, 0.006544984694978736, 0, 0, 0, 0, 0, 0, -0.0029997846518652537, 0, 0, 0, 0, 0, 0, 0, -0.0029997846518652537, 0, 0, 0, 0, 0, 0, 0.001908953869368798, 0, 0, 0, 0, 0, 0, 0, 0.000818123086872342, 0, 0, 0, 0, 0, 0, -0.006272276999354622, 0, 0, 0, 0, 0, 0, 0, -0.001090830782496456, 0, 0, 0, 0, 0, 0, 0.08290313946973066, 0, 0, 0, 0, 0, 0, -0.00545415391248228, 0, 0, 0, 0, 0, 0, -0.11344640137963143, 0, 0, 0, 0, 0, 0, 0, -0.09272061651219876, 0, 0, 0, 0, 0, 0, 0, -0.007363107781851078, 0, 0, 0, 0, 0, 0, -0.20453077171808548, 0, 0, 0, 0, 0, 0, 0, -0.1598067096357308, 0, 0, 0, 0, 0, 0, 0, -0.1990766178056032, 0, 0, 0, 0, 0, 0, -0.241619018322965, 0, 0, 0, 0, 0, 0, 0, -0.1562615095926173, 0, 0, 0, 0, 0, 0, -0.22552926428114228, 0, 0, 0, 0, 0, 0, 0, -0.23425591054111392, 0, 0, 0, 0, 0, 0, -0.31334114227210697, 0, 0, 0, 0, 0, 0, -0.22362031041177347, 0, 0, 0, 0, 0, 0, 0, -0.0681769239060285, 0, 0, 0, 0, 0, 0, -0.12871803233458182, 0, 0, 0, 0, 0, 0, 0, -0.08426667794785123, 0, 0, 0, 0, 0, 0, 0, 0.0995383089028016, 0, 0, 0, 0, 0, 0, 0.006544984694978736, 0, 0, 0, 0, 0, 0, 0, 0.00272707695624114, 0, 0, 0, 0, 0, 0, -0.000818123086872342, 0, 0, 0, 0, 0, 0, 0, 0.0029997846518652537, 0, 0, 0, 0, 0, 0, 0, 0.003272492347489368, 0, 0, 0, 0, 0, 0, 0, 0.06899504699290084, 0, 0, 0, 0, 0, 0, 0.06599526234103559, 0, 0, 0, 0, 0, 0, 0, 0.0719948316447661, 0, 0, 0, 0, 0, 0, 0.007090400086226964, 0, 0, 0, 0, 0, 0, 0, -0.0029997846518652537, 0, 0, 0, 0, 0, 0, -0.13199052468207118, 0, 0, 0, 0, 0, 0, 0, -0.12408200150897186, 0, 0, 0, 0, 0, 0, 0, -0.1892591407631351, 0, 0, 0, 0, 0, 0, -0.13335406316019174, 0, 0, 0, 0, 0, 0, 0, -0.13717197089892932, 0, 0, 0, 0, 0, 0, 0, -0.13799009398580167, 0, 0, 0, 0, 0, 0, -0.10471975511965978, 0, 0, 0, 0, 0, 0, 0, -0.10608329359778035, 0, 0, 0, 0, 0, 0, -0.0703585854710214, 0, 0, 0, 0, 0, 0, 0, -0.004363323129985824, 0, 0, 0, 0, 0, 0, 0, 0.001090830782496456, 0, 0, 0, 0, 0, 0, 0, 0.004636030825609938, 0, 0, 0, 0, 0, 0, 0.08699375490409236, 0, 0, 0, 0, 0, 0, 0, 0.00545415391248228, 0, 0, 0, 0, 0, 0, 0.004908738521234052, 0, 0, 0, 0, 0, 0, 0, 0.002181661564992912, 0, 0, 0, 0, 0, 0, 0.000818123086872342, 0, 0, 0, 0, 0, 0, -0.001908953869368798, 0, 0, 0, 0, 0, 0, 0, -0.002181661564992912, 0, 0, 0, 0, 0, 0, 0, -0.0029997846518652537, 0, 0, 0, 0, 0, 0, -0.005726861608106394, 0, 0, 0, 0, 0, 0, -0.06463172386291502, 0, 0, 0, 0, 0, 0, 0, -0.08835729338221293, 0, 0, 0, 0, 0, 0, -0.06844963160165261, 0, 0, 0, 0, 0, 0, -0.007090400086226964, 0, 0, 0, 0, 0, 0, 0, -0.004908738521234052, 0, 0, 0, 0, 0, 0, -0.00136353847812057, 0, 0, 0, 0, 0, 0, 0.08235772407848242, 0, 0, 0, 0, 0, 0, 0, 0.09844747812030515, 0, 0, 0, 0, 0, 0, 0.17862354063379465, 0, 0, 0, 0, 0, 0, 0, 0.275162064884731, 0, 0, 0, 0, 0, 0, 0.2519819107566813, 0, 0, 0, 0, 0, 0, 0, 0.41369757426178094, 0, 0, 0, 0, 0, 0, 0.37879098922189436, 0, 0, 0, 0, 0, 0, 0, 0.5162356678164478, 0, 0, 0, 0, 0, 0, 0.4955098829490151, 0, 0, 0, 0, 0, 0, 0, 0.32288591161895097, 0, 0, 0, 0, 0, 0, 0.25443628001729834, 0, 0, 0, 0, 0, 0, 0, 0.14862569411514212, 0, 0, 0, 0, 0, 0, 0.11017390903214205, 0, 0, 0, 0, 0, 0, 0, 0.0859029241215959, 0, 0, 0, 0, 0, 0, 0.007090400086226964, 0, 0, 0, 0, 0, 0, 0, 0.007635815477475192, 0, 0, 0, 0, 0, 0, 0.007635815477475192, 0, 0, 0, 0, 0, 0, 0, 0.007363107781851078, 0, 0, 0, 0, 0, 0, 0.0029997846518652537, 0, 0, 0, 0, 0, 0, 0, -0.000272707695624114, 0, 0, 0, 0, 0, 0, -0.0719948316447661, 0, 0, 0, 0, 0, 0, 0, -0.07308566242726255, 0, 0, 0, 0, 0, 0, 0, -0.1366265555076811, 0, 0, 0, 0, 0, 0, -0.11671889372712078, 0, 0, 0, 0, 0, 0, 0, -0.07526732399225546, 0, 0, 0, 0, 0, 0, -0.001636246173744684, 0, 0, 0, 0, 0, 0, 0, 0.003817907738737596, 0, 0, 0, 0, 0, 0, 0.24461880297483024, 0, 0, 0, 0, 0, 0, 0.3239767424014474, 0, 0, 0, 0, 0, 0, 0, 0.26207209549477356, 0, 0, 0, 0, 0, 0, 0, 0.28197975727533386, 0, 0, 0, 0, 0, 0, 0.19144080232812802, 0, 0, 0, 0, 0, 0, 0, 0.13880821707267402, 0, 0, 0, 0, 0, 0, 0, 0.07063129316664553, 0, 0, 0, 0, 0, 0, 0, 0.0040906154343617095, 0, 0, 0, 0, 0, 0, 0.0040906154343617095, 0, 0, 0, 0, 0, 0, 0.00272707695624114, 0, 0, 0, 0, 0, 0, -0.001636246173744684, 0, 0, 0, 0, 0, 0, 0, -0.001908953869368798, 0, 0, 0, 0, 0, 0, -0.001636246173744684, 0, 0, 0, 0, 0, 0, 0, -0.003272492347489368, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.06299547768917033, 0, 0, 0, 0, 0, 0, 0, 0.00545415391248228, 0, 0, 0, 0, 0, 0, 0.003545200043113482, 0, 0, 0, 0, 0, 0, 0, 0.007090400086226964, 0, 0, 0, 0, 0, 0, 0.07635815477475191, 0, 0, 0, 0, 0, 0, 0, 0.09272061651219876, 0, 0, 0, 0, 0, 0, 0.20398535632683726, 0, 0, 0, 0, 0, 0, 0, 0.18953184845875923, 0, 0, 0, 0, 0, 0, 0.20153098706622025, 0, 0, 0, 0, 0, 0.1502619402888868, 0, 0, 0, 0, 0, 0, 0, 0, 0.15162547876700738, 0, 0, 0, 0, 0, 0, -6.149013120932523, 0, 0, 0, 0, 0, 0, 0.09626581655531224, 0, 0, 0, 0, 0, 0, 0, 0.09326603190344698, 0, 0, 0, 0, 0, 0, 0.007635815477475192, 0, 0, 0, 0, 0, 0, 0.007363107781851078, 0, 0, 0, 0, 0, 0, 0, 0.003817907738737596, 0, 0, 0, 0, 0, 0, 0, 0.00272707695624114, 0, 0, 0, 0, 0, 0, 0.00272707695624114, 0];
+		var distances = thetas.map(function () {
+			return 0.16;
+		});
+
+		this.user.setPath(distances, thetas);
+	}
+};
+
+},{"./models/particle-set":3,"./models/sensor":5,"./simulation/landmark":8,"./simulation/user":9,"./view/visualizer":14}],16:[function(require,module,exports){
+'use strict';
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var marked0$0 = [walkPattern].map(regeneratorRuntime.mark);
+
+var _appModelsLandmarkInitSet = require('../app/models/landmark-init-set');
+
+var _appModelsLandmarkInitSet2 = _interopRequireDefault(_appModelsLandmarkInitSet);
+
+if (window.test === undefined) {
+	window.test = {};
+}
+
+/**
+ * Pattern that the user walks
+ * @yield {Number}
+ */
+function walkPattern() {
+	var steps, stepSize, quarter, i;
+	return regeneratorRuntime.wrap(function walkPattern$(context$1$0) {
+		while (1) switch (context$1$0.prev = context$1$0.next) {
+			case 0:
+				steps = 40;
+				stepSize = 2;
+				quarter = steps / 4;
+				i = 0;
+
+			case 4:
+				if (!(i < steps)) {
+					context$1$0.next = 26;
+					break;
+				}
+
+				if (!(i < quarter)) {
+					context$1$0.next = 10;
+					break;
+				}
+
+				context$1$0.next = 8;
+				return { dx: stepSize, dy: 0 };
+
+			case 8:
+				context$1$0.next = 23;
+				break;
+
+			case 10:
+				if (!(i < 2 * quarter)) {
+					context$1$0.next = 15;
+					break;
+				}
+
+				context$1$0.next = 13;
+				return { dx: 0, dy: stepSize };
+
+			case 13:
+				context$1$0.next = 23;
+				break;
+
+			case 15:
+				if (!(i < 3 * quarter)) {
+					context$1$0.next = 20;
+					break;
+				}
+
+				context$1$0.next = 18;
+				return { dx: -stepSize, dy: 0 };
+
+			case 18:
+				context$1$0.next = 23;
+				break;
+
+			case 20:
+				if (!(i < steps)) {
+					context$1$0.next = 23;
+					break;
+				}
+
+				context$1$0.next = 23;
+				return { dx: 0, dy: -stepSize };
+
+			case 23:
+				i++;
+				context$1$0.next = 4;
+				break;
+
+			case 26:
+			case 'end':
+				return context$1$0.stop();
+		}
+	}, marked0$0[0], this);
+}
+
+window.test.landmarkInit = {
+
+	landmarkSet: undefined,
+	userX: 0,
+	userY: 0,
+	lX: 0,
+	lY: 0,
+	userTrace: [],
+	xMax: 50,
+	yMax: 50,
+	ctx: undefined,
+	canvas: undefined,
+
+	pattern: undefined,
+
+	initialize: function initialize() {
+
+		//Init random landmark
+		this.lX = Math.random() * 30 - 15;
+		this.lY = Math.random() * 30 - 15;
+
+		this.landmarkSet = new _appModelsLandmarkInitSet2['default']();
+		this.canvas = document.getElementById('test-content');
+		this.ctx = this.canvas.getContext('2d');
+		this.ctx.scale(10, 10);
+
+		this.userTrace.push({ x: this.userX, y: this.userY });
+
+		this.pattern = walkPattern();
+	},
+
+	iterate: function iterate() {
+		var _pattern$next$value = this.pattern.next().value;
+		var dx = _pattern$next$value.dx;
+		var dy = _pattern$next$value.dy;
+
+		this.userX = this.userX + dx;
+		this.userY = this.userY + dy;
+		console.log({ dx: dx, dy: dy });
+		this.userTrace.push({ x: this.userX, y: this.userY });
+
+		var r = Math.sqrt(Math.pow(this.lX - this.userX, 2) + Math.pow(this.lY - this.userY, 2));
+
+		this.landmarkSet.addMeasurement('uid', this.userX, this.userY, r);
+
+		this._draw();
+		console.debug('True r: ' + r);
+	},
+
+	_draw: function _draw() {
+		var _this = this;
+
+		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+		this.ctx.fillStyle = '#000000';
+
+		this.landmarkSet.particles.get('uid').particles.forEach(function (p) {
+
+			var x = _this._tx(p.x);
+			var y = _this._ty(p.y);
+
+			_this.ctx.fillRect(x, y, 0.3, 0.3);
+		});
+
+		this.ctx.fillStyle = '#ff0000';
+		this.userTrace.forEach(function (t) {
+			return _this.ctx.fillRect(_this._tx(t.x), _this._ty(t.y), 0.5, 0.5);
+		});
+
+		this.ctx.fillStyle = '#00ff00';
+		this.ctx.fillRect(this._tx(this.lX), this._ty(this.lY), 0.5, 0.5);
+	},
+
+	_tx: function _tx(x) {
+		return x + this.xMax / 2;
+	},
+
+	_ty: function _ty(y) {
+		return this.yMax - (y + this.yMax / 2);
+	}
+};
+
+},{"../app/models/landmark-init-set":1}],17:[function(require,module,exports){
+'use strict';
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _appModelsVoteAccumulator = require('../app/models/vote-accumulator');
+
+var _appModelsVoteAccumulator2 = _interopRequireDefault(_appModelsVoteAccumulator);
+
+if (window.test === undefined) {
+	window.test = {};
+}
+
+window.test.voting = {
+
+	votes: undefined,
+	userX: 0,
+	userY: 0,
+	trace: [],
+
+	lX: -5,
+	lY: 10,
+
+	lR: 0,
+	lC: 0,
+
+	initialize: function initialize() {
+		this.votes = new _appModelsVoteAccumulator2['default'](75, 5);
+
+		var _votes$_cartesianToCell = this.votes._cartesianToCell(this.lX, this.lY);
+
+		var row = _votes$_cartesianToCell.row;
+		var column = _votes$_cartesianToCell.column;
+
+		this.lR = row;
+		this.lC = column;
+
+		//Create a table to show the votes
+		document.getElementById('test-content').innerHTML = this._createOutputTable();
+		this._displayLandmark();
+	},
+
+	iterate: function iterate() {
+
+		this.userX += Math.random() * 4 - 2;
+		this.userY += Math.random() * 6 - 3;
+
+		this.trace.push({ x: this.userX, y: this.userY });
+
+		var r = Math.sqrt(Math.pow(this.lX - this.userX, 2) + Math.pow(this.lY - this.userY, 2)) + (Math.random() * 6 - 3);
+
+		this.votes.addMeasurement(this.userX, this.userY, r);
+
+		document.getElementById('test-content').innerHTML = '';
+		document.getElementById('test-content').innerHTML = this._createOutputTable();
+		this._displayLandmark();
+		this._displayUser();
+	},
+
+	_createOutputTable: function _createOutputTable() {
+
+		var table = '<table>';
+
+		table += this.votes.votes.reduce(function (output, row, rowN) {
+			return output + '<tr>' + row.reduce(function (rowOutput, cell, columnN) {
+				var color = 'background-color: rgba(0, 0, 0, ' + cell / 50 + ');';
+				var id = rowN + '' + columnN;
+
+				return rowOutput + '<td id="' + id + '" style="' + color + '">' + cell + '</td>';
+			}, '') + '</tr>';
+		}, '');
+
+		table += '</table>';
+		return table;
+	},
+
+	_displayLandmark: function _displayLandmark() {
+		document.getElementById(this.lR + '' + this.lC).style.backgroundColor = 'red';
+	},
+
+	_displayUser: function _displayUser() {
+		var _this = this;
+
+		this.trace.forEach(function (pos) {
+			var _votes$_cartesianToCell2 = _this.votes._cartesianToCell(pos.x, pos.y);
+
+			var row = _votes$_cartesianToCell2.row;
+			var column = _votes$_cartesianToCell2.column;
+
+			document.getElementById(row + '' + column).style.backgroundColor = 'green';
+		});
+	}
+};
+
+},{"../app/models/vote-accumulator":7}]},{},[15,17,16])
 
 
 //# sourceMappingURL=slacjs-app.js.map
