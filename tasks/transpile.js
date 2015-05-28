@@ -4,7 +4,7 @@ var uglify = require('gulp-uglify');
 var config = require('../config');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
-var sourcemaps = require("gulp-sourcemaps");
+var sourcemaps = require('gulp-sourcemaps');
 var gutil = require('gulp-util');
 
 var development = (config.env == 'development');
@@ -29,13 +29,15 @@ module.exports = function (gulp, entries, outputDir, includeTests) {
 
 		if(development) {
 			pipe = pipe.pipe(sourcemaps.init({loadMaps: true}))
-					.on('error', gutil.log)
-					.pipe(sourcemaps.write('.'));
+					.on('error', gutil.log);
 		}
-		else {
-			pipe = pipe.pipe(uglify());
+		
+		pipe = pipe.pipe(uglify());
+
+		if(development) {
+			pipe = pipe.pipe(sourcemaps.write('.'));
 		}
-			
+
 		return pipe.pipe(gulp.dest(outputDir));
 	};
 };
