@@ -108,7 +108,7 @@ The build config file contains configuration for the all the Gulp tasks.
 
 The *application configuration*, which contains all settings used by the application, can be found in:
 
-`<project root>/src/config.js` 
+`<project root>/src/app/config.js` 
 
 ## Libraries & Third-party software
 

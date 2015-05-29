@@ -4,7 +4,7 @@
  */
 module.exports = {
 	
-	'environment': 'debug',
+	'environment': 'development',
 
 	particles: {
 		N: 40,
@@ -22,4 +22,4 @@ module.exports = {
 		noise: 2,
 		range: 20
 	}
-}
+};

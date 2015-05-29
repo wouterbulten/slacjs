@@ -130,28 +130,26 @@ class Visualizer {
 		particles.forEach((p) => {
 			p.landmarks.forEach((l, uid) => {
 
-				//Compensate for landmark size
-				const x = this._tx(l.x) - (0.5 * size);
-				const y = this._ty(l.y) - (0.5 * size);
-
-				this.ctx.fillRect(x, y, size, size);
-
-				if (landmarks !== undefined) {
-					const trueL = landmarks.landmarkByUid(uid);
-
-					this.ctx.strokeStyle = '#8C7A7A';
-					this.ctx.beginPath();
-					this.ctx.moveTo(x, y);
-					this.ctx.lineTo(this._tx(trueL.x), this._ty(trueL.y));
-					this.ctx.stroke();
-					this.ctx.closePath();
-				}
+				this._plotLandmark(uid, l, landmarks);
 			});
 
 			this.plotLandmarksErrors(p);
 		});
 
 		return this;
+	}
+
+	/**
+	 * Plot the average position of landmarks
+	 * @param  {Map} landmarkMap Map of landmarks
+	 * @param {Array} landmarks True landmarks
+	 * @return {Visualizer}
+	 */
+	plotLandmarkEstimate(landmarkMap, landmarks = undefined) {
+
+		landmarkMap.forEach((l, uid) => {
+			this._plotLandmark(uid, l, landmarks);
+		});
 	}
 
 	/**
@@ -246,6 +244,33 @@ class Visualizer {
 		});
 
 		return this;
+	}
+
+	/**
+	 * Plot a single landmark
+	 * @param  {string} uid UID of landmark
+	 * @param  {Object} landmark The landmark to plot
+	 * @param  {Array} True landmark positions
+	 * @param  {Number} size     [description]
+	 * @return {[type]}          [description]
+	 */
+	_plotLandmark(uid, landmark, landmarks = undefined, size = 0.5) {
+
+		//Compensate for landmark size
+		const x = this._tx(landmark.x) - (0.5 * size);
+		const y = this._ty(landmark.y) - (0.5 * size);
+
+		this.ctx.fillRect(x, y, size, size);
+
+		if (landmarks !== undefined) {
+			const trueL = landmarks.landmarkByUid(uid);
+			this.ctx.strokeStyle = '#8C7A7A';
+			this.ctx.beginPath();
+			this.ctx.moveTo(x, y);
+			this.ctx.lineTo(this._tx(trueL.x), this._ty(trueL.y));
+			this.ctx.stroke();
+			this.ctx.closePath();
+		}
 	}
 
 	/**

@@ -120,6 +120,37 @@ class ParticleSet {
 	}
 
 	/**
+	 * Compute an average of all landmark estimates
+	 * @return {Map}
+	 */
+	landmarkEstimate() {
+		const weights = normalizeWeights(this.particleList.map((p) => p.weight));
+
+		const landmarks = new Map();
+
+		//Loop through all particles to get an estimate of the landmarks
+		this.particleList.forEach((p, i) => {
+			p.landmarks.forEach((landmark, uid) => {
+				if (!landmarks.has(uid)) {
+					landmarks.set(uid, {
+						x: weights[i] * landmark.x,
+						y: weights[i] * landmark.y,
+						uid: uid
+					});
+				}
+				else {
+					const l = landmarks.get(uid);
+
+					l.x += weights[i] * landmark.x;
+					l.y += weights[i] * landmark.y;
+				}
+			});
+		});
+
+		return landmarks;
+	}
+
+	/**
 	 * Get the best estimate of the current user position
 	 * @return {object}
 	 */

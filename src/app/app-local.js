@@ -3,7 +3,7 @@ import Visualizer from './view/visualizer';
 import SimulatedUser from './simulation/user';
 import { SimulatedLandmarkSet } from './simulation/landmark';
 import Sensor from './models/sensor';
-import config from '../config';
+import config from './config';
 
 window.SlacENV = config.environment;
 
@@ -64,7 +64,7 @@ window.SlacApp = {
 			this.visualizer.plotLandmarkInitParticles(this.particleSet.landmarkInitSet);
 		}
 		else {
-			this.visualizer.plotLandmarkPredictions([this.particleSet.bestParticle()], this.landmarks);
+			this.visualizer.plotLandmarkEstimate(this.particleSet.landmarkEstimate(), this.landmarks);
 		}
 	},
 
