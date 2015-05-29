@@ -98,6 +98,18 @@ Individual parts of the project can be built using one of the sub tasks. Run the
 
 `gulp help`
 
+## Configuration
+
+Two configuration files define most of the behaviour of SLACjs. The *build configuration* file is located in:
+
+`<project root>/config.js`
+
+The build config file contains configuration for the all the Gulp tasks. 
+
+The *application configuration*, which contains all settings used by the application, can be found in:
+
+`<project root>/src/config.js` 
+
 ## Libraries & Third-party software
 
 1. *Babeljs:* SLACjs uses ES6 and uses Babel to compile all javascript to ES5 compatible code.

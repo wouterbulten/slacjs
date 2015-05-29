@@ -3,8 +3,9 @@ import Visualizer from './view/visualizer';
 import SimulatedUser from './simulation/user';
 import { SimulatedLandmarkSet } from './simulation/landmark';
 import Sensor from './models/sensor';
+import config from '../config';
 
-window.SlacENV = 'debug';
+window.SlacENV = config.environment;
 
 window.SlacApp = {
 
@@ -14,25 +15,18 @@ window.SlacApp = {
 	landmarks: undefined,
 	sensor: undefined,
 
-	landmarkConfig: {
-		n: 2,
-		txPower: -12,
-		noise: 2,
-		range: 20
-	},
-
 	initialize: function() {
 		'use strict';
 
-		this.particleSet = new ParticleSet(40, {x: 0, y: 0, theta: 0});
+		this.particleSet = new ParticleSet(config.particles.N, config.particles.defaultPose);
 		this.visualizer = new Visualizer('slac-map', 100, 100);
 		this.user = new SimulatedUser({x: 0, y: 0, theta: 0.0}, 2, {xRange: 50, yRange: 50, padding: 5});
 
 		//Add simulated data to the user object
 		//this._addSimulatedData();
 
-		this.landmarks = new SimulatedLandmarkSet(40, {xRange: 50, yRange: 50}, 50, this.landmarkConfig);
-		this.sensor = new Sensor(this.landmarkConfig);
+		this.landmarks = new SimulatedLandmarkSet(40, {xRange: 50, yRange: 50}, 50, config.beacons);
+		this.sensor = new Sensor(config.beacons);
 
 		//Start broadcasting of the simulated landmarks
 		//Broadcasts are sent to the sensor, the user object is used to find nearby landmarks
@@ -61,7 +55,7 @@ window.SlacApp = {
 
 		//Update the canvas
 		this.visualizer.clearCanvas()
-						.plotUserTrace(this.user, 'blue', this.landmarkConfig.range)
+						.plotUserTrace(this.user, 'blue', config.beacons.range)
 						.plotObjects(this.landmarks.landmarks)
 						.plotParticleSet(this.particleSet);
 

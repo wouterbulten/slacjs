@@ -1,7 +1,7 @@
-/*
-General config for all gulp tasks
+/**
+ * Build config for SLACjs
+ * @type {Object}
  */
-
 module.exports = {
 
 	env: 'development',
