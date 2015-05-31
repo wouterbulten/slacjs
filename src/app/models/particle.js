@@ -1,5 +1,5 @@
 import User from './user';
-import { randn } from '../util/math';
+import { randn, pdfn } from '../util/math';
 
 class Particle {
 	/**
@@ -123,7 +123,8 @@ class Particle {
 						[l.cov[1][0] - updateCov[1][0], l.cov[1][1] - updateCov[1][1]]];
 
 		//Update the weight of the particle
-		this.weight = this.weight - (v * (1.0 / covV) * v);
+		//this.weight = this.weight - (v * (1.0 / covV) * v);
+		this.weight = this.weight * pdfn(r, dist, covV);
 
 		//Update particle
 		l.x = newX;
