@@ -1,4 +1,4 @@
-import { polarToCartesian } from '../util/coordinate-system';
+import { polarToCartesian } from '../util/motion';
 import LinkedList from '../util/linked-list';
 
 class User {

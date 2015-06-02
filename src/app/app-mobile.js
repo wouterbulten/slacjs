@@ -5,7 +5,7 @@ import { SimulatedLandmarkSet } from './simulation/landmark';
 import Sensor from './models/sensor';
 import ParticleRenderer from './view/particle-renderer';
 import Pedometer from './device/pedometer';
-import { degreeToRadian, rotationToLocalNorth } from './util/coordinate-system';
+import { degreeToRadian, rotationToLocalNorth } from './util/motion';
 
 window.SlacENV = 'debug';
 
@@ -38,7 +38,7 @@ window.SlacApp = {
 	step: function() {
 
 		console.log('[SLACjs] step');
-this.pedometer.stepCount += 1
+
 		//Only udpate if the user has walked
 		if (this.stepCount == this.pedometer.stepCount) {
 			console.log('[SLACjs] User is not moving');

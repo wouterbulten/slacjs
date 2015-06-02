@@ -1,6 +1,6 @@
 import { randn, pdfn, variance } from '../util/math';
 import { lowVarianceSampling, numberOfEffectiveParticles, normalizeWeights } from '../util/sampling';
-import { polarToCartesian } from '../util/coordinate-system';
+import { polarToCartesian } from '../util/motion';
 
 class LandmarkParticleSet {
 	/**

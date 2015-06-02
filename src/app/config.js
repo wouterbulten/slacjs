@@ -1,10 +1,14 @@
+/*
+global module
+*/
+
 /**
  * General config for SLACjs
  * @type {Object}
  */
 module.exports = {
 	
-	'environment': 'development',
+	environment: 'development',
 
 	particles: {
 		N: 40,

@@ -1,6 +1,6 @@
 import User from '../models/user';
 import { randn } from '../util/math';
-import { polarToCartesian, cartesianToPolar, addTheta } from '../util/coordinate-system';
+import { polarToCartesian, cartesianToPolar, addTheta } from '../util/motion';
 
 class SimulatedUser extends User {
 	/**
