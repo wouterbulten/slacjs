@@ -66,7 +66,7 @@ window.test.landmarkInit = {
 
 		this.userX = this.userX + dx;
 		this.userY = this.userY + dy;
-		console.log({dx, dy})
+
 		this.userTrace.push({x: this.userX, y: this.userY});
 
 		const r = Math.sqrt(Math.pow(this.lX - this.userX, 2) + Math.pow(this.lY - this.userY, 2));
@@ -82,7 +82,7 @@ window.test.landmarkInit = {
 		this.ctx.clearRect (0, 0, this.canvas.width, this.canvas.height);
 		this.ctx.fillStyle = '#000000';
 
-		this.landmarkSet.particles.get('uid').particles.forEach((p) => {
+		this.landmarkSet.particleSetMap.get('uid').particles.forEach((p) => {
 
 			const x = this._tx(p.x);
 			const y = this._ty(p.y);
