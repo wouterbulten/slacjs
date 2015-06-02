@@ -41,7 +41,7 @@ SLACjs is designed to work on mobile devices utilising the compass and accelerom
 
 All steps of the SLACjs algorithm are displayed in the flow chart below. The chart depicts the process of updating the particle filter based on a single observation. In the case of multiple observations, each observations is processed before resampling takes place.
 
-![Flow chart of SLACjs algorithm](/resources/slacjs-algorithm-overview.PNG?raw=true "Flow chart of SLACjs algorithm.")
+![Flow chart of SLACjs algorithm](/resources/slacjs-algorithm-overview.png?raw=true "Flow chart of SLACjs algorithm.")
 
 
 ## Installation
