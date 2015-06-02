@@ -1,0 +1,116 @@
+digraph {
+
+	rankdir=TB;
+	newrank=true;
+	graph[ratio=1.1]
+
+
+
+	subgraph clusterParticleFilter {
+
+		label="SLACjs"
+		motionUpdate [label="Motion update"]
+		processObs [label="Landmark present\n in filter?", shape=diamond, color=grey80, style=filled]
+		variance [label=<Number of<br/> effective particles (N<sub>eff</sub>)>, shape=diamond, color=grey80, style=filled]
+		resample [label="Low variance resampler", shape=box]
+
+		hasEstimate [label="Initialisation of\n landmark complete?", shape=diamond, color=grey80, style=filled]
+		hasEstimateInit [label="Particle filter\n has converged?", shape=diamond, color=grey80, style=filled]
+
+		subgraph clusterBle {
+			label="Bluetooth LE"
+			label="Motion sensing"
+			color=grey30
+			style=dashed
+
+			filter [label="Filter", shape=box]
+			ble1 [label="Beacons / Landmarks", shape=box3d]	
+
+		}
+		
+
+		subgraph clusterMotion {
+			label="Motion sensing"
+			color=grey30
+			style=dashed
+
+			accelerometer [label="Accelerometer", shape=box3d]
+
+			pedometer [label="Pedometer", shape=box]
+
+			compass [label="Compass", shape=box3d]
+
+		}
+
+		subgraph clusterInitLandmark {
+
+			label="Landmark Initialisation\nParticle Filter"
+			color=grey30
+
+			initFilter [label="Create Filter"]
+			updateInitFilter [label="Update filter\n based on observation"]
+
+		}
+
+		subgraph clusterEKF {
+
+			label="Extended Kalman Filter"
+			color=grey30
+
+			initEKF [label="Init EKF"]
+			updateEKF [label="Update EKF"]
+			weight [label="Compute weight"]
+			
+		}
+
+	}
+	end [label="End", width=1.2,height=1, penwidth=2]
+	pseudoStart [width=1.2,height=1, style=invis]
+	start [label="Start", width=1.2,height=1, penwidth=2]
+
+	pseudoStart->start [penwidth=4]
+	start->motionUpdate
+
+	start->end [arrowhead=none, arrowtail=normal, dir=both, label=" On new\n motion"]
+
+
+	initEKF->updateEKF
+	updateEKF->weight
+	initFilter->updateInitFilter [label="{r}"]
+
+	pedometer->motionUpdate [label="Step count"]
+
+	accelerometer->pedometer [label=<{d<sup>2</sup>x/dt<sup>2</sup>, d<sup>2</sup>y/dt<sup>2</sup>, d<sup>2</sup>z/dt<sup>2</sup>}>]
+
+	compass->motionUpdate [label="Heading"]
+
+
+
+
+
+	motionUpdate->processObs
+	filter->processObs [label="Observations [{uid,r}, ...]"]
+	ble1->filter [label="{uid, RSSI}"]
+
+
+	processObs->initFilter [label=<No, {u<sub>x</sub>, u<sub>y</sub>, r}>]
+
+	processObs->hasEstimate [label="Yes"]
+	hasEstimate->updateEKF [label="Yes, {r}"]
+	hasEstimate->updateInitFilter [label="No, {r}"]
+	updateInitFilter->hasEstimateInit [label=<{l<sub>x</sub>, l<sub>y</sub>, l<sub>var</sub>}>]
+	hasEstimateInit->variance [label="No"]
+	hasEstimateInit->initEKF [label=<Yes, {l<sub>x</sub>, l<sub>y</sub>, l<sub>var</sub>}>]
+
+	weight->variance
+	variance->resample [label=<N<sub>eff</sub> &lt;= threshold>]
+
+	variance->end [label=<N<sub>eff</sub> &gt; threshold>]
+	resample->end
+
+	filter->motionUpdate [style=invis]
+	accelerometer->filter [style=invis]
+
+	{rank=same; filter; pedometer}
+	{rank=same; accelerometer; ble1; compass}
+}
