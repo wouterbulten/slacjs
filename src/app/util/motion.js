@@ -1,3 +1,5 @@
+import { randn } from './math.js';
+
 /**
  * Add two radials
  * @param {float} t1
@@ -87,4 +89,29 @@ export function rotationToLocalNorth(degrees) {
 	const right = 360 - degrees + 90;
 
 	return Math.min(left, right);
+}
+
+/**
+ * Sample a new pose using the previous state and a control
+ * @param  {Number} options.x     Current x
+ * @param  {Number} options.y     Current y
+ * @param  {Number} options.theta Current heading
+ * @param  {Object} control       New control
+ * @return {Object}
+ */
+export function sampleMotion(user, o, oPrev, a1 = 0.05, a2 = 0.001, a3 = 5, a4 = 0.05) {
+
+	const deltaRot1 = Math.atan2(o.y - oPrev.y, o.x - oPrev.x) - oPrev.theta;
+	const deltaTrans = Math.sqrt(Math.pow((oPrev.x - o.x), 2) + Math.pow((oPrev.y - o.y), 2)); // = r?
+	const deltaRot2 = o.theta - oPrev.theta - deltaRot1;
+
+	const dDeltaRot1 = deltaRot1 - randn(0, (a1 * (deltaRot1 * deltaRot1)) + (a2 * (deltaTrans * deltaTrans)));
+	const dDeltaTrans = deltaTrans - randn(0, (a3 * (deltaTrans * deltaTrans)) + (a4 * (deltaRot1 * deltaRot1)) + (a4 * (deltaRot2 * deltaRot2)));
+	const dDeltaRot2 = deltaRot2 - randn(0, (a1 * (deltaRot2 * deltaRot2)) + (a2 * (deltaTrans * deltaTrans)));
+
+	const x = user.x + (dDeltaTrans * Math.cos(user.theta + dDeltaRot1));
+	const y = user.y + (dDeltaTrans * Math.sin(user.theta + dDeltaRot1));
+	const theta = user.theta + dDeltaRot1 + dDeltaRot2;
+
+	return {x, y, theta};
 }
