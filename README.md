@@ -22,19 +22,20 @@ The following list of demo's are demo's of the local/browser version of SLACjs a
 
 Local version of SLACjs running in the browser (with simulated data). Blue path is the ground truth motion of the user. Each grey path is a particle. Black squares are landmarks; red squares their best estimate retrieved from the particle filter.
 
-![Local version of SLACjs](/screenshots/slacjs_local.png?raw=true "Local version of SLACjs.")
+![Local version of SLACjs](/resources/screenshots/slacjs_local.png?raw=true "Local version of SLACjs.")
 
 A new landmark is initialised using a separate particle filter. On each new measurement the filter is updated to end up with a rough estimate of the landmark position. Note that this is range-only SLAM, so no heading information is present in the measurements.
 
-![Initialising a new landmark](/screenshots/slacjs_local_init.png?raw=true "Initialising a new landmark.")
+![Initialising a new landmark](/resources/screenshots/slacjs_local_init.png?raw=true "Initialising a new landmark.")
 
 After initialisation the landmark position is further refined using EKF's.
 
-![Updating landmarks after initialisation](/screenshots/slacjs_local_init2.png?raw=true "Updating landmarks after initialisation.")
+![Updating landmarks after initialisation (1/2)](/resources/screenshots/slacjs_local_init2.png?raw=true "Updating landmarks after initialisation (2/2).")
+![Updating landmarks after initialisation (1/2)](/resources/screenshots/slacjs_local_localisation.png?raw=true "Updating landmarks after initialisation (2/2).")
 
 SLACjs is designed to work on mobile devices utilising the compass and accelerometer data. A first version running on an iPad:
 
-![iPad version of SLACjs](/screenshots/slac-js-1.0.PNG?raw=true "First version of SLACjs running on an iPad.")
+![iPad version of SLACjs](/resources/screenshots/slac-js-1.0.PNG?raw=true "First version of SLACjs running on an iPad.")
 
 
 ## Installation

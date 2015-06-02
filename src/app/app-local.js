@@ -20,7 +20,7 @@ window.SlacApp = {
 
 		this.particleSet = new ParticleSet(config.particles.N, config.particles.defaultPose);
 		this.visualizer = new Visualizer('slac-map', 100, 100);
-		this.user = new SimulatedUser({x: 0, y: 0, theta: 0.0}, 2, {xRange: 50, yRange: 50, padding: 5});
+		this.user = new SimulatedUser({x: 0, y: 0, theta: 0.0}, 0.8, {xRange: 50, yRange: 50, padding: 5});
 
 		//Add simulated data to the user object
 		//this._addSimulatedData();
