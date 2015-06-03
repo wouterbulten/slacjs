@@ -40,7 +40,7 @@ class SimulatedUser extends User {
 		const lastY = this.y;
 
 		const {dx, dy} = polarToCartesian(r, limitTheta(theta + this.theta));
-		console.log(limitTheta(theta + this.theta))
+
 		const newX = this._constrainCoordinate(lastX + dx, this.xRange - this.padding, -this.xRange + this.padding);
 		const newY = this._constrainCoordinate(lastY + dy, this.yRange - this.padding, -this.yRange + this.padding);
 
@@ -96,8 +96,9 @@ class SimulatedUser extends User {
 
 			this.iteration++;
 		}
-
-		return {r: Math.abs(randn(this.v, 1)), theta: randn(0.1, 0.2)};
+		this.iteration += 0.1;
+		return {r: this.v + this.iteration, theta: 0.5};
+		//return {r: Math.abs(randn(this.v, 1)), theta: randn(0.1, 0.2)};
 	}
 }
 

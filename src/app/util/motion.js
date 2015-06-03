@@ -39,6 +39,23 @@ export function limitTheta(theta) {
 }
 
 /**
+ * Compute the average heading between two angles
+ * @param  {Number} theta1
+ * @param  {Number} theta2
+ * @return {Number}
+ */
+export function averageHeading(theta1, theta2) {
+
+	const average = (theta1 + theta2) / 2;
+
+	if (theta2 < 0 && theta1 > 0) {
+		return average - Math.PI;
+	}
+
+	return average;
+}
+
+/**
  * Convert polar coordinates to cartesian coordinates
  * @param  {float} r
  * @param  {float} theta
@@ -96,19 +113,37 @@ export function rotationToLocalNorth(degrees) {
  * @param  {Object} control       New control
  * @return {Object}
  */
-export function sampleMotion(user, o, oPrev, a1 = 0.05, a2 = 0.001, a3 = 5, a4 = 0.05) {
+export function sampleMotionModelOdometry(user, o, oPrev, a1 = 0.05, a2 = 0.001, a3 = 0.05, a4 = 0.05) {
 
 	const deltaRot1 = Math.atan2(o.y - oPrev.y, o.x - oPrev.x) - oPrev.theta;
-	const deltaTrans = Math.sqrt(Math.pow((oPrev.x - o.x), 2) + Math.pow((oPrev.y - o.y), 2)); // = r?
+	const deltaTrans = Math.sqrt(Math.pow((oPrev.x - o.x), 2) + Math.pow((oPrev.y - o.y), 2));
 	const deltaRot2 = o.theta - oPrev.theta - deltaRot1;
 
-	const dDeltaRot1 = deltaRot1 - randn(0, (a1 * (deltaRot1 * deltaRot1)) + (a2 * (deltaTrans * deltaTrans)));
+	//console.log('Rotation 1 is: ' + deltaRot1);
+	//console.log('Rotation 2 is: ' + deltaRot2);
+	//console.log('Distance trans is: ' + deltaTrans);
+
+	let dDeltaRot1 = deltaRot1 - randn(0, (a1 * (deltaRot1 * deltaRot1)) + (a2 * (deltaTrans * deltaTrans)));
 	const dDeltaTrans = deltaTrans - randn(0, (a3 * (deltaTrans * deltaTrans)) + (a4 * (deltaRot1 * deltaRot1)) + (a4 * (deltaRot2 * deltaRot2)));
 	const dDeltaRot2 = deltaRot2 - randn(0, (a1 * (deltaRot2 * deltaRot2)) + (a2 * (deltaTrans * deltaTrans)));
 
+	//console.log('Rotation 1 with noise: ' + dDeltaRot1);
+	//console.log('Rotation 2 with noise: ' + dDeltaRot2);
+	//console.log('Distance trans with noise: ' + dDeltaTrans);
+
+	//console.log('User before x:' + user.x);
+	//console.log('User before y:' + user.y);
+	//console.log('Theta before: ' + user.theta);
+
 	const x = user.x + (dDeltaTrans * Math.cos(user.theta + dDeltaRot1));
 	const y = user.y + (dDeltaTrans * Math.sin(user.theta + dDeltaRot1));
-	const theta = user.theta + dDeltaRot1 + dDeltaRot2;
+
+	//console.log('User after x: ' + x);
+	//console.log('User after y: ' + y);
+
+	let theta = user.theta + dDeltaRot1 + dDeltaRot2;
+
+	//console.log('Theta after: ' + theta);
 
 	return {x, y, theta};
 }

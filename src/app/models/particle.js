@@ -31,11 +31,7 @@ class Particle {
 	samplePose(control) {
 
 		//Sample a pose from the 'control'
-		//@todo Improve pose sampling
-		const r = Math.abs(randn(control.r, 0.3));
-		const theta = randn(control.theta, 0.05 * Math.PI);
-
-		this.user.move({r, theta});
+		this.user.samplePose(control);
 
 		return this;
 	}

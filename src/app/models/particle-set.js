@@ -87,10 +87,6 @@ class ParticleSet {
 				return new Particle({}, this.particleList[i]);
 			});
 		}
-		else {
-			console.log('Not resampling');
-			console.log(numberOfEffectiveParticles(weights));
-		}
 
 		return this;
 	}
