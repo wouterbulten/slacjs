@@ -43,28 +43,7 @@ export function cartesianToPolar(dx, dy) {
 
 	const r = Math.sqrt((dx * dx) + (dy * dy));
 
-	let theta;
-
-	//Theta can be computed using tan^-1 when x != 0
-	if (dx !== 0) {
-		theta = Math.atan(dy / dx);
-
-		//Compensate for negative values of dx and dy
-		if (dx < 0) {
-			theta += Math.PI;
-		}
-		else if (dy < 0) {
-			theta += 2 * Math.PI;
-		}
-	}
-	else {
-		if (dy >= 0) {
-			theta = 0;
-		}
-		else {
-			theta = -Math.PI;
-		}
-	}
+	const theta = Math.atan2(dy, dx);
 
 	return {r, theta};
 }
