@@ -1,6 +1,5 @@
 import User from '../models/user';
-import { randn } from '../util/math';
-import { polarToCartesian, cartesianToPolar, addTheta } from '../util/motion';
+import { polarToCartesian, cartesianToPolar, limitTheta } from '../util/motion';
 
 class SimulatedUser extends User {
 	/**
@@ -40,8 +39,8 @@ class SimulatedUser extends User {
 		const lastX = this.x;
 		const lastY = this.y;
 
-		const {dx, dy} = polarToCartesian(r, addTheta(theta, this.theta));
-
+		const {dx, dy} = polarToCartesian(r, limitTheta(theta + this.theta));
+		console.log(limitTheta(theta + this.theta))
 		const newX = this._constrainCoordinate(lastX + dx, this.xRange - this.padding, -this.xRange + this.padding);
 		const newY = this._constrainCoordinate(lastY + dy, this.yRange - this.padding, -this.yRange + this.padding);
 

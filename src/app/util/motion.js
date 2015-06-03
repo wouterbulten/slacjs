@@ -1,20 +1,38 @@
 import { randn } from './math.js';
 
 /**
- * Add two radials
+ * Add two radials, keeps the result within [-pi, pi]
  * @param {float} t1
  * @param {float} t2
  * @return {float} Sum of t1 and t2
  */
 export function addTheta(t1, t2) {
-	let theta = t1 + t2;
-	const twoPi = Math.PI * 2;
+	console.error('Function is deprecated, use limitTheta instead.');
 
-	if (theta > (twoPi)) {
-		theta -= twoPi;
+	let theta = t1 + t2;
+
+	if (theta > Math.PI) {
+		return Math.PI - theta;
 	}
-	else if (theta < 0) {
-		theta += twoPi;
+	else if (theta < -Math.PI) {
+		return -Math.PI - theta;
+	}
+
+	return theta;
+}
+
+/**
+ * Make sure theta remains between [-pi, pi]
+ * @param  {Number} theta
+ * @return {Number}
+ */
+export function limitTheta(theta) {
+	
+	if (theta > Math.PI) {
+		return theta - (Math.PI * 2);
+	}
+	else if (theta < -Math.PI) {
+		return theta + (Math.PI * 2);
 	}
 
 	return theta;
