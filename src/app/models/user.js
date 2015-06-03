@@ -1,4 +1,4 @@
-import { polarToCartesian, averageHeading } from '../util/motion';
+import { polarToCartesian, samplePose } from '../util/motion';
 import LinkedList from '../util/linked-list';
 
 class User {
@@ -55,13 +55,13 @@ class User {
 	 */
 	samplePose({r, theta}) {
 		
-		const heading = averageHeading(this.theta, theta);
+		const {x, y, theta: heading} = samplePose(
+			{x: this.x, y: this.y, theta: this.theta},
+			{r: r, heading: theta}
+		);
 
-		//Use odometry to find a new position
-		const {dx, dy} = polarToCartesian(r, heading);
-
-		this.x += dx;
-		this.y += dy;
+		this.x = x;
+		this.y = y;
 		this.theta = heading;
 
 		this.trace.add({x: this.x, y: this.y, theta: this.theta});
