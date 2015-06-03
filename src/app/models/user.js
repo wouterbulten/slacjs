@@ -1,4 +1,5 @@
-import { polarToCartesian, samplePose } from '../util/motion';
+import { polarToCartesian, meanHeading } from '../util/motion';
+import { randn } from '../util/math';
 import LinkedList from '../util/linked-list';
 
 class User {
@@ -55,14 +56,26 @@ class User {
 	 */
 	samplePose({r, theta}) {
 		
-		const {x, y, theta: heading} = samplePose(
-			{x: this.x, y: this.y, theta: this.theta},
-			{r: r, heading: theta}
-		);
+		const averageHeading = meanHeading(this.theta, theta);
 
-		this.x = x;
-		this.y = y;
-		this.theta = heading;
+		//Compute the standard deviation of the noise based on the
+		//distance to the computed average
+		const sdHeading = 0.5 * Math.abs(theta - averageHeading);
+
+		const sampledHeading = randn(averageHeading, sdHeading);
+
+		//Comput the deviation of the noise of the step size
+		//@todo Base the deviation of the steps on the pedometer
+		const sdStep = 0.5;
+
+		const sampledR = randn(r, sdStep);
+
+		//Use odometry to find a new position
+		const {dx, dy} = polarToCartesian(sampledR, sampledHeading);
+
+		this.x += dx;
+		this.y += dy;
+		this.theta = sampledHeading;
 
 		this.trace.add({x: this.x, y: this.y, theta: this.theta});
 

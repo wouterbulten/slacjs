@@ -104,13 +104,3 @@ export function rotationToLocalNorth(degrees) {
 
 	return Math.min(left, right);
 }
-
-export function samplePose({x, y, theta}, {r, heading}) {
-
-	const averageHeading = meanHeading(theta, heading);
-
-	//Use odometry to find a new position
-	const {dx, dy} = polarToCartesian(r, averageHeading);
-
-	return {x: x + dx, y: y + dy, theta: averageHeading};
-}
