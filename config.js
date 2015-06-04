@@ -45,11 +45,11 @@ module.exports = {
 
 	cordova: {
 		plugins: [
-			'org.apache.cordova.device-motion',
+			'cordova-plugin-device-motion',
 			'com.randdusing.bluetoothle',
-			'org.apache.cordova.dialogs',
-			'org.apache.cordova.console',
-			'org.apache.cordova.device-orientation'
+			'cordova-plugin-dialogs',
+			'cordova-plugin-console',
+			'cordova-plugin-device-orientation'
 		],
 
 		platforms: [

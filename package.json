@@ -7,6 +7,7 @@
     "bower": "^1.4.1",
     "browser-sync": "^2.7.6",
     "browserify": "^10.2.3",
+    "cordova": "^5.0.0",
     "del": "^1.2.0",
     "gulp": "^3.9.0",
     "gulp-cached": "^1.1.0",
