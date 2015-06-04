@@ -1,3 +1,5 @@
+import KalmanFilter from '../util/kalman';
+
 /**
  * Accelerometer based pedometer
  *
@@ -113,7 +115,7 @@ class Pedometer {
 		}
 
 		if (!isNaN(this.varAcc)) {
-			this.filter.setSignalVariance(this.varAcc);
+			this.filter.setMeasurementNoise(this.varAcc);
 			this.sensibility = 2.0 * (Math.sqrt(this.varAcc) / (9.80665 * 9.80665));
 		}
 		else {
@@ -123,52 +125,3 @@ class Pedometer {
 }
 
 export default Pedometer;
-
-/**
- * Kalman filter for pedometer
- * @see http://sebastien.menigot.free.fr/index.php?view=article&id=93
- */
-class KalmanFilter {
-
-	constructor() {
-		this.G  = 1; // filter gain
-		this.Rw = 1; // noise power desirable
-		this.Rv = 10; // noise power estimated
-
-		this.A = 1;
-		this.C = 1;
-		this.B = 0;
-		this.u = 0;
-		this.P = NaN;
-		this.x = NaN; // estimated signal without noise
-		this.y = NaN; //measured
-	}
-
-	filter(measurement) {
-		this.y = measurement;
-
-		if (isNaN(this.x)) {
-			this.x = (1 / this.C) * this.y;
-			this.P = (1 / this.C) * this.Rv * (1 / this.C);
-		}
-		else {
-
-			// Kalman Filter: Prediction and covariance P
-			this.x = (this.A * this.x) + (this.B * this.u);
-			this.P = ((this.A * this.P) * this.A) + this.Rw;
-
-			// Gain
-			this.G = this.P * this.C * (1 / ((this.C * this.P * this.C) + this.Rv));
-
-			// Correction
-			this.x = this.x + this.G * (this.y - (this.C * this.x));
-			this.P = this.P - (this.G * this.C * this.P);
-		}
-
-		return this.x;
-	}
-
-	setSignalVariance(variance) {
-		this.Rv = variance;
-	}
-}

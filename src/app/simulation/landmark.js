@@ -139,6 +139,8 @@ export class SimulatedLandmarkSet {
 	}
 }
 
+export default SimulatedLandmarkSet;
+
 class Landmark {
 	/**
 	 * Landmark
@@ -201,6 +203,8 @@ class Landmark {
 		return this.rssiAtRaw(x, y) + randn(0, this.noise);
 	}
 }
+
+export default Landmark;
 
 /**
  * Convert RSSI to distance

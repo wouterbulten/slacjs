@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>SLACjs RSSI filter test</title>
+
+	<style>
+
+	</style>
+</head>
+
+<body>
+<h1>RSSI filter test</h1>
+
+<div id="test-content"></div>
+
+Filtered error: <span id="test-error"></span><br>
+Unfiltered error: <span id="test-error-real"></span>
+
+<script type="text/javascript" src="../assets/js/browser-polyfill.js"></script>
+<script type="text/javascript" src="../vendor/vendor.js"></script>
+<script type="text/javascript" src="../assets/js/slacjs-app.js"></script>
+<script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+
+<script type="text/javascript">
+/* 
+global test
+*/
+test.rssiFilter.initialize();
+
+for(var i = 0; i < 1000; i++) {
+	test.rssiFilter.iterate();
+}
+
+test.rssiFilter.plot();
+</script>
+</body>
+</html>

@@ -13,7 +13,8 @@ module.exports = {
 
 	'tests': [
 		'src/tests/voting.js',
-		'src/tests/landmark-init.js'
+		'src/tests/landmark-init.js',
+		'src/tests/rssi-filter.js'
 	],
 
 	dir: {

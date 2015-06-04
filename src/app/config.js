@@ -23,7 +23,7 @@ module.exports = {
 	beacons: {
 		n: 2,
 		txPower: -12,
-		noise: 2,
+		noise: 4,
 		range: 20
 	}
 };
