@@ -1,6 +1,7 @@
 import Landmark from '../app/simulation/landmark';
 import config from '../app/config';
 import KalmanFilter from '../app/util/kalman';
+import { variance } from '../app/util/math';
 
 if (window.test === undefined) {
 	window.test = {};
@@ -27,11 +28,16 @@ window.test.rssiFilter = {
 		this.landmark = new Landmark('uid', {x: 0, y: 0}, config.beacons);
 		this.kalman = new KalmanFilter({
 			Q: config.beacons.noise,
-			R: 1
+			R: 0.01
 		});
 	},
 
 	iterate: function() {
+
+		if(this.iteration % 100 === 0) {
+			this.userX += 1;
+			//this.kalman.R = 1;
+		}
 
 		const rssi = this.landmark.rssiAt(this.userX, this.userY);
 		const rssiTrue = this.landmark.rssiAtRaw(this.userX, this.userY);
@@ -47,7 +53,7 @@ window.test.rssiFilter = {
 		this.iteration++;
 
 
-		this.userX += 0.2;
+		this.kalman.R = 0.01;
 
 	},
 
@@ -55,7 +61,7 @@ window.test.rssiFilter = {
 		$('#test-content').highcharts({
 			chart: {
 				type: 'scatter'
-			},
+			},	
 			title: {
 				text: 'RSSI'
 			},
@@ -88,6 +94,8 @@ window.test.rssiFilter = {
 		});
 
 		$('#test-error').html(this.error.reduce((p, c, i) => p+(c-p)/(i+1), 0));
+		$('#test-error-var').html(variance(this.error, (e) => e));
 		$('#test-error-real').html(this.realError.reduce((p, c, i) => p+(c-p)/(i+1), 0));
+		$('#test-error-real-var').html(variance(this.realError, (e) => e));
 	}
 };
