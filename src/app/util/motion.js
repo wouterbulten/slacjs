@@ -1,5 +1,3 @@
-import { randn } from './math.js';
-
 /**
  * Add two radials, keeps the result within [-pi, pi]
  * @param {float} t1
@@ -27,7 +25,7 @@ export function addTheta(t1, t2) {
  * @return {Number}
  */
 export function limitTheta(theta) {
-	
+
 	if (theta > Math.PI) {
 		return theta - (Math.PI * 2);
 	}
