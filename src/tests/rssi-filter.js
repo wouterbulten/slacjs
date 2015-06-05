@@ -28,14 +28,14 @@ window.test.rssiFilter = {
 		this.landmark = new Landmark('uid', {x: 0, y: 0}, config.beacons);
 		this.kalman = new KalmanFilter({
 			Q: config.beacons.noise,
-			R: 0.01
+			R: 0.008
 		});
 	},
 
 	iterate: function() {
 
 		if(this.iteration % 100 === 0) {
-			this.userX += 1;
+			this.userX += 5;
 			//this.kalman.R = 1;
 		}
 
@@ -51,10 +51,6 @@ window.test.rssiFilter = {
 		this.realError.push(Math.abs(rssiTrue - rssi));
 
 		this.iteration++;
-
-
-		this.kalman.R = 0.01;
-
 	},
 
 	plot: function() {

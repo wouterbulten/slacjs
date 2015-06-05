@@ -1,16 +1,31 @@
+import KalmanFilter from '../util/kalman';
+
 class Sensor {
+
 	/**
 	 * Sensor
 	 * @param  {int} options.n
 	 * @param  {int} options.txPower
 	 * @param  {int} options.noise
 	 * @param  {int} options.range
-	 * @return {Senser}
+	 * @param  {Number} options.R       Process noise
+	 * @param  {Number} options.Q       Measurement noise
+	 * @param  {Number} minMeasurements Minimum amount of measurements before we return a rssi value
+	 * @return {Sensor}
 	 */
-	constructor({n, txPower, noise, range}) {
+	constructor({n, txPower, noise, range}, {R = 0.008, Q = undefined} = {}, minMeasurements = 5) {
+		
 		this.landmarks = new Map();
-		this.iteration = 0;
 		this.landmarkConfig = {n, txPower, noise, range};
+
+		if (Q === undefined) {
+			Q = noise;
+		}
+
+		this.R = R;
+		this.Q = Q;
+
+		this.minMeasurements = minMeasurements;
 	}
 
 	/**
@@ -28,9 +43,8 @@ class Sensor {
 	}
 
 	/**
-	 * Get all averaged observations since the last request
+	 * Get all observations since the last request
 	 *
-	 * Updates the interal iteration counter
 	 * @return {Array}
 	 */
 	getObservations() {
@@ -38,12 +52,14 @@ class Sensor {
 
 		//Get all the landmarks that have been upated during the current iteration
 		this.landmarks.forEach((l, uid) => {
-			if (l.iteration === this.iteration) {
-				observedLandmarks.push({uid, r: this._rssiToDistance(l.rssi)});
-			}
-		});
+			if (l.changed && l.measurements > this.minMeasurements) {
+				const rssi = l.filter.lastMeasurement();
 
-		this.iteration++;
+				observedLandmarks.push({uid, r: this._rssiToDistance(rssi)});
+			}
+
+			l.changed = false;
+		});
 
 		return observedLandmarks;
 	}
@@ -57,10 +73,10 @@ class Sensor {
 	_updateLandmark(uid, rssi) {
 
 		const landmark = this.landmarks.get(uid);
-		const alpha = this._computeAlpha(rssi, landmark.iteration);
 
-		landmark.rssi = (rssi * alpha) + (landmark.rssi * (1 - alpha));
-		landmark.iteration = this.iteration;
+		landmark.filter.filter(rssi);
+		landmark.measurements++;
+		landmark.changed = true;
 	}
 
 	/**
@@ -70,33 +86,16 @@ class Sensor {
 	 * @return {void}
 	 */
 	_registerLandmark(uid, rssi) {
+		
+		const filter = new KalmanFilter({R: this.R, Q: this.Q});
+		filter.filter(rssi);
+
 		this.landmarks.set(uid, {
 			uid: uid,
-			rssi: rssi,
-			iteration: this.iteration
+			changed: true,
+			filter: filter,
+			measurements: 1
 		});
-	}
-
-	/**
-	 * Compute the alpha for the exponential weigthed average
-	 * @param  {float} rssi
-	 * @param  {int} previousIteration
-	 * @return {float}
-	 */
-	_computeAlpha(rssi, previousIteration) {
-		//See http://www.hindawi.com/journals/ijdsn/aa/195297/
-		//Alpha is based on the RSSI (larger values means larger alpha)
-		//The difference in time defines the maximum value of alpha, this increases
-		//with the time between the previous observation.
-		//
-		//@todo Currently we only use the timediff
-		const timeDiff = Math.max(this.iteration - previousIteration, 1);
-
-		const timeFactor = 1 - (1 / (Math.pow(timeDiff, 1.5) + 1));
-
-		//const rssiFactor = Math.min(1, 1 - (0.5 * ((-10 - rssi) / 60)));
-
-		return timeFactor;
 	}
 
 	/**

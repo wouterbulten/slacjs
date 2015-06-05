@@ -51,6 +51,14 @@ class KalmanFilter {
 	}
 
 	/**
+	 * Return the last filtered measurement
+	 * @return {Number}
+	 */
+	lastMeasurement() {
+		return this.x;
+	}
+
+	/**
 	 * Set measurement noise Q
 	 * @param {Number} noise
 	 */
