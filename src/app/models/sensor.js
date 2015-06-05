@@ -34,6 +34,12 @@ class Sensor {
 	 * @param {float} options.rssi
 	 */
 	addObservation({uid, rssi}) {
+
+		//Check whether the rssi value is valid
+		if(rssi > 0) {
+			return;
+		}
+
 		if (this.landmarks.has(uid)) {
 			this._updateLandmark(uid, rssi);
 		}
