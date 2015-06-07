@@ -41,7 +41,7 @@ class MotionSensor {
 		if (this.compassId === undefined) {
 			this.compassId = navigator.compass.watchHeading(
 				(data) => this._updateCompass(data),
-				(error)	=> console.log(error),
+				(error)	=>this._onError(error),
 				this.compassOptions
 			);
 		}

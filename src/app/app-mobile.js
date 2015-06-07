@@ -1,4 +1,5 @@
 import SlacController from './slac-controller';
+import BLE from './device/bluetooth.js';
 import MotionSensor from './device/motion-sensor';
 import config from './config';
 
@@ -7,6 +8,7 @@ window.SlacApp = {
 	controller: undefined,
 
 	motionSensor: undefined,
+	ble: undefined,
 
 	uiElements: {},
 
@@ -27,6 +29,7 @@ window.SlacApp = {
 
 			deviceMotionEnabled: $('.device-motion'),
 			deviceCompassEnabled: $('.device-compass'),
+			deviceBleEnabled: $('.device-ble'),
 
 			btnStart: $('.btn-start'),
 			btnReset: $('.btn-reset'),
@@ -36,6 +39,9 @@ window.SlacApp = {
 		//Create a new motion sensor object that listens for updates
 		//The sensor is working even if the algorithm is paused (to update the view)
 		this._startMotionSensing();
+
+		//Start the bluetooth radio
+		this._startBluetooth();
 
 		//Bind events to the buttons
 		this._bindButtons();
@@ -101,6 +107,23 @@ window.SlacApp = {
 	},
 
 	/**
+	 * Start the bluetooth radio
+	 * @return {void}
+	 */
+	_startBluetooth() {
+
+		this.ble = new BLE(config.ble.frequency);
+
+		const success = this.ble.initRadio();
+
+		if (success) {
+			this.uiElements.deviceBleEnabled.addClass('enabled');
+		}
+
+		this.ble.onObservation((data) => this._bluetoothObservation(data));
+	},
+
+	/**
 	 * Start the motion sensing
 	 * @return {void}
 	 */
@@ -137,10 +160,26 @@ window.SlacApp = {
 		this.uiElements.indheading.html(data.heading.toFixed(2));
 
 		//Send the motion update to the controller
-		if(this.controller !== undefined) {
+		if (this.controller !== undefined) {
 			this.controller.addMotionObservation(data.x, data.y, data.z, data.heading);
 
 			this.uiElements.stepCount.html(this.controller.pedometer.stepCount);
+		}
+	},
+	
+	/**
+	 * Process a bluetooth event
+	 * @param  {Object} data
+	 * @return {void}
+	 */
+	_bluetoothObservation(data) {
+
+		if (this.controller !== undefined) {
+
+			this.controller.addDeviceObservation({
+				uid: data.address,
+				rssi: data.rssi
+			});
 		}
 	}
 };

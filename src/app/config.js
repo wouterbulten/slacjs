@@ -29,5 +29,9 @@ module.exports = {
 
 	sensor: {
 		frequency: 100
+	},
+
+	ble: {
+		frequency: 100
 	}
 };
