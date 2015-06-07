@@ -27,6 +27,9 @@ class Pedometer {
 		this.updateRate = updateRate; //Update rate in ms
 
 		this.filter = new KalmanFilter();
+
+		//Callback to run after a new step
+		this.callbackOnStep = undefined;
 	}
 
 	/**
@@ -44,6 +47,15 @@ class Pedometer {
 		this.accNorm.shift();
 
 		this._stepDetection();
+	}
+
+	/**
+	 * Register a callback function to run on a new step
+	 * @param  {Function} callback
+	 * @return {void}
+	 */
+	onStep(callback) {
+		this.callbackOnStep = callback;
 	}
 
 	/**
@@ -74,6 +86,10 @@ class Pedometer {
 			this.stepCount++;
 			this.stepArr.push(1);
 			this.stepArr.shift();
+
+			if(this.callbackOnStep !== undefined) {
+				this.callbackOnStep();
+			}
 		}
 		else {
 			this.stepArr.push(0);
