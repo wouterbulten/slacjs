@@ -1,85 +1,21 @@
+import SlacController from './slac-controller';
 import MotionSensor from './device/motion-sensor';
-import ParticleSet from './models/particle-set';
-import SimulatedUser from './simulation/user';
-import { SimulatedLandmarkSet } from './simulation/landmark';
-import Sensor from './models/sensor';
-import ParticleRenderer from './view/particle-renderer';
-import Pedometer from './device/pedometer';
-import { degreeToRadian, rotationToLocalNorth } from './util/motion';
-
-window.SlacENV = 'debug';
-
-/*
-global $
- */
+import config from './config';
 
 window.SlacApp = {
 
-	motionSensor: undefined,
-	pedometer: undefined,
+	controller: undefined,
 
-	stepCount: 0,
+	motionSensor: undefined,
 
 	uiElements: {},
 
-	particleSet: undefined,
-	visualizer: undefined,
-	user: undefined,
-	landmarks: undefined,
-	sensor: undefined,
-
-	landmarkConfig: {
-		n: 2,
-		txPower: -12,
-		noise: 2,
-		range: 20
-	},
-
-	step: function() {
-
-		console.log('[SLACjs] step');
-
-		//Only udpate if the user has walked
-		if (this.stepCount == this.pedometer.stepCount) {
-			console.log('[SLACjs] User is not moving');
-			return false;
-		}
-
-		console.log('[SLACjs] User moved, running SLAM');
-
-		//Get difference in amount of steps
-		const steps = this.pedometer.stepCount - this.stepCount;
-		this.stepCount = this.pedometer.stepCount;
-
-		//Convert step count to distance measure
-		//@todo Make this variable
-		const dist = steps * 0.8;
-
-		//Get current heading
-		const heading = degreeToRadian(this.motionSensor.heading);
-
-		console.log(`[SLACjs] User moved, dist (m): ${dist}, heading (rad): ${heading}`);
-
-		//Sample a new pose for each particle in the set
-		this.particleSet.samplePose({r: dist, theta: heading});
-
-		//Get the latest observation
-		const observations = this.sensor.getObservations();
-
-		observations.forEach((obs) => this.particleSet.processObservation(obs));
-
-		this.particleSet.resample();
-
-		this.renderer.render(this.particleSet);
-
-		return true;
-	},
-
-	initialize: function() {
-		'use strict';
-
-		console.log('[SLACjs] Initialising..');
-
+	/**
+	 * Setup the application
+	 * @return {void}
+	 */
+	initialize() {
+		
 		//Cache all UI elements
 		this.uiElements = {
 			indx: $('.motion-indicator-x'),
@@ -90,64 +26,88 @@ window.SlacApp = {
 			map: $('#slacjs-map'),
 
 			deviceMotionEnabled: $('.device-motion'),
-			deviceCompassEnabled: $('.device-compass')
+			deviceCompassEnabled: $('.device-compass'),
+
+			btnStart: $('.btn-start'),
+			btnReset: $('.btn-reset'),
+			btnPause: $('.btn-pause')
 		};
 
-		this.particleSet = new ParticleSet(40, {x: 0, y: 0, theta: 0});
-		this.user = new SimulatedUser({x: 0, y: 0, theta: 0.0}, 2, {xRange: 50, yRange: 50, padding: 5});
-
-		this.landmarks = new SimulatedLandmarkSet(40, {xRange: 50, yRange: 50}, 50, this.landmarkConfig);
-		this.sensor = new Sensor(this.landmarkConfig);
-
-		//Start broadcasting of the simulated landmarks
-		//Broadcasts are sent to the sensor, the user object is used to find nearby landmarks
-		this.landmarks.startBroadcast(this.sensor, this.user);
-
-		this.renderer = new ParticleRenderer('slacjs-map');
-
+		//Create a new motion sensor object that listens for updates
+		//The sensor is working even if the algorithm is paused (to update the view)
 		this._startMotionSensing();
 
-		//Start the slam loop
-		this.loop();
+		//Bind events to the buttons
+		this._bindButtons();
 	},
 
 	/**
-	 * Start the SLAC loop
-	 * @param  {Number} timeout Number of miliseconds between updates
-	 * @return {SlacApp}
+	 * Start the SLACjs algorithm
+	 * @return {void}
 	 */
-	loop: function(timeout = 500) {
+	start() {
 
-		setTimeout(() => {
+		console.log('[SLACjs] Starting');
 
-			console.log('[SLACjs] Running loop');
+		if(this.controller !== undefined) {
+			this.reset();
+		}
 
-			var stepped = this.step();
+		//Create a new controller
+		this.controller = new SlacController(
+			config.particles.N,
+			config.particles.defaultPose,
+			config.beacons,
+			config.sensor.frequency
+		);
 
-			if (stepped) {
-				//We performed a step, run the next step
-				this.loop(100);
-			}
-			else {
-				//Wait a bit befor running the next step
-				this.loop(250);
-			}
-		}, timeout);
+		this.uiElements.btnStart.prop('disabled', true);
+		this.uiElements.btnReset.prop('disabled', false);
+	},
 
-		return this;
+	/**
+	 * Reset the SLACjs controller
+	 * @return {void}
+	 */
+	reset() {
+
+		console.log('[SLACjs] Resetting controller');
+
+		this.uiElements.btnStart.prop('disabled', false);
+		this.uiElements.btnReset.prop('disabled', true);
+
+		delete this.controller;
+	},
+
+	/**
+	 * Pause the SLACjs controller
+	 * @return {void}
+	 */
+	pause() {
+		console.log('[SLACjs] Pausing controller');
+
+		this.controller.pause();
+	},
+
+	/**
+	 * Bind events to buttons in the view
+	 * @return {void}
+	 */
+	_bindButtons() {
+
+		this.uiElements.btnStart.on('click', () => this.start());
+		this.uiElements.btnReset.on('click', () => this.reset());
+		this.uiElements.btnPause.on('click', () => this.pause());
 	},
 
 	/**
 	 * Start the motion sensing
-	 * @return {[type]} [description]
+	 * @return {void}
 	 */
 	_startMotionSensing() {
 
 		//Create a new motion sensor object that listens for updates
 		this.motionSensor = new MotionSensor();
-
-		//Create new pedometer to count steps
-		this.pedometer = new Pedometer(this.motionSensor.frequency);
 
 		//Register a listener, this udpates the view and runs the pedometer
 		this.motionSensor.onChange((data) => this._motionUpdate(data));
@@ -163,6 +123,11 @@ window.SlacApp = {
 		}
 	},
 
+	/**
+	 * Process a motion update event
+	 * @param  {Object} data
+	 * @return {void}
+	 */
 	_motionUpdate(data) {
 
 		//Update the view
@@ -171,22 +136,14 @@ window.SlacApp = {
 		this.uiElements.indz.html(data.z.toFixed(2));
 		this.uiElements.indheading.html(data.heading.toFixed(2));
 
-		//Find smallest rotation
-		const degree = rotationToLocalNorth(data.heading);
+		//Send the motion update to the controller
+		if(this.controller !== undefined) {
+			this.controller.addMotionObservation(data.x, data.y, data.z, data.heading);
 
-		this.uiElements.map.css({
-			'-webkit-transform' : 'rotate('+ degree +'deg)',
-             '-moz-transform' : 'rotate('+ degree +'deg)',
-             '-ms-transform' : 'rotate('+ degree +'deg)',
-             'transform' : 'rotate('+ degree +'deg)'
-        });
-
-		//Update the pedometer
-		this.pedometer.processMeasurement(data.x, data.y, data.z);
-
-		this.uiElements.stepCount.html(this.pedometer.stepCount);
+			this.uiElements.stepCount.html(this.controller.pedometer.stepCount);
+		}
 	}
-
 };
 
-window.SlacApp.initialize();
+//@todo remove this for the device version
+window.SlacApp.initialize(); 

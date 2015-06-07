@@ -48,7 +48,7 @@ Bottom nav bar
  */
 .device-indicator li {
 	float: left;
-	margin-left: 30px;
+	margin-left: 10px;
 	list-style-type: none;
 }
 .device-indicator li:first-child {

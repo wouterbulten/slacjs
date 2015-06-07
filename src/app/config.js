@@ -25,5 +25,9 @@ module.exports = {
 		txPower: -12,
 		noise: 4,
 		range: 20
+	},
+
+	sensor: {
+		frequency: 100
 	}
 };
