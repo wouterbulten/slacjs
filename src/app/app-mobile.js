@@ -1,6 +1,7 @@
 import SlacController from './slac-controller';
 import BLE from './device/bluetooth.js';
 import MotionSensor from './device/motion-sensor';
+import ParticleRenderer from './view/particle-renderer';
 import config from './config';
 
 window.SlacApp = {
@@ -9,6 +10,7 @@ window.SlacApp = {
 
 	motionSensor: undefined,
 	ble: undefined,
+	renderer: undefined,
 
 	uiElements: {},
 
@@ -47,6 +49,9 @@ window.SlacApp = {
 
 		//Bind events to the buttons
 		this._bindButtons();
+
+		//Create a renderer for the canvas view
+		this.renderer = new ParticleRenderer('slacjs-map');
 	},
 
 	/**
@@ -70,6 +75,9 @@ window.SlacApp = {
 			config.beacons,
 			config.sensor.frequency
 		);
+
+		//Bind renderer to controller
+		this.controller.onUpdate((particles) => this.renderer.render(particles));
 
 		console.log('[SLACjs] Controller created');
 

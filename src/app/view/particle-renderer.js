@@ -33,13 +33,45 @@ class ParticleRenderer {
 			this.resizeOnNextRender = false;
 		}
 
+		const best = particleSet.bestParticle();
+
 		particleSet.particles().forEach((p) => {
-			const resize = this._plotUserTrace(p.user);
+
+			if(p === best) {
+				return;
+			}
+
+			const resize = this._plotUserTrace(p.user, '#A8A8A8', 0.05);
 
 			if (resize) {
 				this.resizeOnNextRender = true;
 			}
 		});
+
+		//Plot the best user trace and the landmarks
+		this._plotUserTrace(best.user, '#24780D', 0.1);
+		this.best.landmarks.forEach((uid, landmark) => {
+			this._plotLandmark(landmark, '#B52B2B');
+		});
+
+		return this;
+	}
+
+	/**
+	 * Clear the canvas
+	 * @return {ParticleRenderer}
+	 */
+	clearCanvas() {
+
+		//Save transformation matrix
+		this.ctx.save();
+
+		//Reset the transform to clear the whole canvas
+		this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+		//Restore transformation
+		this.ctx.restore();
 
 		return this;
 	}
@@ -51,7 +83,7 @@ class ParticleRenderer {
 	 * @param  {float} Range of the sensor
 	 * @return {Boolean} True if the canvas has to resize
 	 */
-	_plotUserTrace(user, color = '#4B4C54') {
+	_plotUserTrace(user, color = '#A8A8A8', lineWidth = 0.1) {
 
 		this.ctx.lineJoin = 'round';
 		this.ctx.lineWidth = 0.1;
@@ -157,25 +189,6 @@ class ParticleRenderer {
 	}
 
 	/**
-	 * Clear the canvas
-	 * @return {ParticleRenderer}
-	 */
-	clearCanvas() {
-
-		//Save transformation matrix
-		this.ctx.save();
-
-		//Reset the transform to clear the whole canvas
-		this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-		//Restore transformation
-		this.ctx.restore();
-
-		return this;
-	}
-
-	/**
 	 * Translate x
 	 * @param  {Number} x
 	 * @return {Number}
@@ -192,6 +205,22 @@ class ParticleRenderer {
 	_ty(y) {
 		return this.yMax - ((y * this.factor) + (this.yMax / 2));
 	}
+
+	/**
+	 * Plot a object
+	 * @param {Object} objects A objects with at least an x,y value
+	 * @param {string} fillStyle
+	 */
+	_plotObject(object, fillStyle = '#000000', size = 0.35) {
+		this.ctx.fillStyle = fillStyle;
+
+		//Compensate for landmark size
+		var x = this._tx(object.x) - (0.35 * size);
+		var y = this._ty(object.y) - (0.35 * size);
+
+		this.ctx.fillRect(x, y, size, size);
+	}
+
 }
 
 export default ParticleRenderer;

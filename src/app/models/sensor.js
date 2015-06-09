@@ -30,10 +30,11 @@ class Sensor {
 
 	/**
 	 * Process a new observation
-	 * @param {string} options.uid
-	 * @param {float} options.rssi
+	 * @param {String} uid
+	 * @param {Number} rssi
+	 * @param {String} name
 	 */
-	addObservation({uid, rssi}) {
+	addObservation(uid, rssi, name) {
 
 		//Check whether the rssi value is valid
 		if(rssi > 0) {
@@ -44,7 +45,7 @@ class Sensor {
 			this._updateLandmark(uid, rssi);
 		}
 		else {
-			this._registerLandmark(uid, rssi);
+			this._registerLandmark(uid, rssi, name);
 		}
 	}
 
@@ -91,7 +92,7 @@ class Sensor {
 	 * @param  {float} rssi  Current RSSI value
 	 * @return {void}
 	 */
-	_registerLandmark(uid, rssi) {
+	_registerLandmark(uid, rssi, name) {
 		
 		console.log('[SLACjs/sensor] New landmark found with uid ' + uid);
 
@@ -99,9 +100,10 @@ class Sensor {
 		filter.filter(rssi);
 
 		this.landmarks.set(uid, {
-			uid: uid,
+			uid,
 			changed: true,
-			filter: filter,
+			name,
+			filter,
 			measurements: 1
 		});
 	}
