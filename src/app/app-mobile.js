@@ -18,6 +18,8 @@ window.SlacApp = {
 	 */
 	initialize() {
 		
+		console.log('[SLACjs] Running initialization');
+
 		//Cache all UI elements
 		this.uiElements = {
 			indx: $('.motion-indicator-x'),
@@ -59,6 +61,8 @@ window.SlacApp = {
 			this.reset();
 		}
 
+		this.uiElements.btnStart.prop('disabled', true);
+
 		//Create a new controller
 		this.controller = new SlacController(
 			config.particles.N,
@@ -67,8 +71,17 @@ window.SlacApp = {
 			config.sensor.frequency
 		);
 
-		this.uiElements.btnStart.prop('disabled', true);
+		console.log('[SLACjs] Controller created');
+
+		this.controller.start();
+
+		console.log('[SLACjs] Controller started');
+
 		this.uiElements.btnReset.prop('disabled', false);
+
+		console.log('[SLACjs] Start listening for devices');
+
+		this.ble.startListening();
 	},
 
 	/**
@@ -82,6 +95,7 @@ window.SlacApp = {
 		this.uiElements.btnStart.prop('disabled', false);
 		this.uiElements.btnReset.prop('disabled', true);
 
+		this.ble.stopListening();
 		delete this.controller;
 	},
 
@@ -118,6 +132,9 @@ window.SlacApp = {
 
 		if (success) {
 			this.uiElements.deviceBleEnabled.addClass('enabled');
+		}
+		else {
+			console.log('[SLACjs] BLE Radio not enabled');
 		}
 
 		this.ble.onObservation((data) => this._bluetoothObservation(data));
@@ -183,6 +200,3 @@ window.SlacApp = {
 		}
 	}
 };
-
-//@todo remove this for the device version
-window.SlacApp.initialize(); 

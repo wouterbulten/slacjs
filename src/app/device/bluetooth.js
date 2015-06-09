@@ -17,19 +17,20 @@ class BLE {
 	 * @return {Boolean} True on success
 	 */
 	initRadio() {
-		let success = false;
 
 		bluetoothle.initialize(
 			(result) => {
+
 				if (result.status == 'enabled' || result.status == 'initialized') {
-					success = true;
+					console.log('[SLACjs] Radio initialized');
 				}
 			},
 			(error) => this._onError("Bluetooth is not turned on, or could not be turned on. Make sure your phone has a Bluetooth 4.+ (BLE) chip."),
 			{"request": true}
 		);
 
-		return success;
+		//@todo Find better way to determine whether the radio is ready
+		return true;
 	}
 
 	/**
@@ -112,12 +113,24 @@ class BLE {
 	 * @return {void}
 	 */
 	_onError(error) {
-		console.error('Error occured: ' + error.code);
+
+		let errorMsg;
+
+		if (error.code !== undefined) {
+			errorMsg = error.code;
+		}
+		else {
+			errorMsg = error;
+		}
+
+		console.error('Error occured: ' + errorMsg);
 
 		navigator.notification.alert(
-			'An error occured in the BLE radio: ' + error.code,
+			'An error occured in the BLE radio: ' + errorMsg,
 			undefined,
 			'Error BLE',
 			'Ok');
 	}
 }
+
+export default BLE;

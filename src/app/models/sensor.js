@@ -93,6 +93,8 @@ class Sensor {
 	 */
 	_registerLandmark(uid, rssi) {
 		
+		console.log('[SLACjs/sensor] New landmark found with uid ' + uid);
+
 		const filter = new KalmanFilter({R: this.R, Q: this.Q});
 		filter.filter(rssi);
 

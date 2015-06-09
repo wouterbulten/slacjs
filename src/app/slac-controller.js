@@ -39,6 +39,8 @@ class SlacController {
 			return;
 		}
 
+		console.log('[SLACjs/controller] Update running');
+
 		//@todo Check for the amount of steps here
 		const dist = 1 * this.stepSize;
 		const heading = this.heading;
