@@ -2,6 +2,7 @@ import SlacController from './slac-controller';
 import BLE from './device/bluetooth.js';
 import MotionSensor from './device/motion-sensor';
 import ParticleRenderer from './view/particle-renderer';
+import { degreeToRadian } from './util/motion';
 import config from './config';
 
 window.SlacApp = {
@@ -68,10 +69,14 @@ window.SlacApp = {
 
 		this.uiElements.btnStart.prop('disabled', true);
 
+		//Use the current heading as the base
+		const startingPose = config.particles.defaultPose;
+		startingPose.theta = degreeToRadian(this.motionSensor.heading);
+
 		//Create a new controller
 		this.controller = new SlacController(
 			config.particles.N,
-			config.particles.defaultPose,
+			startingPose,
 			config.beacons,
 			config.sensor.frequency
 		);
@@ -186,7 +191,10 @@ window.SlacApp = {
 
 		//Send the motion update to the controller
 		if (this.controller !== undefined) {
-			this.controller.addMotionObservation(data.x, data.y, data.z, data.heading);
+			this.controller.addMotionObservation(
+				data.x, data.y, data.z, 
+				degreeToRadian(data.heading)
+			);
 
 			this.uiElements.stepCount.html(this.controller.pedometer.stepCount);
 		}
