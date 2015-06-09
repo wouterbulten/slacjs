@@ -192,11 +192,7 @@ window.SlacApp = {
 	_bluetoothObservation(data) {
 
 		if (this.controller !== undefined) {
-
-			this.controller.addDeviceObservation({
-				uid: data.address,
-				rssi: data.rssi
-			});
+			this.controller.addDeviceObservation(data.address, data.rssi, data.name);
 		}
 	}
 };

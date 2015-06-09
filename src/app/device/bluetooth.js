@@ -25,8 +25,9 @@ class BLE {
 					console.log('[SLACjs] Radio initialized');
 				}
 			},
-			(error) => this._onError("Bluetooth is not turned on, or could not be turned on. Make sure your phone has a Bluetooth 4.+ (BLE) chip."),
-			{"request": true}
+
+			() => this._onError('Bluetooth is not turned on, or could not be turned on. Make sure your phone has a Bluetooth 4.+ (BLE) chip.'),
+			{request: true}
 		);
 
 		//@todo Find better way to determine whether the radio is ready
@@ -64,6 +65,7 @@ class BLE {
 					success = true;
 				}
 			},
+
 			(error)	=> this._onError(error)
 		);
 
@@ -102,7 +104,7 @@ class BLE {
 	 */
 	_processObservation(data) {
 
-		if (this.callback !== undefined) {
+		if (this.callback !== undefined && data.status == 'scanResult') {
 			this.callback(data);
 		}
 	}

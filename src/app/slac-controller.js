@@ -76,11 +76,12 @@ class SlacController {
 	 * Register a new device observation
 	 * @param {String} uid
 	 * @param {Number} rssi
+	 * @param {String} name
 	 */
-	addDeviceObservation(uid, rssi) {
+	addDeviceObservation(uid, rssi, name) {
 
 		//Add the device observation to the sensor for filtering
-		this.sensor.addObservation({uid, rssi});
+		this.sensor.addObservation(uid, rssi, name);
 	}
 }
 
