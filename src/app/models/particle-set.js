@@ -61,6 +61,7 @@ class ParticleSet {
 						p.addLandmark({uid, r}, {x, y}, {varX, varY});
 					});
 
+					this.landmarkInitSet.remove(uid);
 					this.initialisedLandmarks.push(uid);
 				}
 			}
