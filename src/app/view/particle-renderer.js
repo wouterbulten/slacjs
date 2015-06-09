@@ -37,7 +37,7 @@ class ParticleRenderer {
 
 		particleSet.particles().forEach((p) => {
 
-			if(p === best) {
+			if (p === best) {
 				return;
 			}
 
@@ -48,10 +48,17 @@ class ParticleRenderer {
 			}
 		});
 
+		//Plot any landmark init filters
+		particleSet.landmarkInitSet.particleSetMap.forEach((landmarkPf) => {
+			landmarkPf.particles.forEach((p) => {
+				this._plotObject(p, '#5FE653');
+			});
+		});
+
 		//Plot the best user trace and the landmarks
 		this._plotUserTrace(best.user, '#24780D', 0.1);
-		this.best.landmarks.forEach((uid, landmark) => {
-			this._plotLandmark(landmark, '#B52B2B');
+		best.landmarks.forEach((landmark) => {
+			this._plotObject(landmark, '#B52B2B');
 		});
 
 		return this;
@@ -86,7 +93,7 @@ class ParticleRenderer {
 	_plotUserTrace(user, color = '#A8A8A8', lineWidth = 0.1) {
 
 		this.ctx.lineJoin = 'round';
-		this.ctx.lineWidth = 0.1;
+		this.ctx.lineWidth = lineWidth;
 		this.ctx.fillStyle = '#960E0E';
 		this.ctx.strokeStyle = color;
 
