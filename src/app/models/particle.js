@@ -50,17 +50,18 @@ class Particle {
 	 * Register a new landmark
 	 * @param {string} options.uid
 	 * @param {float} options.r
-	 * @param {[type]} options.x 	Initial x position
-	 * @param {[type]} options.y    Initial y
-	 * @param {[type]} options.varX Cov in X direction
-	 * @param {[type]} options.varY Cov in Y direction
+	 * @param {String} options.name
+	 * @param {Number} options.x 	Initial x position
+	 * @param {Number} options.y    Initial y
+	 * @param {Number} options.varX Cov in X direction
+	 * @param {Number} options.varY Cov in Y direction
 	 */
-	addLandmark({uid, r}, {x, y}, {varX, varY} = {varX: 1, varY: 1}) {
+	addLandmark({uid, r, name}, {x, y}, {varX, varY} = {varX: 1, varY: 1}) {
 
-		//@todo find better values for initial covariance
 		const landmark = {
 			x: x,
 			y: y,
+			name: name,
 			cov: [[varX, 0], [0, varY]]
 		};
 
@@ -153,6 +154,7 @@ class Particle {
 
 		copy.x = landmark.x;
 		copy.y = landmark.y;
+		copy.name = landmark.name;
 		copy.cov = [...landmark.cov];
 
 		return copy;

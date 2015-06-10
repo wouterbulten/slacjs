@@ -102,6 +102,7 @@ class Visualizer {
 	 */
 	plotObjects(objects, fillStyle = '#000000') {
 		this.ctx.fillStyle = fillStyle;
+		this.ctx.font = "1px serif";
 		const size = 0.35;
 
 		objects.forEach((o) => {
@@ -111,6 +112,10 @@ class Visualizer {
 			var y = this._ty(o.y) - (0.35 * size);
 
 			this.ctx.fillRect(x, y, size, size);
+
+			if(o.name !== undefined) {
+				this.ctx.fillText(o.name, x, y, 50);
+			}
 		});
 
 		return this;
@@ -256,11 +261,18 @@ class Visualizer {
 	 */
 	_plotLandmark(uid, landmark, landmarks = undefined, size = 0.5) {
 
+		this.ctx.font = "1px serif";
+		
 		//Compensate for landmark size
 		const x = this._tx(landmark.x) - (0.5 * size);
 		const y = this._ty(landmark.y) - (0.5 * size);
 
 		this.ctx.fillRect(x, y, size, size);
+
+
+		if(landmark.name !== undefined) {
+			this.ctx.fillText(landmark.name, x, y, 50);
+		}
 
 		if (landmarks !== undefined) {
 			const trueL = landmarks.landmarkByUid(uid);

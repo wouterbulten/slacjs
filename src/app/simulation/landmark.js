@@ -65,7 +65,7 @@ export class SimulatedLandmarkSet {
 		const landmarks = this.landmarksInRange(x, y);
 		const measurements = [];
 
-		return landmarks.forEach((l) => measurements.push({uid: l.uid, rssi: l.rssiAt(x, y)}));
+		return landmarks.forEach((l) => measurements.push({uid: l.uid, rssi: l.rssiAt(x, y), name: l.name}));
 	}
 
 	/**
@@ -80,7 +80,7 @@ export class SimulatedLandmarkSet {
 		if (landmarks.length > 0) {
 			const landmark = landmarks[Math.floor(Math.random() * landmarks.length)];
 
-			return {uid: landmark.uid, rssi: landmark.rssiAt(x, y)};
+			return {uid: landmark.uid, rssi: landmark.rssiAt(x, y), name: landmark.name};
 		}
 	}
 
@@ -161,6 +161,7 @@ class Landmark {
 		this.n = n;
 		this.txPower = txPower;
 		this.noise = noise;
+		this.name = uid;
 	}
 
 	/**

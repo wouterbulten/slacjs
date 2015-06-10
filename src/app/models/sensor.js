@@ -14,7 +14,7 @@ class Sensor {
 	 * @return {Sensor}
 	 */
 	constructor({n, txPower, noise, range}, {R = 0.008, Q = undefined} = {}, minMeasurements = 5) {
-		
+
 		this.landmarks = new Map();
 		this.landmarkConfig = {n, txPower, noise, range};
 
@@ -62,7 +62,7 @@ class Sensor {
 			if (l.changed && l.measurements > this.minMeasurements) {
 				const rssi = l.filter.lastMeasurement();
 
-				observedLandmarks.push({uid, r: this._rssiToDistance(rssi)});
+				observedLandmarks.push({uid, r: this._rssiToDistance(rssi), name: l.name});
 			}
 
 			l.changed = false;
@@ -93,8 +93,8 @@ class Sensor {
 	 * @return {void}
 	 */
 	_registerLandmark(uid, rssi, name) {
-		
-		console.log('[SLACjs/sensor] New landmark found with uid ' + uid);
+
+		console.log('[SLACjs/sensor] New landmark found with uid ' + uid + ' and name ' + name);
 
 		const filter = new KalmanFilter({R: this.R, Q: this.Q});
 		filter.filter(rssi);

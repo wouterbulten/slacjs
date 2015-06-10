@@ -45,7 +45,7 @@ class ParticleSet {
 
 		if (obs !== {}) {
 
-			const { uid, r } = obs;
+			const { uid, r, name } = obs;
 
 			if (this.initialisedLandmarks.indexOf(uid) == -1) {
 
@@ -58,7 +58,7 @@ class ParticleSet {
 				if (estimate > 0.6) {
 
 					this.particleList.forEach((p) => {
-						p.addLandmark({uid, r}, {x, y}, {varX, varY});
+						p.addLandmark(obs, {x, y}, {varX, varY});
 					});
 
 					this.landmarkInitSet.remove(uid);
@@ -66,7 +66,7 @@ class ParticleSet {
 				}
 			}
 			else {
-				this.particleList.forEach((p) => p.processObservation({uid, r}));
+				this.particleList.forEach((p) => p.processObservation(obs));
 			}
 		}
 

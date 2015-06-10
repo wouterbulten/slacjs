@@ -1,6 +1,6 @@
 class ParticleRenderer {
 
-	constructor(element, padding = 5, factor = 1, xMaxInit = 40, yMaxInit = 40) {
+	constructor(element, padding = 5, factor = 1, xMaxInit = 20, yMaxInit = 20) {
 		this.element = element;
 		this.canvas = document.getElementById(element);
 		this.ctx = this.canvas.getContext('2d');
@@ -226,6 +226,12 @@ class ParticleRenderer {
 		var y = this._ty(object.y) - (0.35 * size);
 
 		this.ctx.fillRect(x, y, size, size);
+
+		if(object.name !== undefined) {
+			this.ctx.font = "1px serif";
+			this.ctx.fillStyle = "#000000";
+			this.ctx.fillText(object.name, x, y);
+		}
 	}
 
 }
