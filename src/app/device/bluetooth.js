@@ -10,6 +10,7 @@ class BLE {
 		this.restartTimer = undefined;
 		this.listenening = false;
 		this.callback = undefined;
+		this.filterFunc = undefined;
 	}
 
 	/**
@@ -84,6 +85,15 @@ class BLE {
 	}
 
 	/**
+	 * Add a filter to only accept some observations
+	 * @param  {Function} filterFunc
+	 * @return {void}
+	 */
+	filter(filterFunc) {
+		this.filterFunc = filterFunc;
+	}
+
+	/**
 	 * Start scanning for BLE devices
 	 * @return {void}
 	 */
@@ -105,7 +115,11 @@ class BLE {
 	_processObservation(data) {
 
 		if (this.callback !== undefined && data.status == 'scanResult') {
-			this.callback(data);
+
+			//Run the filter if it exists
+			if(this.filterFunc === undefined || this.filterFunc(data)) {
+				this.callback(data);
+			}
 		}
 	}
 

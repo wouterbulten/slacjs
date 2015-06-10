@@ -16,7 +16,7 @@ class SlacController {
 
 		//Initialize a new particle set at 'defaultPose'
 		this.particleSet = new ParticleSet(nParticles, defaultPose);
-		
+
 		//Create a new sensor that tracks signal strengths
 		this.sensor = new Sensor(landmarkConfig);
 

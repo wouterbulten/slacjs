@@ -20,7 +20,7 @@ window.SlacApp = {
 	 * @return {void}
 	 */
 	initialize() {
-		
+
 		console.log('[SLACjs] Running initialization');
 
 		//Cache all UI elements
@@ -141,6 +141,10 @@ window.SlacApp = {
 
 		this.ble = new BLE(config.ble.frequency);
 
+		this.ble.filter((obs) => {
+			return obs.name !== undefined && obs.name !== null && ~obs.name.indexOf(config.ble.devicePrefix);
+		});
+
 		const success = this.ble.initRadio();
 
 		if (success) {
@@ -192,14 +196,14 @@ window.SlacApp = {
 		//Send the motion update to the controller
 		if (this.controller !== undefined) {
 			this.controller.addMotionObservation(
-				data.x, data.y, data.z, 
+				data.x, data.y, data.z,
 				degreeToRadian(data.heading)
 			);
 
 			this.uiElements.stepCount.html(this.controller.pedometer.stepCount);
 		}
 	},
-	
+
 	/**
 	 * Process a bluetooth event
 	 * @param  {Object} data

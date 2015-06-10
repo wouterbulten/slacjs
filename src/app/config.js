@@ -7,7 +7,7 @@ global module
  * @type {Object}
  */
 module.exports = {
-	
+
 	environment: 'development',
 
 	particles: {
@@ -32,6 +32,7 @@ module.exports = {
 	},
 
 	ble: {
-		frequency: 100
+		frequency: 100,
+		devicePrefix: 'DoBeacon_upstair'
 	}
 };
