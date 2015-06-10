@@ -6,8 +6,8 @@ class DataStore {
 
     save(data) {
 
-        data = JSON.stringify(data);
-        
+        data = 'SlacJsData =  ' + JSON.stringify(data) + ';';
+
         /*
         global window
          */
