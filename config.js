@@ -51,7 +51,8 @@ module.exports = {
 			'cordova-plugin-console',
 			'cordova-plugin-device-orientation',
 			'cordova-plugin-file',
-			'cordova-plugin-device'
+			'cordova-plugin-device',
+			'cordova-plugin-screen-orientation'
 		],
 
 		platforms: [

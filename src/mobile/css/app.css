@@ -90,3 +90,16 @@ canvas.map {
 	border: 1px solid red;
 	transition: all 1s ease-in-out;
 }
+
+/*
+General components
+ */
+.dense-motion-data {
+	text-align: center;
+	padding-left: 0;
+	margin-bottom: 0;
+}
+.dense-motion-data li {
+	list-style-type: none;
+	display: inline-block;
+}

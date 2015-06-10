@@ -17,12 +17,12 @@
 			<div class="container">
 
 				<div class="col-sm-2">
-					<div class="navbar-header">
+					<div class="navbar-header hidden-xs">
 						<span class="navbar-brand">SLACjs <sup class="text-muted">1.0</sup></span>
 					</div>
 				</div>
 
-				<div class="col-sm-10">
+				<div class="col-sm-10 text-center">
 					<ul class="nav navbar-nav repo">
 						<li><a href="#"><i class="fa fa-github"></i>&nbsp; wouterbulten/slacjs</a></li>
 					</ul>
@@ -46,7 +46,7 @@
 		</nav>
 
 		<div class="container-fluid full-height">
-			<div class="col-sm-2 sidebar">
+			<div class="col-sm-2 hidden-xs sidebar">
 				<h2>Motion</h2>
 				<hr>
 				<ul>
@@ -60,7 +60,16 @@
 				<h2>Devices</h2>
 				<hr>
 			</div>
-			<div class="col-sm-10 map-container">
+			<div class="map-container text-center">
+				<div class="visible-xs-block">
+					<ul class="dense-motion-data">
+						<li>x: <span class="text-muted motion-indicator-x">0.0</span></li>
+						<li>y: <span class="text-muted motion-indicator-y">0.0</span></li></li>
+						<li>z: <span class="text-muted motion-indicator-z">0.0</span></li></li>
+						<li>C: <span class="text-muted motion-indicator-heading">120.0</span></li>
+						<li>S: <span class="text-muted motion-step-count">0</span></li>
+					</ul>
+				</div>
 				<canvas id="slacjs-map" class="map"></canvas>
 			</div>
 		</div>

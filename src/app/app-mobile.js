@@ -49,6 +49,9 @@ window.SlacApp = {
 			btnExport: $('.btn-export')
 		};
 
+		//Lock the orientation of the device
+		this._lockDeviceOrientation();
+
 		//Create a new motion sensor object that listens for updates
 		//The sensor is working even if the algorithm is paused (to update the view)
 		this._startMotionSensing();
@@ -245,6 +248,35 @@ window.SlacApp = {
 				this.observations.bluetooth.push(data);
 			}
 			this.controller.addDeviceObservation(data.address, data.rssi, data.name);
+		}
+	},
+
+	/**
+	 * Lock the device orientation based on the platform
+	 * @return {void}
+	 */
+	_lockDeviceOrientation() {
+
+		let setting = false;
+
+		switch(device.platform) {
+			case "iOS":
+				setting = config.deviceOrientation.ios;
+				break;
+
+			case "android":
+				setting = config.deviceOrientation.android;
+				break;
+		}
+
+		/*
+		global screen
+		 */
+		if (!setting) {
+			screen.unlockOrientation();
+		}
+		else {
+			screen.lockOrientation(setting);
 		}
 	}
 };
