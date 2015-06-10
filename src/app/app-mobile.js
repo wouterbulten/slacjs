@@ -17,6 +17,11 @@ window.SlacApp = {
 
 	uiElements: {},
 
+	observations: {
+		bluetooth: [],
+		motion: []
+	},
+
 	/**
 	 * Setup the application
 	 * @return {void}
@@ -135,7 +140,7 @@ window.SlacApp = {
 	 * @return {void}
 	 */
 	export() {
-		this.storage.save([1,2,3,4]);
+		this.storage.save(this.observations);
 	},
 
 	/**
@@ -212,6 +217,11 @@ window.SlacApp = {
 
 		//Send the motion update to the controller
 		if (this.controller !== undefined) {
+
+			if(config.exportData) {
+				this.observations.motion.push(data);
+			}
+
 			this.controller.addMotionObservation(
 				data.x, data.y, data.z,
 				degreeToRadian(data.heading)
@@ -229,6 +239,10 @@ window.SlacApp = {
 	_bluetoothObservation(data) {
 
 		if (this.controller !== undefined) {
+
+			if(config.exportData) {
+				this.observations.bluetooth.push(data);
+			}
 			this.controller.addDeviceObservation(data.address, data.rssi, data.name);
 		}
 	}
