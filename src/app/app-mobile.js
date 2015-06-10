@@ -186,7 +186,8 @@ window.SlacApp = {
 	_startMotionSensing() {
 
 		//Create a new motion sensor object that listens for updates
-		this.motionSensor = new MotionSensor();
+		//@todo Move booleans to config
+		this.motionSensor = new MotionSensor(config.sensor.frequency);
 
 		//Register a listener, this udpates the view and runs the pedometer
 		this.motionSensor.onChange((data) => this._motionUpdate(data));

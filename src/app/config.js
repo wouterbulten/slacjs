@@ -10,6 +10,8 @@ module.exports = {
 
 	environment: 'development',
 
+	exportData: true,
+
 	particles: {
 		N: 40,
 

@@ -2,12 +2,12 @@ class MotionSensor {
 
 	/**
 	 * Motion sensor
+	* @param {Number} frequency Update rate of sensor
 	 * @param {Boolean} enableCompassUpdate Set to true to be notified of compass updates
 	 * @param {Boolean} enableAccUpdate Set to true to be notified of accelerometer updates
-	 * @param {Number} frequency Update rate of sensor
 	 * @return {MotionSensor}
 	 */
-	constructor(enableCompassUpdate = false, enableAccUpdate = true, frequency = 100, compassFilter = 2) {
+	constructor(frequency = 100, enableCompassUpdate = false, enableAccUpdate = true, compassFilter = undefined) {
 
 		this.accelerometerId = undefined;
 		this.compassId = undefined;
