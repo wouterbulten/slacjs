@@ -49,7 +49,7 @@ All steps of the SLACjs algorithm are displayed in the flow chart below. The cha
 SLACjs uses *bower* and *gulp* to manage dependencies and build the project; both can be installed using *npm*. Make sure that you have *npm* installed and then run:
 
 1. Install gulp globally (only do this if you do not have gulp installed yet):
-		`npm install --global gulp` 
+		`npm install --global gulp`
 2. Install project dependencies:
 		`npm install`
 3. Install all bower dependencies:
@@ -111,11 +111,11 @@ Two configuration files define most of the behaviour of SLACjs. The *build confi
 
 `<project root>/config.js`
 
-The build config file contains configuration for the all the Gulp tasks. 
+The build config file contains configuration for the all the Gulp tasks.
 
 The *application configuration*, which contains all settings used by the application, can be found in:
 
-`<project root>/src/app/config.js` 
+`<project root>/src/app/config.js`
 
 ## Libraries & Third-party software
 
@@ -137,3 +137,10 @@ The following Cordova plugins are used in the mobile version:
 ## Browser/device support
 
 SLACjs utilises the Babel ES6 polyfill to support older browsers and mobile devices.
+
+## Exporting data (iOS)
+
+To use *iTunes File Sharing* to download data files the following needs to be added to the *.plist* file:
+
+	<key>UIFileSharingEnabled</key>
+	<true/>

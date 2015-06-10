@@ -49,7 +49,9 @@ module.exports = {
 			'com.randdusing.bluetoothle',
 			'cordova-plugin-dialogs',
 			'cordova-plugin-console',
-			'cordova-plugin-device-orientation'
+			'cordova-plugin-device-orientation',
+			'cordova-plugin-file',
+			'cordova-plugin-device'
 		],
 
 		platforms: [

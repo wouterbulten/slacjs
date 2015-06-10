@@ -2,6 +2,7 @@ import SlacController from './slac-controller';
 import BLE from './device/bluetooth.js';
 import MotionSensor from './device/motion-sensor';
 import ParticleRenderer from './view/particle-renderer';
+import DataStore from './device/data-storage';
 import { degreeToRadian } from './util/motion';
 import config from './config';
 
@@ -12,6 +13,7 @@ window.SlacApp = {
 	motionSensor: undefined,
 	ble: undefined,
 	renderer: undefined,
+	storage: undefined,
 
 	uiElements: {},
 
@@ -38,7 +40,8 @@ window.SlacApp = {
 
 			btnStart: $('.btn-start'),
 			btnReset: $('.btn-reset'),
-			btnPause: $('.btn-pause')
+			btnPause: $('.btn-pause'),
+			btnExport: $('.btn-export')
 		};
 
 		//Create a new motion sensor object that listens for updates
@@ -53,6 +56,9 @@ window.SlacApp = {
 
 		//Create a renderer for the canvas view
 		this.renderer = new ParticleRenderer('slacjs-map');
+
+		//Create a datastore object to save the trace
+		this.storage = new DataStore();
 	},
 
 	/**
@@ -91,6 +97,7 @@ window.SlacApp = {
 		console.log('[SLACjs] Controller started');
 
 		this.uiElements.btnReset.prop('disabled', false);
+		this.uiElements.btnExport.prop('disabled', false);
 
 		console.log('[SLACjs] Start listening for devices');
 
@@ -107,6 +114,7 @@ window.SlacApp = {
 
 		this.uiElements.btnStart.prop('disabled', false);
 		this.uiElements.btnReset.prop('disabled', true);
+		this.uiElements.btnExport.prop('disabled', true);
 
 		this.ble.stopListening();
 		delete this.controller;
@@ -123,6 +131,14 @@ window.SlacApp = {
 	},
 
 	/**
+	 * Save data to the storage
+	 * @return {void}
+	 */
+	export() {
+		this.storage.save([1,2,3,4]);
+	},
+
+	/**
 	 * Bind events to buttons in the view
 	 * @return {void}
 	 */
@@ -131,6 +147,7 @@ window.SlacApp = {
 		this.uiElements.btnStart.on('click', () => this.start());
 		this.uiElements.btnReset.on('click', () => this.reset());
 		this.uiElements.btnPause.on('click', () => this.pause());
+		this.uiElements.btnExport.on('click', () => this.export());
 	},
 
 	/**

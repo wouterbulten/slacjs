@@ -46,9 +46,16 @@ Sidebar styles
 /*
 Bottom nav bar
  */
+ul.repo a {
+	padding-left: 0px;
+	padding-right: 0px;
+}
+.device-indicator {
+	padding-left: 15px;
+}
 .device-indicator li {
 	float: left;
-	margin-left: 10px;
+	margin-left: 5px;
 	list-style-type: none;
 }
 .device-indicator li:first-child {
@@ -62,7 +69,10 @@ Bottom nav bar
 .device-indicator li.enabled .fa {
 	color: #18bc9c;
 }
-
+.navbar-text {
+	margin-left: 0;
+	margin-right: 0;
+}
 /*
 Canvas
  */
