@@ -20,23 +20,49 @@ function getTask(task) {
     return require('./tasks/' + task).apply(this, argArray);
 }
 
+/*
+
+Tasks for the local version of SLACjs
+
+ */
 gulp.task('lint', getTask('lint'));
 gulp.task('clean', getTask('clean'));
 gulp.task('test', ['lint']); //Used by Travis
 
 gulp.task('build', ['lint', 'build-js', 'build-vendor', 'build-polyfill', 'build-html', 'build-styles']);
 
-gulp.task('build-html', getTask('html'));
+gulp.task('build-html', getTask('move', config.dir.src.html, config.dir.dist.public));
 gulp.task('build-js', getTask(
 	'transpile', config.entries.local, config.dir.dist.scripts, (config.env == 'development'))
 );
+
 gulp.task('build-styles', getTask('styles'));
 gulp.task('build-vendor', getTask('vendor', config.dir.dist.vendor));
 gulp.task('build-polyfill', getTask('polyfill', config.dir.dist.scripts));
 
 gulp.task('mobile', ['lint', 'mobile-vendor', 'mobile-build-js', 'mobile-polyfill', 'mobile-resources']);
 
-//Mobile build tasks
+/*
+
+Tasks for the replay version of SLACjs
+
+ */
+
+gulp.task('build-js-replay', getTask(
+	'transpile', config.entries.replay, config.dir.dist.scripts, (config.env == 'development'))
+);
+gulp.task('build-html-replay', getTask('move', config.dir.src.replayHtml, config.dir.dist.public));
+
+gulp.task('build-replay', ['lint', 'build-js-replay', 'build-vendor', 'build-polyfill', 'build-html-replay', 'build-styles', 'move-replay-data']);
+
+gulp.task('move-replay-data', getTask('move', config.dir.src.replayData, config.dir.dist.replayData));
+
+/*
+
+Mobile build tasks
+
+ */
+
 gulp.task('mobile-build-js', getTask(
 	'transpile', config.entries.mobile, config.dir.mobile.scripts, false
 ));
@@ -46,10 +72,17 @@ gulp.task('mobile-setup', ['mobile-resources'], getTask('cordova-setup'));
 gulp.task('mobile-vendor', getTask('vendor', config.dir.mobile.vendor));
 gulp.task('mobile-polyfill', getTask('polyfill', config.dir.mobile.vendor));
 
-//Tasks for local testing and reloading the browser
+
+/*
+
+Tasks for reloading the browser using browser sync
+
+ */
 gulp.task('reload-styles', ['build-styles'], browserSync.reload);
 gulp.task('reload-scripts', ['lint', 'build-js'], browserSync.reload);
+gulp.task('reload-scripts-replay', ['lint', 'build-js-replay'], browserSync.reload);
 gulp.task('reload-index', ['build-html'], browserSync.reload);
+gulp.task('reload-index-replay', ['build-html-replay'], browserSync.reload);
 
 // Main task for serving the non-mobile local version of SlacJS
 gulp.task('serve', ['build'], function() {
@@ -60,8 +93,24 @@ gulp.task('serve', ['build'], function() {
 	// Watch .js files
 	gulp.watch(config.dir.src.scripts, ['reload-scripts']);
 	gulp.watch(config.dir.src.tests, ['reload-scripts']);
-	
+
 	gulp.watch(config.dir.src.html, ['reload-index']);
+
+	browserSync({
+		server: './dist'
+	});
+});
+
+// Main task for serving the replay local version of SlacJS
+gulp.task('serve-replay', ['build-replay'], function() {
+
+	// Watch .css files
+	gulp.watch(config.dir.src.styles, ['reload-styles']);
+
+	// Watch .js files
+	gulp.watch(config.dir.src.scripts, ['reload-scripts-replay']);
+
+	gulp.watch(config.dir.src.replayHtml, ['reload-index-replay']);
 
 	browserSync({
 		server: './dist'

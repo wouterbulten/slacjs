@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>SLACjs Test</title>
+
+	<style>
+		* { margin:0; padding:0; } /* to remove the top and left whitespace */
+
+		html, body { width:100%; height:100%; } /* just to be sure these are full screen*/
+
+		canvas { display:block; } /* To remove the scrollbars */
+
+		#slac-stage {
+			width: 100%;
+			position: relative;
+
+		}
+		#slac-stage canvas {
+			z-index: -1;
+			position: absolute;
+			border: 1px solid black;
+			background-color: #eeeeee;
+			box-sizing:border-box;
+			-moz-box-sizing:border-box;
+			-webkit-box-sizing:border-box;
+		}
+	</style>
+</head>
+
+<body>
+
+<div id="slac-stage">
+	<canvas height="600" width="600" id="slacjs-map"></canvas>
+</div>
+
+<h1>SLAC.js <small>(ES6 Version)</small></h1>
+Iteration time:
+<select id="time">
+	<option>5000</option>
+	<option>2000</option>
+	<option>1000</option>
+	<option>500</option>
+	<option selected>250</option>
+	<option>50</option>
+	<option>10</option>
+</select>
+
+<script type="text/javascript" src="data/replay-data.js"></script>
+<script type="text/javascript" src="assets/js/browser-polyfill.js"></script>
+<script type="text/javascript" src="vendor/vendor.js"></script>
+<script type="text/javascript" src="assets/js/slacjs-app.js"></script>
+
+<script type="text/javascript">
+
+$(window).ready(function() {
+
+	SlacApp.initialize();
+	SlacApp.start();
+
+});
+</script>
+</body>
+</html>

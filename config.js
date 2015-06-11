@@ -8,7 +8,8 @@ module.exports = {
 
 	entries: {
 		local: ['src/app/app-local.js'],
-		mobile: ['src/app/app-mobile.js']
+		mobile: ['src/app/app-mobile.js'],
+		replay: ['src/app/app-replay.js']
 	},
 
 	'tests': [
@@ -22,6 +23,8 @@ module.exports = {
 			styles: 'src/local/styles/**/*.css',
 			scripts: 'src/app/**/*.js',
 			html: 'src/local/**/*.html',
+			replayHtml: 'src/replay/**/*.html',
+			replayData: 'src/replay/data/*.js',
 			mobile: 'src/mobile/**/*.*',
 			tests: 'src/tests/**/*.js',
 			polyfill: 'node_modules/babelify/node_modules/babel-core/browser-polyfill.js'
@@ -32,7 +35,8 @@ module.exports = {
 			styles: 'dist/assets/css/',
 			scripts: 'dist/assets/js/',
 			vendor: 'dist/vendor/',
-			public: 'dist/'
+			public: 'dist/',
+			replayData: 'dist/data/'
 		},
 
 		mobile: {
@@ -40,7 +44,7 @@ module.exports = {
 			scripts: 'mobile/www/js/',
 			www: 'mobile/www/',
 			vendor: 'mobile/www/vendor/'
-		}
+		},
 	},
 
 	cordova: {

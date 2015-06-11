@@ -223,6 +223,8 @@ window.SlacApp = {
 		if (this.controller !== undefined) {
 
 			if(config.exportData) {
+				data.timestamp = new Date().getTime();
+
 				this.observations.motion.push(data);
 			}
 
@@ -245,6 +247,8 @@ window.SlacApp = {
 		if (this.controller !== undefined) {
 
 			if(config.exportData) {
+				data.timestamp = new Date().getTime();
+
 				this.observations.bluetooth.push(data);
 			}
 			this.controller.addDeviceObservation(data.address, data.rssi, data.name);
