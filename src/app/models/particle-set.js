@@ -132,7 +132,8 @@ class ParticleSet {
 					landmarks.set(uid, {
 						x: weights[i] * landmark.x,
 						y: weights[i] * landmark.y,
-						uid: uid
+						uid: uid,
+						name: landmark.name
 					});
 				}
 				else {

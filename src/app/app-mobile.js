@@ -92,7 +92,8 @@ window.SlacApp = {
 			config.particles.N,
 			startingPose,
 			config.beacons,
-			config.sensor.frequency
+			config.sensor.frequency,
+            config.pedometer.stepSize
 		);
 
 		//Bind renderer to controller

@@ -31,6 +31,10 @@ module.exports = {
 		}
 	},
 
+	pedometer: {
+		stepSize: 0.4
+	},
+	
 	beacons: {
 		n: 2,
 		txPower: -60,

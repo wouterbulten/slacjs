@@ -1,6 +1,6 @@
 import config from './config';
 import SlacController from './slac-controller';
-import ParticleRenderer from './view/particle-renderer';
+import ReplayRenderer from './view/replay-renderer';
 import { degreeToRadian } from './util/motion';
 
 /**
@@ -30,7 +30,7 @@ window.SlacApp = {
         }
 
         //Create a renderer for the canvas view
-		this.renderer = new ParticleRenderer('slacjs-map', 5, 1, 10, 10);
+		this.renderer = new ReplayRenderer('slacjs-map');
     },
 
     start() {
@@ -44,7 +44,8 @@ window.SlacApp = {
             config.particles.N,
             startingPose,
             config.beacons,
-            config.sensor.frequency
+            config.sensor.frequency,
+            config.pedometer.stepSize
         );
 
         //We hack the controller to update the BLE observations before we run the internal update function

@@ -10,9 +10,10 @@ class SlacController {
 	 * @param  {Object} defaultPose      Starting pose of particles
 	 * @param  {Object} landmarkConfig   Landmark configuration
 	 * @param  {Number} motionUpdateRate Motion update frequency
+	 * @param  {Number} stepSize
 	 * @return {SlacController}
 	 */
-	constructor(nParticles, defaultPose, landmarkConfig, motionUpdateRate) {
+	constructor(nParticles, defaultPose, landmarkConfig, motionUpdateRate, stepSize) {
 
 		//Initialize a new particle set at 'defaultPose'
 		this.particleSet = new ParticleSet(nParticles, defaultPose);
@@ -21,7 +22,7 @@ class SlacController {
 		this.sensor = new Sensor(landmarkConfig);
 
 		//Create new pedometer to count steps
-		this.pedometer = new Pedometer(motionUpdateRate);
+		this.pedometer = new Pedometer(motionUpdateRate, stepSize);
 		this.pedometer.onStep(() => this._update());
 
 		//Create a local copy of the current heading
