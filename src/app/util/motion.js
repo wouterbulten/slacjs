@@ -91,6 +91,15 @@ export function degreeToRadian(degrees) {
 }
 
 /**
+ * Convert a clockwise degree to a counter clockwise degree
+ * @param  {Number} degrees	
+ * @return {Number}
+ */
+export function clockwiseToCounterClockwise(degrees) {
+	return 360 - degrees;
+}
+
+/**
  * Finds the smallest rotation to the local north (wich is 90deg on a radial axis)
  * @param  {Number} degrees
  * @return {Number}

@@ -1,6 +1,6 @@
 class ReplayRenderer {
 
-    constructor(element, xMax = 15, yMax = 15, startX = 2.5, startY = 12.5) {
+    constructor(element, xMax = 15, yMax = 15, startX = 2.5, startY = 5) {
         this.element = element;
         this.canvas = document.getElementById(element);
         this.ctx = this.canvas.getContext('2d');
@@ -29,10 +29,14 @@ class ReplayRenderer {
 		});
 
 		//Plot any landmark init filters
+		let color = 50;
+
 		particleSet.landmarkInitSet.particleSetMap.forEach((landmarkPf) => {
 			landmarkPf.particles.forEach((p) => {
-				this._plotObject(p, '#5FE653', 3);
+				this._plotObject(p, 'rgb(0,' + color + ',0)', 5);
 			});
+
+            color += 50;
 		});
 
 		//Plot the best user trace
@@ -177,12 +181,9 @@ class ReplayRenderer {
 		this.ctx.fillRect(x, y, size, size);
 
 		if(object.name !== undefined) {
-            this.ctx.save();
-            this.ctx.setTransform(1, 0, 0, 1, 0, 0);
 			this.ctx.font = "15px serif";
 			this.ctx.fillStyle = "#000000";
 			this.ctx.fillText(object.name, x, y);
-            this.ctx.restore();
 		}
 	}
 }

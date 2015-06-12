@@ -13,7 +13,7 @@ class Sensor {
 	 * @param  {Number} minMeasurements Minimum amount of measurements before we return a rssi value
 	 * @return {Sensor}
 	 */
-	constructor({n, txPower, noise, range}, {R = 0.008, Q = undefined} = {}, minMeasurements = 5) {
+	constructor({n, txPower, noise, range}, {R = 0.008, Q = undefined} = {}, minMeasurements = 10) {
 
 		this.landmarks = new Map();
 		this.landmarkConfig = {n, txPower, noise, range};

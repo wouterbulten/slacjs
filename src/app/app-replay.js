@@ -1,7 +1,7 @@
 import config from './config';
 import SlacController from './slac-controller';
 import ReplayRenderer from './view/replay-renderer';
-import { degreeToRadian } from './util/motion';
+import { degreeToRadian, clockwiseToCounterClockwise } from './util/motion';
 
 /**
  * Application object for replaying recorded data
@@ -37,7 +37,7 @@ window.SlacApp = {
 
         //Use the current heading as the base
 		const startingPose = config.particles.defaultPose;
-		startingPose.theta = degreeToRadian(SlacJsData.motion[0].heading);
+		startingPose.theta = degreeToRadian(clockwiseToCounterClockwise(SlacJsData.motion[0].heading));
 
         //Create a new controller
         this.controller = new SlacController(
@@ -87,7 +87,7 @@ window.SlacApp = {
 
         this.controller.addMotionObservation(
             data.x, data.y, data.z,
-            degreeToRadian(data.heading)
+            degreeToRadian(clockwiseToCounterClockwise(data.heading))
         );
 
         this.currentMotionTimestamp = data.timestamp;
