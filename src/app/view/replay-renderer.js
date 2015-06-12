@@ -1,9 +1,11 @@
 class ReplayRenderer {
 
-    constructor(element, xMax = 15, yMax = 15, startX = 2.5, startY = 5) {
+    constructor(element, landmarkPositions, xMax = 15, yMax = 15, startX = 2.5, startY = 5) {
         this.element = element;
         this.canvas = document.getElementById(element);
         this.ctx = this.canvas.getContext('2d');
+
+        this.trueLandmarkPositions = landmarkPositions;
 
         this.xMax = xMax;
         this.yMax = yMax;
@@ -51,6 +53,17 @@ class ReplayRenderer {
         best.landmarks.forEach((landmark) => {
 			this._plotObject(landmark, '#B52B2B', 10);
 		});
+
+        //Plot the true landmarks
+        for (let name in this.trueLandmarkPositions) {
+            if (this.trueLandmarkPositions.hasOwnProperty(name)) {
+
+                const landmark =  this.trueLandmarkPositions[name];
+                landmark.name = name;
+
+                this._plotObject(landmark, '#000000', 10);
+            }
+        }
 
 		return this;
     }

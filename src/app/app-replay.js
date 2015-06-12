@@ -29,8 +29,12 @@ window.SlacApp = {
             console.error('No replay data found');
         }
 
+        if(SlacJsLandmarkPositions === undefined) {
+            console.error('No true landmark positions found');
+        }
+
         //Create a renderer for the canvas view
-		this.renderer = new ReplayRenderer('slacjs-map');
+		this.renderer = new ReplayRenderer('slacjs-map', SlacJsLandmarkPositions);
     },
 
     start() {
