@@ -1,4 +1,21 @@
 /**
+ * Convert an angle in degrees to a radian angle and substract the base
+ *
+ * Base corresponds to theta=0. Degrees are converted from CW to CWW.
+ *
+ * @param  {Number} heading Angle in degrees
+ * @param  {Number} base Base angle in degrees
+ * @return {Number} between -pi and pi
+ */
+export function degreeToNormalisedHeading(heading, base) {
+
+	let baseRadian = degreeToRadian(clockwiseToCounterClockwise(base));
+	let headingRadian = degreeToRadian(clockwiseToCounterClockwise(heading));
+
+	return headingRadian - baseRadian;
+}
+
+/**
  * Add two radials, keeps the result within [-pi, pi]
  * @param {float} t1
  * @param {float} t2
@@ -92,7 +109,7 @@ export function degreeToRadian(degrees) {
 
 /**
  * Convert a clockwise degree to a counter clockwise degree
- * @param  {Number} degrees	
+ * @param  {Number} degrees
  * @return {Number}
  */
 export function clockwiseToCounterClockwise(degrees) {
