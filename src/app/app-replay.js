@@ -35,19 +35,28 @@ window.SlacApp = {
             console.error('No true landmark positions found');
         }
 
+        if(SlacJsStartingPosition === undefined) {
+            console.error('No starting position found');
+        }
+
         //Create a renderer for the canvas view
 		this.renderer = new ReplayRenderer('slacjs-map', SlacJsLandmarkPositions);
     },
 
     start() {
 
-        //Use the current heading as the base
+        //Store the current heading
         this.startHeading = SlacJsData.motion[0].heading;
+
+        //Update the initial pose with the true starting position
+        const startingPose = config.particles.defaultPose;
+        startingPose.x = SlacJsStartingPosition.x;
+        startingPose.y = SlacJsStartingPosition.y;
 
         //Create a new controller
         this.controller = new SlacController(
             config.particles.N,
-            config.particles.defaultPose,
+            startingPose,
             config.beacons,
             config.sensor.frequency,
             config.pedometer.stepSize

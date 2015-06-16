@@ -1,6 +1,6 @@
 class ReplayRenderer {
 
-    constructor(element, landmarkPositions, xMax = 15, yMax = 15, startX = 2.5, startY = 5) {
+    constructor(element, landmarkPositions, xMax = 10, yMax = 10, offsetX = 0.5, offsetY = 0.5) {
         this.element = element;
         this.canvas = document.getElementById(element);
         this.ctx = this.canvas.getContext('2d');
@@ -9,8 +9,8 @@ class ReplayRenderer {
 
         this.xMax = xMax;
         this.yMax = yMax;
-        this.startX = startX;
-        this.startY = startY;
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
 
         this._resizeCanvas();
         this.scaleFactor = this._calculateScaleFactor();
@@ -113,8 +113,8 @@ class ReplayRenderer {
 		const height = this.canvas.height;
 
 		//Calculate maximal possible scalefactor
-		const scaleXMax = width / this.xMax;
-		const scaleYMax = height / this.yMax;
+		const scaleXMax = width / (this.xMax + this.offsetX);
+		const scaleYMax = height / (this.yMax + this.offsetY);
 
 		return Math.min(scaleXMax, scaleYMax);
 	}
@@ -162,7 +162,7 @@ class ReplayRenderer {
 	 * @return {Number}
 	 */
 	_tx(x) {
-		return (x + this.startX) * this.scaleFactor;
+		return (x + this.offsetX) * this.scaleFactor;
 	}
 
 	/**
@@ -171,7 +171,7 @@ class ReplayRenderer {
 	 * @return {Number}
 	 */
 	_ty(y) {
-		return (this.yMax - (y + this.startY)) * this.scaleFactor;
+		return (this.yMax - (y + this.offsetY)) * this.scaleFactor;
 	}
 
 	/**
