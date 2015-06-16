@@ -13,27 +13,27 @@ class SlacController {
 	 * @param  {Number} stepSize
 	 * @return {SlacController}
 	 */
-	constructor(nParticles, defaultPose, landmarkConfig, motionUpdateRate, stepSize) {
+	constructor(config) {
 
 		//Initialize a new particle set at 'defaultPose'
-		this.particleSet = new ParticleSet(nParticles, defaultPose);
+		this.particleSet = new ParticleSet(config.particles.N, config.particles.defaultPose);
 
 		//Create a new sensor that tracks signal strengths
-		this.sensor = new Sensor(landmarkConfig);
+		this.sensor = new Sensor(config.landmarkConfig, config.sensor.rssi.kalman, config.sensor.rssi.minMeasurements);
 
 		//Create new pedometer to count steps
-		this.pedometer = new Pedometer(motionUpdateRate, stepSize);
+		this.pedometer = new Pedometer(config.sensor.motion.frequency);
 		this.pedometer.onStep(() => this._update());
 
 		//Create a local copy of the current heading
-		this.heading = 0.0;
+		this.heading = config.particles.defaultPose.theta;
 
 		//Step size of a single step in meters
-		this.stepSize = 0.8;
+		this.stepSize = config.pedometer.stepSize;
 
 		this.started = false;
-
 		this.callback = undefined;
+		this.lastObservations = [];
 	}
 
 	/**

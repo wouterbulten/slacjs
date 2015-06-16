@@ -59,18 +59,11 @@ window.SlacApp = {
         this.startHeading = SlacJsData.motion[0].heading;
 
         //Update the initial pose with the true starting position
-        const startingPose = config.particles.defaultPose;
-        startingPose.x = SlacJsStartingPosition.x;
-        startingPose.y = SlacJsStartingPosition.y;
+        config.particles.defaultPose.x = SlacJsStartingPosition.x;
+        config.particles.defaultPose.y = SlacJsStartingPosition.y;
 
         //Create a new controller
-        this.controller = new SlacController(
-            config.particles.N,
-            startingPose,
-            config.beacons,
-            config.sensor.frequency,
-            config.pedometer.stepSize
-        );
+        this.controller = new SlacController(config);
 
         //We hack the controller to update the BLE observations before we run the internal update function
         this.controller.pedometer.onStep(() => {

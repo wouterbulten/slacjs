@@ -32,10 +32,10 @@ module.exports = {
 	},
 
 	pedometer: {
-		stepSize: 0.4
+		stepSize: 0.8
 	},
 
-	beacons: {
+	landmarkConfig: {
 		n: 2,
 		txPower: -60,
 		noise: 4,
@@ -43,7 +43,16 @@ module.exports = {
 	},
 
 	sensor: {
-		frequency: 100
+		motion: {
+			frequency: 100
+		},
+		rssi: {
+			kalman: {
+				R: 0.008,
+				Q: 4
+			},
+			minMeasurements: 10
+		}
 	},
 
 	ble: {
