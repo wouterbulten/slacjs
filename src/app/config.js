@@ -22,7 +22,7 @@ module.exports = {
 	},
 
 	particles: {
-		N: 40,
+		N: 50,
 
 		defaultPose: {
 			x: 0,
@@ -34,7 +34,7 @@ module.exports = {
 	pedometer: {
 		stepSize: 0.4
 	},
-	
+
 	beacons: {
 		n: 2,
 		txPower: -60,

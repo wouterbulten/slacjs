@@ -56,13 +56,9 @@ class User {
 	 */
 	samplePose({r, theta}) {
 
-		const averageHeading = meanHeading(this.theta, theta);
+		const sdHeading = 0.1;
 
-		//Compute the standard deviation of the noise based on the
-		//distance to the computed average
-		const sdHeading = 0.5 * Math.abs(theta - averageHeading);
-
-		const sampledHeading = limitTheta(randn(averageHeading, sdHeading));
+		const sampledHeading = limitTheta(randn(theta, sdHeading));
 
 		//Comput the deviation of the noise of the step size
 		//@todo Base the deviation of the steps on the pedometer

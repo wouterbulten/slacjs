@@ -64,12 +64,31 @@ export function limitTheta(theta) {
  * @param  {Number} theta1
  * @param  {Number} theta2
  * @return {Number}
+ * @see https://en.wikipedia.org/wiki/Mean_of_circular_quantities
  */
 export function meanHeading(theta1, theta2) {
 
-	const average = (theta1 + theta2) / 2;
+	const oldTheta1 = theta1;
+	const oldTheta2 = theta2;
 
-	return average;
+	if (theta1 < 0) {
+		theta1 += 2 * Math.PI;
+	}
+	if (theta2 < 0) {
+		theta2 += 2 * Math.PI;
+	}
+
+	const {dx: x1, dy: y1} = polarToCartesian(1, theta1);
+	const {dx: x2, dy: y2} = polarToCartesian(1, theta2);
+
+	const avgX = (x1 + x2) / 2;
+	const avgY = (y1 + y2) / 2;
+
+	const {theta: heading} = cartesianToPolar(avgX, avgY);
+
+	console.log({oldTheta1, oldTheta2, theta1, theta2, heading});
+
+	return heading;
 }
 
 /**

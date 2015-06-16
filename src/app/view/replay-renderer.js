@@ -27,7 +27,7 @@ class ReplayRenderer {
 				return;
 			}
 
-			this._plotUserTrace(p.user, '#A8A8A8', 2);
+			this._plotUserTrace(p.user, '#CCCCCC', 0.5);
 		});
 
 		//Plot any landmark init filters
