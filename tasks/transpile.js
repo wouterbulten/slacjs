@@ -31,8 +31,10 @@ module.exports = function (gulp, entries, outputDir, includeTests) {
 			pipe = pipe.pipe(sourcemaps.init({loadMaps: true}))
 					.on('error', gutil.log);
 		}
-		
-		pipe = pipe.pipe(uglify());
+
+		if(!development) {
+			pipe = pipe.pipe(uglify());
+		}
 
 		if(development) {
 			pipe = pipe.pipe(sourcemaps.write('.'));
