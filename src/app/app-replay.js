@@ -1,7 +1,7 @@
 import config from './config';
 import SlacController from './slac-controller';
 import ReplayRenderer from './view/replay-renderer';
-import { degreeToRadian, clockwiseToCounterClockwise } from './util/motion';
+import { degreeToNormalisedHeading } from './util/motion';
 
 /**
  * Application object for replaying recorded data
@@ -23,6 +23,8 @@ window.SlacApp = {
     startMotionTimestamp: 0,
     currentMotionTimestamp: 0,
 
+    startHeading: 0,
+
     initialize() {
 
         if(SlacJsData === undefined) {
@@ -40,13 +42,12 @@ window.SlacApp = {
     start() {
 
         //Use the current heading as the base
-		const startingPose = config.particles.defaultPose;
-		startingPose.theta = degreeToRadian(clockwiseToCounterClockwise(SlacJsData.motion[0].heading));
+        this.startHeading = SlacJsData.motion[0].heading;
 
         //Create a new controller
         this.controller = new SlacController(
             config.particles.N,
-            startingPose,
+            config.particles.defaultPose,
             config.beacons,
             config.sensor.frequency,
             config.pedometer.stepSize
@@ -67,7 +68,7 @@ window.SlacApp = {
         //Save the start time, we use this to determine which BLE events to send
         this.lastUpdate = new Date().getTime();
 
-        this.motionInterval = setInterval(() => this._processMotionObservation(), config.sensor.frequency);
+        this.motionInterval = setInterval(() => this._processMotionObservation(), config.sensor.frequency / 10);
     },
 
     /**
@@ -91,7 +92,7 @@ window.SlacApp = {
 
         this.controller.addMotionObservation(
             data.x, data.y, data.z,
-            degreeToRadian(clockwiseToCounterClockwise(data.heading))
+            degreeToNormalisedHeading(data.heading, this.startHeading)
         );
 
         this.currentMotionTimestamp = data.timestamp;

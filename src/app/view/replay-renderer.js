@@ -44,11 +44,6 @@ class ReplayRenderer {
 		//Plot the best user trace
 		this._plotUserTrace(best.user, '#24780D');
 
-        //Plot the average landmark positions
-		particleSet.landmarkEstimate().forEach((landmark) => {
-			this._plotObject(landmark, '#71BBF0', 10);
-		});
-
         //Plot the landmarks of the best particle
         best.landmarks.forEach((landmark) => {
 			this._plotObject(landmark, '#B52B2B', 10);

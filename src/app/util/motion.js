@@ -9,10 +9,16 @@
  */
 export function degreeToNormalisedHeading(heading, base) {
 
-	let baseRadian = degreeToRadian(clockwiseToCounterClockwise(base));
-	let headingRadian = degreeToRadian(clockwiseToCounterClockwise(heading));
+	let diff = heading - base;
 
-	return headingRadian - baseRadian;
+	if (diff < 0) {
+		diff += 360;
+	}
+	else if (diff > 360) {
+		diff -= 360;
+	}
+
+	return limitTheta(degreeToRadian(clockwiseToCounterClockwise(diff)));
 }
 
 /**
@@ -62,10 +68,6 @@ export function limitTheta(theta) {
 export function meanHeading(theta1, theta2) {
 
 	const average = (theta1 + theta2) / 2;
-
-	if (theta2 < 0 && theta1 > 0) {
-		return average - Math.PI;
-	}
 
 	return average;
 }

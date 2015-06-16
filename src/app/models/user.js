@@ -1,4 +1,4 @@
-import { polarToCartesian, meanHeading } from '../util/motion';
+import { polarToCartesian, meanHeading, limitTheta } from '../util/motion';
 import { randn } from '../util/math';
 import LinkedList from '../util/linked-list';
 
@@ -55,14 +55,14 @@ class User {
 	 * @return {User}
 	 */
 	samplePose({r, theta}) {
-		
+
 		const averageHeading = meanHeading(this.theta, theta);
 
 		//Compute the standard deviation of the noise based on the
 		//distance to the computed average
 		const sdHeading = 0.5 * Math.abs(theta - averageHeading);
 
-		const sampledHeading = randn(averageHeading, sdHeading);
+		const sampledHeading = limitTheta(randn(averageHeading, sdHeading));
 
 		//Comput the deviation of the noise of the step size
 		//@todo Base the deviation of the steps on the pedometer
