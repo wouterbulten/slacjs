@@ -113,7 +113,9 @@ class SlacController {
 		this.particleSet.samplePose({r: dist, theta: heading});
 
 		//Let each particle process the observations
-		this.sensor.getObservations().forEach((obs) => {
+		this.lastObservations = this.sensor.getObservations();
+
+		this.lastObservations.forEach((obs) => {
 			this.particleSet.processObservation(obs)
 		});
 
