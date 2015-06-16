@@ -24,15 +24,19 @@ module.exports = {
 	particles: {
 		N: 50,
 
-		defaultPose: {
-			x: 0,
-			y: 0,
-			theta: 0
+		user: {
+			defaultPose: {
+				x: 0,
+				y: 0,
+				theta: 0
+			},
+			sdStep: 0.2,
+			sdHeading: 0.1
 		}
 	},
 
 	pedometer: {
-		stepSize: 0.8
+		stepSize: 0.4
 	},
 
 	landmarkConfig: {

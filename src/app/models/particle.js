@@ -4,19 +4,17 @@ import { randn, pdfn } from '../util/math';
 class Particle {
 	/**
 	 * Create a new particle
-	 * @param  {float} options.x     Initial x position of user
-	 * @param  {float} options.y     Initial y position of user
-	 * @param  {float} options.theta Initial theta of user
+	 * @param  {object} userConfig
 	 * @return {Particle}
 	 */
-	constructor({x, y, theta}, parent = undefined) {
+	constructor(userConfig, parent = undefined) {
 
 		if (parent !== undefined) {
 			this.user = User.copyUser(parent.user);
 			this.landmarks = this._copyMap(parent.landmarks);
 		}
 		else {
-			this.user = new User({x, y, theta});
+			this.user = new User(userConfig.defaultPose, userConfig);
 			this.landmarks = new Map();
 		}
 

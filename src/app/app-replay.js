@@ -59,8 +59,8 @@ window.SlacApp = {
         this.startHeading = SlacJsData.motion[0].heading;
 
         //Update the initial pose with the true starting position
-        config.particles.defaultPose.x = SlacJsStartingPosition.x;
-        config.particles.defaultPose.y = SlacJsStartingPosition.y;
+        config.particles.user.defaultPose.x = SlacJsStartingPosition.x;
+        config.particles.user.defaultPose.y = SlacJsStartingPosition.y;
 
         //Create a new controller
         this.controller = new SlacController(config);
@@ -90,7 +90,7 @@ window.SlacApp = {
         //Save the start time, we use this to determine which BLE events to send
         this.lastUpdate = new Date().getTime();
 
-        this.motionInterval = setInterval(() => this._processMotionObservation(), config.sensor.frequency / 10);
+        this.motionInterval = setInterval(() => this._processMotionObservation(), config.sensor.frequency);
     },
 
     /**

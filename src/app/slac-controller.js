@@ -16,7 +16,7 @@ class SlacController {
 	constructor(config) {
 
 		//Initialize a new particle set at 'defaultPose'
-		this.particleSet = new ParticleSet(config.particles.N, config.particles.defaultPose);
+		this.particleSet = new ParticleSet(config.particles.N, config.particles.user);
 
 		//Create a new sensor that tracks signal strengths
 		this.sensor = new Sensor(config.landmarkConfig, config.sensor.rssi.kalman, config.sensor.rssi.minMeasurements);
@@ -26,7 +26,7 @@ class SlacController {
 		this.pedometer.onStep(() => this._update());
 
 		//Create a local copy of the current heading
-		this.heading = config.particles.defaultPose.theta;
+		this.heading = config.particles.user.defaultPose.theta;
 
 		//Step size of a single step in meters
 		this.stepSize = config.pedometer.stepSize;
@@ -67,7 +67,7 @@ class SlacController {
 		//Update the pedometer
 		this.pedometer.processMeasurement(x, y, z);
 
-		this.heading = heading;
+		this.heading = heading;this.dist = 0;
 	}
 
 	/**

@@ -8,13 +8,15 @@ class User {
 	 * @param  {float} options.x     Starting x location of the user
 	 * @param  {float} options.y     Starting y location of the user
 	 * @param  {float} options.theta Direction of the user in radials relative to the x-axis
+	 * @param  {object} userConfig
 	 * @param  {LinkedList} trace 	 Optional trace to extend
 	 * @return {User}
 	 */
-	constructor({x, y, theta}, trace = undefined) {
+	constructor({x, y, theta}, userConfig, trace = undefined) {
 		this.x = x;
 		this.y = y;
 		this.theta = theta;
+		this.userConfig = userConfig;
 
 		this.previousOdometry = {x, y, theta};
 
@@ -56,13 +58,13 @@ class User {
 	 */
 	samplePose({r, theta}) {
 
-		const sdHeading = 0.1;
+		const sdHeading = this.userConfig.sdHeading;
 
 		const sampledHeading = limitTheta(randn(theta, sdHeading));
 
 		//Comput the deviation of the noise of the step size
 		//@todo Base the deviation of the steps on the pedometer
-		const sdStep = 0.5;
+		const sdStep = this.userConfig.sdStep;
 
 		const sampledR = randn(r, sdStep);
 
@@ -88,7 +90,7 @@ class User {
 			x: user.x,
 			y: user.y,
 			theta: user.theta
-		}, user.trace);
+		}, user.userConfig, user.trace);
 	}
 }
 

@@ -11,7 +11,7 @@ class ParticleSet {
 	 * @param  {float} options.theta Initial theta of user
 	 * @return ParticleSet
 	 */
-	constructor(nParticles, {x, y, theta}) {
+	constructor(nParticles, userConfig) {
 		this.nParticles = nParticles;
 
 		this.particleList = [];
@@ -21,7 +21,7 @@ class ParticleSet {
 		this.landmarkInitSet = new LandmarkInitializationSet();
 
 		for (let i = 0; i < nParticles; i++) {
-			this.particleList.push(new Particle({x, y, theta}));
+			this.particleList.push(new Particle(userConfig));
 		}
 	}
 
