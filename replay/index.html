@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>SLACjs Test</title>
+
+	<style>
+		#slac-stage canvas {
+			border: 1px solid black;
+			background-color: #eeeeee;
+		}
+	</style>
+</head>
+
+<body>
+
+<h1>SLAC.js <small>(Replaying recorded data)</small></h1>
+
+<div id="slac-stage">
+	<canvas height="600" width="600" id="slacjs-map"></canvas>
+</div>
+
+<div id="rssi-plots">
+
+</div>
+
+<div id="rssi-plot"></div>
+<div id="dist-plots"></div>
+
+<script type="text/javascript" src="data/replay-data.js"></script>
+<script type="text/javascript" src="data/environment-data.js"></script>
+<script type="text/javascript" src="assets/js/browser-polyfill.js"></script>
+<script type="text/javascript" src="vendor/vendor.js"></script>
+<script type="text/javascript" src="assets/js/slacjs-app.js"></script>
+<script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+
+<script type="text/javascript">
+
+$(window).ready(function() {
+
+	SlacApp.initialize();
+	SlacApp.start();
+
+});
+</script>
+</body>
+</html>
