@@ -7,12 +7,14 @@ class LandmarkInitializationSet {
 	 * @param  {Number} stdRange                   sd of range measurements
 	 * @param  {Number} randomParticles            Number of random particles
 	 * @param  {Number} effectiveParticleThreshold Threshold of effective particles
+	 * @param  {Number} maxVariance
 	 * @return {LandmarkInitializationSet}
 	 */
-	constructor({N, sd, randomN, effectiveParticleThreshold}) {
+	constructor({N, sd, randomN, effectiveParticleThreshold, maxVariance}) {
 		this.nParticles = N;
 		this.stdRange = sd;
 		this.randomParticles = randomN;
+		this.maxVariance = maxVariance;
 
 		if (effectiveParticleThreshold === undefined) {
 			this.effectiveParticleThreshold = nParticles / 1.5;
@@ -34,7 +36,7 @@ class LandmarkInitializationSet {
 	addMeasurement(uid, x, y, r) {
 		if (!this.has(uid)) {
 			this.particleSetMap.set(uid, new LandmarkParticleSet(
-				this.nParticles, this.stdRange, this.randomParticles, this.effectiveParticleThreshold
+				this.nParticles, this.stdRange, this.randomParticles, this.effectiveParticleThreshold, this.maxVariance
 			));
 		}
 

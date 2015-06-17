@@ -35,10 +35,11 @@ module.exports = {
 		},
 
 		init: {
-			N: 200,
-			sd: 2,
+			N: 500,
+			sd: 1,
 			randomN: 0,
-			effectiveParticleThreshold: 130
+			effectiveParticleThreshold: 250,
+			maxVariance: 4
 		}
 	},
 
@@ -48,7 +49,7 @@ module.exports = {
 
 	landmarkConfig: {
 		n: 2,
-		txPower: -62,
+		txPower: -64,
 		noise: 4,
 		range: 20
 	},
@@ -68,6 +69,6 @@ module.exports = {
 
 	ble: {
 		frequency: 100,
-		devicePrefix: 'LowBeacon5'
+		devicePrefix: 'LowBeacon'
 	}
 };

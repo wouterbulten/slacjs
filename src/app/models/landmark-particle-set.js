@@ -9,13 +9,15 @@ class LandmarkParticleSet {
 	 * @param  {Number} stdRange                   SD of range measurements
 	 * @param  {Number} randomParticles            Number of random particles to use each update
 	 * @param  {Number} effectiveParticleThreshold Threshold for resampling
+	 * @param  {Number} maxVariance				   The maximum variance before a landmark estimate is returned
 	 * @return {LandmarkParticleSet}
 	 */
-	constructor(nParticles, stdRange, randomParticles, effectiveParticleThreshold) {
+	constructor(nParticles, stdRange, randomParticles, effectiveParticleThreshold, maxVariance) {
 		this.nParticles = nParticles;
 		this.stdRange = stdRange;
 		this.effectiveParticleThreshold = effectiveParticleThreshold;
 		this.randomParticles = randomParticles;
+		this.maxVariance = maxVariance;
 
 		this.measurements = 0;
 		this.particles = [];
@@ -189,7 +191,7 @@ class LandmarkParticleSet {
 			//Update the weight accordingly
 			//p(r) = N(r|dist,sd)
 
-			const weight = pdfn(r, dist, this.stdRange);
+			const weight = pdfn(r, dist, this.stdRange * 2);
 
 			p.weight = p.weight * weight;
 		});
