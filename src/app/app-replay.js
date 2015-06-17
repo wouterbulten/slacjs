@@ -80,6 +80,9 @@ window.SlacApp = {
 
                 this._updateDistPlot(obs.name, trueDist, obs.r);
             });
+
+            //Show the current error
+            this._calculateLandmarkError();
         });
 
         this.controller.start();
@@ -239,5 +242,22 @@ window.SlacApp = {
 
         plot.plot.series[0].setData(plot.data.real);
         plot.plot.series[1].setData(plot.data.measured);
+    },
+
+    _calculateLandmarkError() {
+
+        const distArr = [];
+
+        this.controller.particleSet.bestParticle().landmarks.forEach(function(l) {
+
+        	const trueL = SlacJsLandmarkPositions[l.name];
+
+        	const dist = Math.sqrt(Math.pow(trueL.x - l.x, 2) + Math.pow(trueL.y - l.y, 2));
+
+        	distArr.push(dist);
+        });
+
+        $('.landmark-error').html(distArr.reduce(function(total, d) { return total + d; }, 0) / distArr.length);
+
     }
 };
