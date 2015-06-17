@@ -44,7 +44,7 @@ module.exports = {
 	},
 
 	pedometer: {
-		stepSize: 0.8
+		stepSize: 0.5
 	},
 
 	landmarkConfig: {

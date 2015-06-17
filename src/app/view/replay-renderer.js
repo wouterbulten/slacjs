@@ -1,6 +1,6 @@
 class ReplayRenderer {
 
-    constructor(element, landmarkPositions, xMax = 10, yMax = 10, offsetX = 0.5, offsetY = 0.5) {
+    constructor(element, landmarkPositions, xMax = 12, yMax = 12, offsetX = 1.5, offsetY = 1.5) {
         this.element = element;
         this.canvas = document.getElementById(element);
         this.ctx = this.canvas.getContext('2d');
