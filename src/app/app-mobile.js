@@ -84,17 +84,10 @@ window.SlacApp = {
 		this.uiElements.btnStart.prop('disabled', true);
 
 		//Use the current heading as the base
-		const startingPose = config.particles.defaultPose;
-		startingPose.theta = degreeToRadian(this.motionSensor.heading);
+		config.particles.user.defaultPose.theta = degreeToRadian(this.motionSensor.heading);
 
 		//Create a new controller
-		this.controller = new SlacController(
-			config.particles.N,
-			startingPose,
-			config.beacons,
-			config.sensor.frequency,
-            config.pedometer.stepSize
-		);
+		this.controller = new SlacController(config);
 
 		//Bind renderer to controller
 		this.controller.onUpdate((particles) => this.renderer.render(particles));
@@ -191,7 +184,7 @@ window.SlacApp = {
 
 		//Create a new motion sensor object that listens for updates
 		//@todo Move booleans to config
-		this.motionSensor = new MotionSensor(config.sensor.frequency);
+		this.motionSensor = new MotionSensor(config.sensor.motion.frequency);
 
 		//Register a listener, this udpates the view and runs the pedometer
 		this.motionSensor.onChange((data) => this._motionUpdate(data));

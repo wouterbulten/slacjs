@@ -36,12 +36,12 @@ module.exports = {
 	},
 
 	pedometer: {
-		stepSize: 0.4
+		stepSize: 0.8
 	},
 
 	landmarkConfig: {
 		n: 2,
-		txPower: -60,
+		txPower: -62,
 		noise: 4,
 		range: 20
 	},
@@ -61,6 +61,6 @@ module.exports = {
 
 	ble: {
 		frequency: 100,
-		devicePrefix: 'DoBeacon_upstair'
+		devicePrefix: 'LowBeacon'
 	}
 };
