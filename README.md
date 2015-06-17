@@ -37,6 +37,11 @@ SLACjs is designed to work on mobile devices utilising the compass and accelerom
 
 ![iPad version of SLACjs](/resources/screenshots/slac-js-1.0.PNG?raw=true "First version of SLACjs running on an iPad.")
 
+The following screenshot shows a replay of live data recorded using the iPad versin of SLACjs. All data is real data and is played back in real time (so no simulated movement or beacons). Performance of this particle run, measured in average landmark location error, is 1.87 meters. 'Red blocks' are estimated landmarks, 'black blocks' are their true positions.
+
+![Replay of live data](/resources/screenshots/slacjs_live_lowbroadcast_187.png?raw=true "Replay of live data.")
+
+
 ## Overview of algorithm
 
 All steps of the SLACjs algorithm are displayed in the flow chart below. The chart depicts the process of updating the particle filter based on a single observation. In the case of multiple observations, each observations is processed before resampling takes place.
