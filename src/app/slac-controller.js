@@ -16,7 +16,7 @@ class SlacController {
 	constructor(config) {
 
 		//Initialize a new particle set at 'defaultPose'
-		this.particleSet = new ParticleSet(config.particles.N, config.particles.user);
+		this.particleSet = new ParticleSet(config.particles.N, config.particles.user, config.particles.init);
 
 		//Create a new sensor that tracks signal strengths
 		this.sensor = new Sensor(config.landmarkConfig, config.sensor.rssi.kalman, config.sensor.rssi.minMeasurements);

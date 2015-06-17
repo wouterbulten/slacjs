@@ -5,20 +5,19 @@ import { lowVarianceSampling, numberOfEffectiveParticles, normalizeWeights } fro
 class ParticleSet {
 	/**
 	 * Create a new particle set with a given number of particles
-	 * @param  {int} nParticles    	 Number of particles
-	 * @param  {float} options.x     Initial x postion of user
-	 * @param  {float} options.y     Initial y position of user
-	 * @param  {float} options.theta Initial theta of user
-	 * @return ParticleSet
+	 * @param  {Number} nParticles Number of particles
+	 * @param  {Object} userConfig Config of the user
+	 * @param  {Object} initConfig Config for the init filter
+	 * @return {ParticleSet}
 	 */
-	constructor(nParticles, userConfig) {
+	constructor(nParticles, userConfig, initConfig) {
 		this.nParticles = nParticles;
 
 		this.particleList = [];
 
 		//Internal list to keep track of initialised landmarks
 		this.initialisedLandmarks = [];
-		this.landmarkInitSet = new LandmarkInitializationSet();
+		this.landmarkInitSet = new LandmarkInitializationSet(initConfig);
 
 		for (let i = 0; i < nParticles; i++) {
 			this.particleList.push(new Particle(userConfig));

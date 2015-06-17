@@ -32,6 +32,13 @@ module.exports = {
 			},
 			sdStep: 0.2,
 			sdHeading: 0.1
+		},
+
+		init: {
+			N: 200,
+			sd: 2,
+			randomN: 0,
+			effectiveParticleThreshold: 130
 		}
 	},
 
@@ -61,6 +68,6 @@ module.exports = {
 
 	ble: {
 		frequency: 100,
-		devicePrefix: 'LowBeacon'
+		devicePrefix: 'LowBeacon5'
 	}
 };
