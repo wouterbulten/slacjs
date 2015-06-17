@@ -10,7 +10,7 @@ class MotionSensor {
 	 * @param {Boolean} convertToCw Set to true to convert headings to counter clockwise
 	 * @return {MotionSensor}
 	 */
-	constructor(frequency = 100, enableCompassUpdate = false, enableAccUpdate = true, compassFilter = undefined, convertToCw = true) {
+	constructor(frequency = 100, enableCompassUpdate = false, enableAccUpdate = true, compassFilter = undefined, convertToCw = false) {
 
 		this.accelerometerId = undefined;
 		this.compassId = undefined;
