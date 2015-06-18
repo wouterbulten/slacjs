@@ -83,6 +83,15 @@ window.SlacApp = {
 
 		this.uiElements.btnStart.prop('disabled', true);
 
+		//Go in background mode if it is enabled
+		if(config.backgroundMode) {
+			/*
+			global cordova
+			 */
+			cordova.plugins.backgroundMode.setDefaults({ title: 'SLACjs running', text:'Background monitoring'});
+			cordova.plugins.backgroundMode.enable();
+		}
+
 		//Use the current heading as the base
 		config.particles.user.defaultPose.theta = degreeToRadian(this.motionSensor.heading);
 
@@ -120,6 +129,13 @@ window.SlacApp = {
 
 		this.ble.stopListening();
 		delete this.controller;
+
+		if(config.backgroundMode) {
+			/*
+			global cordova
+			 */
+			cordova.plugins.backgroundMode.disable();
+		}
 	},
 
 	/**

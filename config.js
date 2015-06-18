@@ -56,7 +56,8 @@ module.exports = {
 			'cordova-plugin-device-orientation',
 			'cordova-plugin-file',
 			'cordova-plugin-device',
-			'cordova-plugin-screen-orientation'
+			'cordova-plugin-screen-orientation',
+			'de.appplant.cordova.plugin.background-mode'
 		],
 
 		platforms: [
