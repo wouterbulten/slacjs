@@ -2,8 +2,9 @@ import SlacController from './slac-controller';
 import BLE from './device/bluetooth.js';
 import MotionSensor from './device/motion-sensor';
 import ParticleRenderer from './view/particle-renderer';
+import ReplayRenderer from './view/replay-renderer';
 import DataStore from './device/data-storage';
-import { degreeToRadian } from './util/motion';
+import { degreeToRadian, degreeToNormalisedHeading } from './util/motion';
 import config from './config';
 
 window.SlacApp = {
@@ -21,6 +22,8 @@ window.SlacApp = {
 		bluetooth: [],
 		motion: []
 	},
+
+	startHeading: 0,
 
 	/**
 	 * Setup the application
@@ -63,7 +66,7 @@ window.SlacApp = {
 		this._bindButtons();
 
 		//Create a renderer for the canvas view
-		this.renderer = new ParticleRenderer('slacjs-map');
+		this.renderer = new ReplayRenderer('slacjs-map', {});
 
 		//Create a datastore object to save the trace
 		this.storage = new DataStore();
@@ -94,6 +97,7 @@ window.SlacApp = {
 
 		//Use the current heading as the base
 		config.particles.user.defaultPose.theta = degreeToRadian(this.motionSensor.heading);
+		this.startHeading = this.motionSensor.heading;
 
 		//Create a new controller
 		this.controller = new SlacController(config);
@@ -240,7 +244,7 @@ window.SlacApp = {
 
 			this.controller.addMotionObservation(
 				data.x, data.y, data.z,
-				degreeToRadian(data.heading)
+				degreeToNormalisedHeading(data.heading, this.startHeading)
 			);
 
 			this.uiElements.stepCount.html(this.controller.pedometer.stepCount);
