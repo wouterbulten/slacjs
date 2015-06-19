@@ -27,6 +27,8 @@ window.SlacApp = {
 
     distPlots: {},
 
+    errorPlot: {},
+
     initialize() {
 
         if(SlacJsData === undefined) {
@@ -48,9 +50,12 @@ window.SlacApp = {
         for(name in SlacJsLandmarkPositions) {
             if (SlacJsLandmarkPositions.hasOwnProperty(name)) {
 
-                this._createDistPlot(name);
+                //this._createDistPlot(name);
             }
         }
+
+        //Create plot for the errors
+        this._initErrorPlot();
     },
 
     start() {
@@ -93,7 +98,7 @@ window.SlacApp = {
         //Save the start time, we use this to determine which BLE events to send
         this.lastUpdate = new Date().getTime();
 
-        this.motionInterval = setInterval(() => this._processMotionObservation(), config.sensor.frequency);
+        this.motionInterval = setInterval(() => this._processMotionObservation(), config.sensor.motion.frequency / 2);
     },
 
     /**
@@ -153,15 +158,26 @@ window.SlacApp = {
         do {
             current = SlacJsData.bluetooth[this.bleEventIteration];
 
-            this.controller.addDeviceObservation(current.address, current.rssi, current.name);
             this.bleEventIteration++;
 
-            this._updateRssiPlot(current.name, current.rssi)
+            /*if(current.name != 'LowBeacon5_2015-06-16') {
+                console.log(current.name);
+                continue;
+            }*/
+            this.controller.addDeviceObservation(current.address, current.rssi, current.name);
+
+            if(current.rssi < 0) {
+                const filteredRssi = this.controller.sensor.landmarks.get(current.address).filter.lastMeasurement();
+
+                this._updateRssiPlot(current.name, current.rssi, filteredRssi);
+            }
         }
         while(current.timestamp <= timestamp);
     },
 
     _createDistPlot(name) {
+
+        return;
         $('#dist-plots').append(`<div id="${name}-dist"></div>`);
 
         this.distPlots[name] = {
@@ -170,6 +186,8 @@ window.SlacApp = {
                 real: [],
                 measured: [],
                 rssi: [],
+                rawDist: [],
+                kalman: [],
                 index: 0
             },
 
@@ -188,53 +206,77 @@ window.SlacApp = {
                 yAxis: [
                     {
                         title: {
-                            text: 'Distance'
+                            text: 'RSSI'
                         },
+                        opposite: true,
+                        max: -50,
+                        min: -100
                     },
                     {
                         title: {
-                            text: 'RSSI'
+                            text: 'Distance'
                         },
-                        opposite: true
+                        min: 0,
+                        max: 10,
                     }
                 ],
                 series: [
                     {
                         name: 'Computed distance from average user (averaged over all particles) to real beacon location',
                         type: 'line',
-                        yAxis: 0
+                        yAxis: 1
                     },
                     {
                         name: 'Measured distance to beacon using path loss model',
                         type: 'line',
-                        yAxis: 0
+                        yAxis: 1
                     },
                     {
                         name: 'RSSI',
                         type: 'line',
+                        yAxis: 0
+                    },
+                    {
+                        name: 'Raw distance',
+                        type: 'line',
                         yAxis: 1
+                    },
+                    {
+                        name: 'RSSI kalman',
+                        type: 'line',
+                        yAxis: 0
                     }
                 ]
             })
         }
     },
 
-    _updateRssiPlot(name, rssi) {
-
+    _updateRssiPlot(name, rssi, filteredRssi) {
+        return;
         //Filter invalid values
-        if(rssi > 0) {
+        let dist;
+        if (rssi > 0) {
             rssi = null;
+            dist = null;
         }
+        else {
+            dist = Math.pow(10, (rssi - config.landmarkConfig.txPower) / (-10 * config.landmarkConfig.n));
+        }
+
 
         const plot = this.distPlots[name];
         plot.data.rssi.push([plot.data.index, rssi]);
+        plot.data.rawDist.push([plot.data.index, dist]);
+        plot.data.kalman.push([plot.data.index, filteredRssi]);
         plot.data.index++;
 
         plot.plot.series[2].setData(plot.data.rssi);
+        plot.plot.series[3].setData(plot.data.rawDist);
+        plot.plot.series[4].setData(plot.data.kalman);
     },
 
     _updateDistPlot(name, real, measured) {
-
+        return;
         const plot = this.distPlots[name];
 
         plot.data.real.push([plot.data.index, real]);
@@ -247,6 +289,7 @@ window.SlacApp = {
     _calculateLandmarkError() {
 
         const distArr = [];
+        let landmarkErrorsStr = '';
 
         this.controller.particleSet.bestParticle().landmarks.forEach(function(l) {
 
@@ -255,9 +298,55 @@ window.SlacApp = {
         	const dist = Math.sqrt(Math.pow(trueL.x - l.x, 2) + Math.pow(trueL.y - l.y, 2));
 
         	distArr.push(dist);
+
+            landmarkErrorsStr += l.name + ': ' + dist + '<br>';
         });
 
-        $('.landmark-error').html(distArr.reduce(function(total, d) { return total + d; }, 0) / distArr.length);
+        if(distArr.length > 0) {
+            $('.landmark-individual-error').html(landmarkErrorsStr);
 
+            const avg = distArr.reduce(function(total, d) { return total + d; }, 0) / distArr.length;
+            this.errorPlot.data.push(avg);
+
+            this.errorPlot.plot.series[0].setData(this.errorPlot.data);
+            $('.landmark-error').html(avg);
+        }
+    },
+
+    _initErrorPlot() {
+
+        this.errorPlot = {
+
+            data: [],
+
+            plot: new Highcharts.Chart({
+                chart: {
+                    renderTo: 'error-plot',
+                },
+                title: {
+                    text: 'Error plot',
+                },
+                xAxis: {
+                    title: {
+                        text: 'Time'
+                    }
+                },
+                yAxis: [
+                    {
+                        title: {
+                            text: 'Error'
+                        },
+                        max: 4,
+                        min: 1
+                    }
+                ],
+                series: [
+                    {
+                        name: 'Error',
+                        type: 'line',
+                    }
+                ]
+            })
+        }
     }
 };
