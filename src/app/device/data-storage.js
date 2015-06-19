@@ -60,10 +60,16 @@ class DataStore {
             case "iOS":
                 return cordova.file.documentsDirectory;
 
+            case "Android":
             case "android":
                 return cordova.file.externalDataDirectory;
 
             default:
+                navigator.notification.alert(
+                    'Unsupported platform for data store: ' + device.platform,
+                    null,
+                    'Status',
+                    'Sorry!')
                 console.error('[SLACjs] Unsupported platform for data store.');
         }
     }
