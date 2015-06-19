@@ -52,7 +52,7 @@ window.SlacApp = {
 		};
 
 		//Lock the orientation of the device
-		this._lockDeviceOrientation();
+		const orientationSetting = this._lockDeviceOrientation();
 
 		//Create a new motion sensor object that listens for updates
 		//The sensor is working even if the algorithm is paused (to update the view)
@@ -65,7 +65,20 @@ window.SlacApp = {
 		this._bindButtons();
 
 		//Create a renderer for the canvas view
-		this.renderer = new ParticleRenderer('slacjs-map');
+		//Based on the orientation setting, use an offset for the canvas
+		let height;
+		switch(orientationSetting) {
+			case 'portrait':
+			case 'portrait-secondary':
+			case 'portrait-primary':
+				height = window.innerHeight - 120;
+				break;
+
+			default:
+				height = window.innerHeight - 60;
+		}
+
+		this.renderer = new ParticleRenderer('slacjs-map', height);
 
 		//Create a datastore object to save the trace
 		this.storage = new DataStore();
@@ -270,7 +283,7 @@ window.SlacApp = {
 
 	/**
 	 * Lock the device orientation based on the platform
-	 * @return {void}
+	 * @return {String}
 	 */
 	_lockDeviceOrientation() {
 
@@ -295,5 +308,7 @@ window.SlacApp = {
 		else {
 			screen.lockOrientation(setting);
 		}
+
+		return setting;
 	}
 };

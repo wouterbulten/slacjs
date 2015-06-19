@@ -13,14 +13,14 @@ module.exports = {
 	exportData: true,
 
 	backgroundMode: true,
-	
+
 	/**
 	 * Device orientation, set to false to unlock
 	 * @see https://github.com/gbenvenuti/cordova-plugin-screen-orientation
 	 */
 	deviceOrientation: {
-		android: 'portrait',
-		ios: 'landscape'
+		android: 'portrait-primary',
+		ios: 'landscape-primary'
 	},
 
 	particles: {

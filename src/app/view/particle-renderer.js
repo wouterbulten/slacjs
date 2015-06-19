@@ -7,16 +7,17 @@ class ParticleRenderer extends BaseRenderer {
 	 * @param  {String} element canvas element to render to
 	 * @return {ParticleRenderer}
 	 */
-	constructor(element) {
+	constructor(element, height) {
 		super(element);
 
 		this.offsetX = 0;
 		this.offsetY = 0;
 
-		this.padding = 2;
+		this.padding = 5;
 		this.scaleFactor = undefined;
+		this.maxScaleFactor = 100;
 
-		this.optimizeForRetina();
+		this.optimizeForRetina(height);
 	}
 
 	render(particleSet) {
@@ -105,22 +106,25 @@ class ParticleRenderer extends BaseRenderer {
 
 		user.trace.values().forEach(({x, y, theta}) => {
 			if ((x + this.offsetX) > maxX) {
-				maxX = x;
+				maxX = x + this.offsetX;
 			}
 			if ((y + this.offsetY) > maxY) {
-				maxY = y;
+				maxY = y + this.offsetY;
 			}
 		});
+
 		//Calculate a new scalefactor
 		//Never take a higher value as this will result in flickering
-
 		if (this.scaleFactor === undefined) {
-			this.scaleFactor = this.calculateScaleFactor(maxX, maxY, this.padding)
+			this.scaleFactor = Math.min(
+				this.calculateScaleFactor(maxX + (2 * this.padding), maxY + (2 * this.padding)),
+				this.maxScaleFactor
+			);
 		}
 		else {
 			this.scaleFactor = Math.min(
 				this.scaleFactor,
-				this.calculateScaleFactor(maxX, maxY, this.padding)
+				this.calculateScaleFactor(maxX + (2 * this.padding), maxY + (2 * this.padding))
 			);
 		}
 	}
@@ -131,7 +135,7 @@ class ParticleRenderer extends BaseRenderer {
 	 * @return {Number}
 	 */
 	tx(x) {
-		return (x + this.offsetX) * this.scaleFactor;
+		return (x + this.offsetX + this.padding) * this.scaleFactor;
 	}
 
 	/**
@@ -140,7 +144,7 @@ class ParticleRenderer extends BaseRenderer {
 	 * @return {Number}
 	 */
 	ty(y) {
-		return this.canvas.height - ((y + this.offsetY) * this.scaleFactor);
+		return this.canvas.height - ((y + this.offsetY + this.padding) * this.scaleFactor);
 	}
 }
 

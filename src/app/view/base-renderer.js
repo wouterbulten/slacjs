@@ -31,13 +31,23 @@ class BaseRenderer {
 
     /**
 	 * Resize the canvas for retina devices
+	 * @param {Number} fixedHeight
 	 * @return {void}
 	 */
-	optimizeForRetina() {
+	optimizeForRetina(fixedHeight = undefined) {
 
-		const cs = window.getComputedStyle(this.canvas);
+        let height;
+        const cs = window.getComputedStyle(this.canvas);
+
+        if (fixedHeight === undefined) {
+
+            //Calculate height as no height is given
+            height = parseInt(cs.getPropertyValue('height'), 10);
+        }
+        else {
+            height = fixedHeight;
+        }
 		const width = parseInt(cs.getPropertyValue('width'), 10);
-		const height = parseInt(cs.getPropertyValue('height'), 10);
 
 		//Calcuate a factor for the resolution
 		//Use 1.99 scale on retina devices
@@ -54,14 +64,14 @@ class BaseRenderer {
 	 * Scale the canvas to zoom in
 	 * @return {void}
 	 */
-	calculateScaleFactor(xMax, yMax, padding) {
+	calculateScaleFactor(xMax, yMax) {
 
 		const width = this.canvas.width;
 		const height = this.canvas.height;
 
 		//Calculate maximal possible scalefactor
-		const scaleXMax = width / (xMax + padding);
-		const scaleYMax = height / (yMax + padding);
+		const scaleXMax = width / (xMax);
+		const scaleYMax = height / (yMax);
 
 		return Math.min(scaleXMax, scaleYMax);
 	}
