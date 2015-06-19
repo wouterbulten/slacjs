@@ -3,7 +3,7 @@ import BLE from './device/bluetooth.js';
 import MotionSensor from './device/motion-sensor';
 import ParticleRenderer from './view/particle-renderer';
 import DataStore from './device/data-storage';
-import { degreeToRadian, degreeToNormalisedHeading } from './util/motion';
+import { degreeToRadian, degreeToNormalisedHeading, rotationToLocalNorth } from './util/motion';
 import config from './config';
 
 window.SlacApp = {
@@ -23,6 +23,7 @@ window.SlacApp = {
 	},
 
 	startHeading: 0,
+	lastUiRotation: 0,
 
 	/**
 	 * Setup the application
@@ -115,7 +116,9 @@ window.SlacApp = {
 		this.controller = new SlacController(config);
 
 		//Bind renderer to controller
-		this.controller.onUpdate((particles) => this.renderer.render(particles));
+		this.controller.onUpdate((particles) => {
+			this.renderer.render(particles);
+		});
 
 		console.log('[SLACjs] Controller created');
 
@@ -279,6 +282,25 @@ window.SlacApp = {
 			}
 			this.controller.addDeviceObservation(data.address, data.rssi, data.name);
 		}
+	},
+
+	/**
+	 * Rotate the canvas to local north
+	 * @param  {Number} heading
+	 * @return {void}
+	 */
+	_rotateScreen(heading) {
+		//Find smallest rotation
+		const degree = rotationToLocalNorth(heading, this.lastUiRotation);
+
+		this.uiElements.map.css({
+			'-webkit-transform' : 'rotate('+ degree +'deg)',
+			'-moz-transform' : 'rotate('+ degree +'deg)',
+			'-ms-transform' : 'rotate('+ degree +'deg)',
+			'transform' : 'rotate('+ degree +'deg)'
+		});
+
+		this.lastUiRotation = heading;
 	},
 
 	/**

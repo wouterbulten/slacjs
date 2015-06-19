@@ -129,6 +129,15 @@ export function degreeToRadian(degrees) {
 }
 
 /**
+ * Convert a value in rad to a degree value
+ * @param  {Number} rad
+ * @return {Number}
+ */
+export function radianToDegree(rad) {
+	return rad * (180 / Math.PI);
+}
+
+/**
  * Convert a clockwise degree to a counter clockwise degree
  * @param  {Number} degrees
  * @return {Number}
@@ -138,14 +147,20 @@ export function clockwiseToCounterClockwise(degrees) {
 }
 
 /**
- * Finds the smallest rotation to the local north (wich is 90deg on a radial axis)
- * @param  {Number} degrees
+ * Finds the smallest rotation to the local north
+ * @param  {Number} rad
  * @return {Number}
  */
-export function rotationToLocalNorth(degrees) {
+export function rotationToLocalNorth(rad, previous) {
 
-	const left = degrees - 90;
-	const right = 360 - degrees + 90;
+	rad += 0.5 * Math.PI;
 
-	return Math.min(left, right);
+	const left = rad - previous;
+	const right = (Math.PI * 2) - previous - rad;
+
+	if (left < right) {
+		return -1 * radianToDegree(left);
+	}
+
+	return radianToDegree(right);
 }

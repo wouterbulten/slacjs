@@ -67,7 +67,7 @@ class SlacController {
 		//Update the pedometer
 		this.pedometer.processMeasurement(x, y, z);
 
-		this.heading = heading;this.dist = 0;
+		this.heading = heading;
 	}
 
 	/**
