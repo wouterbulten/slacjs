@@ -2,7 +2,6 @@ import SlacController from './slac-controller';
 import BLE from './device/bluetooth.js';
 import MotionSensor from './device/motion-sensor';
 import ParticleRenderer from './view/particle-renderer';
-import ReplayRenderer from './view/replay-renderer';
 import DataStore from './device/data-storage';
 import { degreeToRadian, degreeToNormalisedHeading } from './util/motion';
 import config from './config';
@@ -66,7 +65,7 @@ window.SlacApp = {
 		this._bindButtons();
 
 		//Create a renderer for the canvas view
-		this.renderer = new ReplayRenderer('slacjs-map', {});
+		this.renderer = new ParticleRenderer('slacjs-map');
 
 		//Create a datastore object to save the trace
 		this.storage = new DataStore();
