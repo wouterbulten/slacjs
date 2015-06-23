@@ -101,8 +101,8 @@ export class SimulatedLandmarkSet {
 	 */
 	_randomLandmark(uid) {
 		return new Landmark(uid, {
-			x: Math.random() * (2 * this.xRange) - this.xRange,
-			y: Math.random() * (2 * this.yRange) - this.yRange
+			x: Math.random() * this.xRange,
+			y: Math.random() * this.yRange
 		}, this.landmarkConfig);
 	}
 

@@ -1,7 +1,7 @@
 import SimulatedUser from './simulation/user';
 import { SimulatedLandmarkSet } from './simulation/landmark';
 import SlacController from './slac-controller';
-import ReplayRenderer from './view/replay-renderer';
+import SimulationRenderder from './view/simulation-renderer';
 import config from './config';
 
 window.SlacENV = config.environment;
@@ -20,20 +20,42 @@ window.SlacApp = {
 	initialize: function() {
 		'use strict';
 
+		const userStartX = config.simulation.xMax / 2;
+		const userStartY = config.simulation.yMax / 2;
+
+		//Move the user to the center of the screen
+		config.particles.user.defaultPose.x = userStartX;
+		config.particles.user.defaultPose.y = userStartY;
+
         //Create a new controller
         this.controller = new SlacController(config);
 
         this.controller.start();
 
-		//Create a renderer for the canvas view
-		this.renderer = new ReplayRenderer('slacjs-map', {});
-
         //Bind renderer to controller
-		this.controller.onUpdate((particles) => this.renderer.render(particles));
+		this.controller.onUpdate((particles) => this.renderer.render(particles, this.user));
 
-		this.user = new SimulatedUser({x: 0, y: 0, theta: 0.0}, 0.8, {xRange: 20, yRange: 20, padding: 5});
+		this.user = new SimulatedUser(
+			{x: userStartX, y: userStartY, theta: 0.0},
+			0.8,
+			{xRange: config.simulation.xMax, yRange: config.simulation.yMax, padding: 5}
+		);
 
-		this.landmarks = new SimulatedLandmarkSet(20, {xRange: 20, yRange: 20}, 50, config.landmarkConfig);
+		this.landmarks = new SimulatedLandmarkSet(
+			20,
+			{xRange: config.simulation.xMax, yRange: config.simulation.yMax},
+			50,
+			config.landmarkConfig
+		);
+
+		//Create a renderer for the canvas view
+		this.renderer = new SimulationRenderder(
+			'slacjs-map',
+			this.landmarks.landmarks,
+			config.simulation.xMax,
+			config.simulation.yMax,
+			0, 0
+		);
 
 		//Start broadcasting of the simulated landmarks
 		//Broadcasts are sent to the sensor, the user object is used to find nearby landmarks

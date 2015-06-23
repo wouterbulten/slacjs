@@ -72,5 +72,10 @@ module.exports = {
 	ble: {
 		frequency: 100,
 		devicePrefix: 'LowBeacon'
+	},
+
+	simulation: {
+		xMax: 20,
+		yMax: 20
 	}
 };
