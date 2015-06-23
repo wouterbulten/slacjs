@@ -10,17 +10,12 @@ class LandmarkInitializationSet {
 	 * @param  {Number} maxVariance
 	 * @return {LandmarkInitializationSet}
 	 */
-	constructor({N, sd, randomN, effectiveParticleThreshold, maxVariance}) {
-		this.nParticles = N;
-		this.stdRange = sd;
-		this.randomParticles = randomN;
-		this.maxVariance = maxVariance;
+	constructor(particleConfig) {
 
-		if (effectiveParticleThreshold === undefined) {
-			this.effectiveParticleThreshold = nParticles / 1.5;
-		}
-		else {
-			this.effectiveParticleThreshold = effectiveParticleThreshold;
+		this.particleConfig = particleConfig;
+
+		if (this.particleConfig.effectiveParticleThreshold === undefined) {
+			this.particleConfig.effectiveParticleThreshold = particleConfig.N / 1.5;
 		}
 
 		this.particleSetMap = new Map();
@@ -34,10 +29,9 @@ class LandmarkInitializationSet {
 	 * @param {Number} r   Range measurement
 	 */
 	addMeasurement(uid, x, y, r) {
+
 		if (!this.has(uid)) {
-			this.particleSetMap.set(uid, new LandmarkParticleSet(
-				this.nParticles, this.stdRange, this.randomParticles, this.effectiveParticleThreshold, this.maxVariance
-			));
+			this.particleSetMap.set(uid, new LandmarkParticleSet(this.particleConfig));
 		}
 
 		this.particleSetMap.get(uid).addMeasurement(x, y, r);
@@ -78,6 +72,16 @@ class LandmarkInitializationSet {
 	 */
 	particleSets() {
 		return this.particleSetMap.values();
+	}
+
+	static copy(set) {
+		const copy = new LandmarkInitializationSet(set.particleConfig);
+
+		set.particleSetMap.forEach((p, uid) => {
+			copy.particleSetMap.set(uid, LandmarkParticleSet.copy(p));
+		});
+
+		return copy;
 	}
 }
 

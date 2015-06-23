@@ -1,5 +1,6 @@
 import User from './user';
 import { randn, pdfn } from '../util/math';
+import LandmarkInitializationSet from './landmark-init-set';
 
 class Particle {
 	/**
@@ -7,15 +8,22 @@ class Particle {
 	 * @param  {object} userConfig
 	 * @return {Particle}
 	 */
-	constructor(userConfig, parent = undefined) {
+	constructor(userConfig, initConfig, parent = undefined) {
 
 		if (parent !== undefined) {
 			this.user = User.copyUser(parent.user);
 			this.landmarks = this._copyMap(parent.landmarks);
+
+			this.initialisedLandmarks = [...parent.initialisedLandmarks];
+			this.landmarkInitSet = LandmarkInitializationSet.copy(parent.landmarkInitSet);
 		}
 		else {
 			this.user = new User(userConfig.defaultPose, userConfig);
 			this.landmarks = new Map();
+
+			this.initialisedLandmarks = [];
+			//Internal list to keep track of initialised landmarks
+			this.landmarkInitSet = new LandmarkInitializationSet(initConfig);
 		}
 
 		this.weight = 1;
@@ -44,6 +52,34 @@ class Particle {
 		return this;
 	}
 
+	processObservation(obs) {
+
+		const { uid, r, name, moved } = obs;
+
+		//If the landmark has moved we remove it from this particle
+		if (moved) {
+			this.removeLandmark(uid);
+		}
+
+		if (this.initialisedLandmarks.indexOf(uid) == -1) {
+
+			this.landmarkInitSet.addMeasurement(uid, this.user.x, this.user.y, r);
+
+			const {estimate, x, y, varX, varY} = this.landmarkInitSet.estimate(uid);
+
+			if (estimate > 0.6) {
+
+				this.addLandmark(obs, {x, y}, {varX, varY});
+
+				this.landmarkInitSet.remove(uid);
+				this.initialisedLandmarks.push(uid);
+			}
+		}
+		else {
+			this.updateLandmark(obs);
+		}
+	}
+
 	/**
 	 * Register a new landmark
 	 * @param {string} options.uid
@@ -67,11 +103,16 @@ class Particle {
 	}
 
 	/**
-	 * Remove a landmark from this particle
-	 * @param  {String} uid landmark uid
+	 * Remove a landmark from all the particles
+	 * @param  {String} uid Landmark uid
 	 * @return {void}
 	 */
 	removeLandmark(uid) {
+
+		//Remove from the landmark list
+		const index = this.observedLandmarks.indexOf(uid);
+		this.observedLandmarks.splice(index, 1);
+
 		this.landmarks.delete(uid);
 	}
 
@@ -81,7 +122,7 @@ class Particle {
 	 * @param  {float} options.r    range measurement
 	 * @return {void}
 	 */
-	processObservation({uid, r}) {
+	updateLandmark({uid, r}) {
 
 		//Find the correct EKF
 		const l = this.landmarks.get(uid);

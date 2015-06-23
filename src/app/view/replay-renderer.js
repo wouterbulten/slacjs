@@ -44,7 +44,7 @@ class ReplayRenderer extends BaseRenderer {
 		//Plot any landmark init filters
 		let color = 50;
 
-		particleSet.landmarkInitSet.particleSetMap.forEach((landmarkPf) => {
+		best.landmarkInitSet.particleSetMap.forEach((landmarkPf) => {
 			landmarkPf.particles.forEach((p) => {
 				this.plotObject(p, 'rgb(0,' + color + ',0)', 5);
 			});
