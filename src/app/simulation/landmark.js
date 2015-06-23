@@ -26,12 +26,12 @@ export class SimulatedLandmarkSet {
 
 	/**
 	 * Start broadcasting landmark data
-	 * @param  {Sensor} sensor
+	 * @param  {SlacController} controller
 	 * @param  {User} user
 	 * @return {void}
 	 */
-	startBroadcast(sensor, user) {
-		this.broadcastId = window.setTimeout(() => this._broadCast(sensor, user), this.updateRate);
+	startBroadcast(controller, user) {
+		this.broadcastId = window.setTimeout(() => this._broadCast(controller, user), this.updateRate);
 	}
 
 	/**
@@ -80,7 +80,7 @@ export class SimulatedLandmarkSet {
 		if (landmarks.length > 0) {
 			const landmark = landmarks[Math.floor(Math.random() * landmarks.length)];
 
-			return {uid: landmark.uid, rssi: landmark.rssiAt(x, y), name: landmark.name};
+			return {uid: landmark.uid, rssi: landmark.rssiAt(x, y), name: landmark.name, address: landmark.address};
 		}
 	}
 
@@ -110,19 +110,19 @@ export class SimulatedLandmarkSet {
 	 * Simulate a broadcast
 	 *
 	 * Sets a timeout to run this function again after a fixed amount of time
-	 * @param  {Sensor} sensor
+	 * @param  {SlacController} controller
 	 * @param  {User} user
 	 * @return {void}
 	 */
-	_broadCast(sensor, user) {
+	_broadCast(controller, user) {
 
-		const measurement = this.randomMeasurementAtPoint(user.x, user.y);
+		const m = this.randomMeasurementAtPoint(user.x, user.y);
 
-		if (measurement !== undefined) {
-			sensor.addObservation(measurement);
+		if (m !== undefined) {
+			controller.addDeviceObservation(m.uid, m.rssi, m.name);
 		}
 
-		this.broadcastId = window.setTimeout(() => this._broadCast(sensor, user), this.updateRate);
+		this.broadcastId = window.setTimeout(() => this._broadCast(controller, user), this.updateRate);
 	}
 
 	/**
@@ -162,6 +162,7 @@ class Landmark {
 		this.txPower = txPower;
 		this.noise = noise;
 		this.name = uid;
+		this.address = 'addr:' + uid;
 	}
 
 	/**
