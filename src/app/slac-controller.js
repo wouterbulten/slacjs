@@ -21,6 +21,11 @@ class SlacController {
 		//Create a new sensor that tracks signal strengths
 		this.sensor = new Sensor(config.landmarkConfig, config.sensor.rssi.kalman, config.sensor.rssi.minMeasurements);
 
+		//Define when we treat a landmark as new
+		this.sensor.hasMovedIf((newLandmark, oldLandmark) => {
+			return newLandmark.uid == oldLandmark.uid && newLandmark.name != oldLandmark.name;
+		});
+
 		//Create new pedometer to count steps
 		this.pedometer = new Pedometer(config.sensor.motion.frequency);
 		this.pedometer.onStep(() => this._update());

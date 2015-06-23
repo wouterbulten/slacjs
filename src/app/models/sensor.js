@@ -26,6 +26,8 @@ class Sensor {
 		this.Q = Q;
 
 		this.minMeasurements = minMeasurements;
+
+		this.hasMoved = undefined;
 	}
 
 	/**
@@ -42,7 +44,13 @@ class Sensor {
 		}
 
 		if (this.landmarks.has(uid)) {
-			this._updateLandmark(uid, rssi);
+
+			if (this._hasMoved(uid, name)) {
+				this._moveLandmark(uid, rssi, name);
+			}
+			else {
+				this._updateLandmark(uid, rssi);
+			}
 		}
 		else {
 			this._registerLandmark(uid, rssi, name);
@@ -62,13 +70,26 @@ class Sensor {
 			if (l.changed && l.measurements > this.minMeasurements) {
 				const rssi = l.filter.lastMeasurement();
 
-				observedLandmarks.push({uid, r: this._rssiToDistance(rssi), name: l.name});
+				observedLandmarks.push({uid, r: this._rssiToDistance(rssi), name: l.name, moved: l.moved});
 			}
 
+			//Reset all flags
 			l.changed = false;
+			l.moved = false;
 		});
 
 		return observedLandmarks;
+	}
+
+	/**
+	 * Callback that returns true when a beacon has moved
+	 * @param  {Function} callback
+	 * @return {Sensor}
+	 */
+	hasMovedIf(callback) {
+		this.hasMoved = callback;
+
+		return this;
 	}
 
 	/**
@@ -88,11 +109,13 @@ class Sensor {
 
 	/**
 	 * Add a new landmark to the interal list
-	 * @param  {string} uid  Landanme uid
+	 * @param  {string} uid  Landmark name uid
 	 * @param  {float} rssi  Current RSSI value
+	 * @param  {String} name Landmark name
+	 * @param  {Boolean} moved
 	 * @return {void}
 	 */
-	_registerLandmark(uid, rssi, name) {
+	_registerLandmark(uid, rssi, name, moved = false) {
 
 		console.log('[SLACjs/sensor] New landmark found with uid ' + uid + ' and name ' + name);
 
@@ -104,8 +127,38 @@ class Sensor {
 			changed: true,
 			name,
 			filter,
-			measurements: 1
+			measurements: 1,
+			moved
 		});
+	}
+
+	/**
+	 * Check whether a landmark has moved
+	 * @param  {String}  uid
+	 * @param  {String}  name
+	 * @return {Boolean}
+	 */
+	_hasMoved(uid, name) {
+		const landmark = this.landmarks.get(uid);
+
+		return this.hasMoved !== undefined && this.hasMoved(
+			{uid, name},
+			{uid: landmark.uid, name: landmark.name}
+		);
+	}
+
+	/**
+	 * Move a landmark by ressetting and setting the moved flag
+	 * @param  {string} uid  Landmark name uid
+	 * @param  {float} rssi  Current RSSI value
+	 * @param  {String} name Landmark name
+	 * @return {void}
+	 */
+	_moveLandmark(uid, rssi, name) {
+
+		console.log('[SLACjs/sensor] Landmark with uid ' + uid + ' has moved.');
+
+		this._registerLandmark(uid, rssi, name, true);
 	}
 
 	/**
