@@ -44,7 +44,12 @@ class ParticleSet {
 
 		if (obs !== {}) {
 
-			const { uid, r, name } = obs;
+			const { uid, r, name, moved } = obs;
+
+			//If the landmark has moved we remove it from all particles
+			if (moved) {
+				this._removeLandmark(uid);
+			}
 
 			if (this.initialisedLandmarks.indexOf(uid) == -1) {
 
@@ -158,6 +163,20 @@ class ParticleSet {
 			x: this.particleList.reduce((prev, p, i) => prev + (weights[i] * p.user.x), 0),
 			y: this.particleList.reduce((prev, p, i) => prev + (weights[i] * p.user.y), 0)
 		};
+	}
+
+	/**
+	 * Remove a landmark from all the particles
+	 * @param  {String} uid Landmark uid
+	 * @return {void}
+	 */
+	_removeLandmark(uid) {
+
+		//Remove from the landmark list
+		const index = this.observedLandmarks.indexOf(uid);
+		this.observedLandmarks.splice(index, 1);
+
+		this.particleList.forEach((p) => p.removeLandmark(uid));
 	}
 }
 

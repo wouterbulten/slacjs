@@ -67,6 +67,15 @@ class Particle {
 	}
 
 	/**
+	 * Remove a landmark from this particle
+	 * @param  {String} uid landmark uid
+	 * @return {void}
+	 */
+	removeLandmark(uid) {
+		this.landmarks.delete(uid);
+	}
+
+	/**
 	 * Update a landmark using the EKF update rule
 	 * @param  {string} options.uid landmark id
 	 * @param  {float} options.r    range measurement
