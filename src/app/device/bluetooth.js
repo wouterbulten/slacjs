@@ -9,8 +9,10 @@ class BLE {
 		this.updateRate = updateRate;
 		this.restartTimer = undefined;
 		this.listenening = false;
+
 		this.callback = undefined;
 		this.filterFunc = undefined;
+
 	}
 
 	/**
@@ -78,19 +80,23 @@ class BLE {
 	/**
 	 * Register a function to run on each observation
 	 * @param  {Function} callback
-	 * @return {void}
+	 * @return {BLE}
 	 */
 	onObservation(callback) {
 		this.callback = callback;
+
+		return this;
 	}
 
 	/**
 	 * Add a filter to only accept some observations
 	 * @param  {Function} filterFunc
-	 * @return {void}
+	 * @return {BLE}
 	 */
 	filter(filterFunc) {
 		this.filterFunc = filterFunc;
+
+		return this;
 	}
 
 	/**

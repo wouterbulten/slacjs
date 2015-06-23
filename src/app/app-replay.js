@@ -31,15 +31,15 @@ window.SlacApp = {
 
     initialize() {
 
-        if(SlacJsData === undefined) {
+        if(typeof SlacJsData === 'undefined') {
             console.error('No replay data found');
         }
 
-        if(SlacJsLandmarkPositions === undefined) {
+        if(typeof SlacJsLandmarkPositions === 'undefined') {
             console.error('No true landmark positions found');
         }
 
-        if(SlacJsStartingPosition === undefined) {
+        if(typeof SlacJsStartingPosition === 'undefined') {
             console.error('No starting position found');
         }
 
