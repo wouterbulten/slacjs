@@ -24,7 +24,7 @@ module.exports = {
 	},
 
 	particles: {
-		N: 50,
+		N: 10,
 
 		user: {
 			defaultPose: {
@@ -40,8 +40,8 @@ module.exports = {
 			N: 500,
 			sd: 1,
 			randomN: 0,
-			effectiveParticleThreshold: 250,
-			maxVariance: 4
+			effectiveParticleThreshold: 350,
+			maxVariance: 8
 		}
 	},
 

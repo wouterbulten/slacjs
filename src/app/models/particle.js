@@ -14,15 +14,12 @@ class Particle {
 			this.user = User.copyUser(parent.user);
 			this.landmarks = this._copyMap(parent.landmarks);
 
-			this.initialisedLandmarks = [...parent.initialisedLandmarks];
 			this.landmarkInitSet = LandmarkInitializationSet.copy(parent.landmarkInitSet);
 		}
 		else {
 			this.user = new User(userConfig.defaultPose, userConfig);
 			this.landmarks = new Map();
 
-			this.initialisedLandmarks = [];
-			//Internal list to keep track of initialised landmarks
 			this.landmarkInitSet = new LandmarkInitializationSet(initConfig);
 		}
 
@@ -61,7 +58,7 @@ class Particle {
 			this.removeLandmark(uid);
 		}
 
-		if (this.initialisedLandmarks.indexOf(uid) == -1) {
+		if (this.landmarkInitSet.has(uid) || !this.landmarks.has(uid)) {
 
 			this.landmarkInitSet.addMeasurement(uid, this.user.x, this.user.y, r);
 
@@ -72,7 +69,6 @@ class Particle {
 				this.addLandmark(obs, {x, y}, {varX, varY});
 
 				this.landmarkInitSet.remove(uid);
-				this.initialisedLandmarks.push(uid);
 			}
 		}
 		else {
