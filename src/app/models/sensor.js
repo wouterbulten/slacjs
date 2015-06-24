@@ -111,9 +111,9 @@ class Sensor {
 	 */
 	_updateLandmark(uid, rssi) {
 
-		this._event(uid, 'update', 'Landmark updated');
-
 		const landmark = this.landmarks.get(uid);
+
+		this._event(uid, landmark.name, 'update', 'Landmark updated');
 
 		landmark.filter.filter(rssi);
 		landmark.measurements++;
@@ -130,7 +130,7 @@ class Sensor {
 	 */
 	_registerLandmark(uid, rssi, name, moved = false) {
 
-		this._event(uid, 'new', `New landmark found with name ${name}`);
+		this._event(uid, name, 'new', `New landmark found with name ${name}`);
 
 		const filter = new KalmanFilter({R: this.R, Q: this.Q});
 		filter.filter(rssi);
@@ -169,7 +169,7 @@ class Sensor {
 	 */
 	_moveLandmark(uid, rssi, name) {
 
-		this._event(uid, 'moved', 'Landmark has moved');
+		this._event(uid, name, 'moved', 'Landmark has moved');
 
 		this._registerLandmark(uid, rssi, name, true);
 	}
@@ -186,15 +186,13 @@ class Sensor {
 	/**
 	 * Process a sensor event
 	 * @param  {String} uid
-	 * @param  {String} name
+	 * @param  {String} event
 	 * @param  {String} msg
 	 * @return {void}
 	 */
-	_event(uid, name, msg) {
-		console.log(`[SLCAjs/sensor] ${uid} ${name}, message: "${msg}"`);
-
+	_event(uid, name, event, msg) {
 		if(this.eventListener !== undefined) {
-			this.eventListener(uid, name, msg);
+			this.eventListener(uid, name, event, msg);
 		}
 	}
 }

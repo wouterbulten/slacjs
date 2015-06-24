@@ -3,6 +3,7 @@ import BLE from './device/bluetooth.js';
 import MotionSensor from './device/motion-sensor';
 import ParticleRenderer from './view/particle-renderer';
 import DataStore from './device/data-storage';
+import LandmarkActivityPanel from './view/landmark-activity-panel';
 import { degreeToRadian, degreeToNormalisedHeading, rotationToLocalNorth } from './util/motion';
 import config from './config';
 
@@ -81,6 +82,14 @@ window.SlacApp = {
 
 		this.renderer = new ParticleRenderer('slacjs-map', height);
 
+        //Create a view for the panel that displays beacon info
+        this.landmarkPanel = new LandmarkActivityPanel('#landmark-info');
+
+		//Update the panel every second
+		setInterval(() => {
+			this.landmarkPanel.render();
+		}, 500);
+
 		//Create a datastore object to save the trace
 		this.storage = new DataStore();
 	},
@@ -119,6 +128,16 @@ window.SlacApp = {
 		this.controller.onUpdate((particles) => {
 			this.renderer.render(particles);
 		});
+
+		//Add a listener to the sensor of the controller
+        this.controller.sensor.setEventListener((uid, name, event, msg) => {
+
+            if(event != 'update') {
+				console.log(`[SLACjs/sensor] ${uid} (${name}) ${event}, message: "${msg}"`);
+			}
+
+            this.landmarkPanel.processEvent(uid, name, event, msg);
+        });
 
 		console.log('[SLACjs] Controller created');
 

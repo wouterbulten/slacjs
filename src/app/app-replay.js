@@ -1,6 +1,7 @@
 import config from './config';
 import SlacController from './slac-controller';
 import ReplayRenderer from './view/replay-renderer';
+import LandmarkActivityPanel from './view/landmark-activity-panel';
 import { degreeToNormalisedHeading } from './util/motion';
 
 /**
@@ -46,13 +47,8 @@ window.SlacApp = {
         //Create a renderer for the canvas view
 		this.renderer = new ReplayRenderer('slacjs-map', SlacJsLandmarkPositions);
 
-        //Create a plot for the rssi data
-        for(name in SlacJsLandmarkPositions) {
-            if (SlacJsLandmarkPositions.hasOwnProperty(name)) {
-
-                //this._createDistPlot(name);
-            }
-        }
+        //Create a view for the panel that displays beacon info
+        this.landmarkPanel = new LandmarkActivityPanel('#landmark-info');
 
         //Create plot for the errors
         this._initErrorPlot();
@@ -84,10 +80,27 @@ window.SlacApp = {
             this._calculateLandmarkError();
         });
 
+        //Add a listener to the sensor of the controller
+        this.controller.sensor.setEventListener((uid, name, event, msg) => {
+
+            if (event != 'update') {
+                console.log(`[SLCAjs/sensor] ${uid} ${event}, message: "${msg}"`);
+            }
+
+            this.landmarkPanel.processEvent(uid, name, event, msg);
+        });
+
         this.controller.start();
 
         //Bind renderer to controller
-		this.controller.onUpdate((particles) => this.renderer.render(particles));
+		this.controller.onUpdate((particles) => {
+
+            //Update the canvas
+            this.renderer.render(particles);
+
+            //Update the beacon info
+            this.landmarkPanel.render();
+        });
 
         //Save the start time, we use this to determine which BLE events to send
         this.lastUpdate = new Date().getTime();
@@ -159,6 +172,10 @@ window.SlacApp = {
         while(current.timestamp <= timestamp);
     },
 
+    /**
+     * Calculate the landmark error and show on screen
+     * @return {[type]} [description]
+     */
     _calculateLandmarkError() {
 
         const distArr = [];
@@ -186,6 +203,10 @@ window.SlacApp = {
         }
     },
 
+    /**
+     * Initialize the error plot
+     * @return {void}
+     */
     _initErrorPlot() {
 
         this.errorPlot = {
