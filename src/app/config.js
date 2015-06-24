@@ -71,7 +71,18 @@ module.exports = {
 
 	ble: {
 		frequency: 100,
-		devicePrefix: 'LowBeacon'
+		devicePrefix: 'LowBeacon',
+
+		toFriendlyName: (name) => {
+			const parts = name.split('_');
+
+	        if (name.includes('2015')) {
+	            return parts[0];
+	        }
+			else {
+				return parts[0] + parts[1];
+			}
+		},
 	},
 
 	simulation: {

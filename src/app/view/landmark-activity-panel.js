@@ -1,3 +1,5 @@
+import config from '../config';
+
 class LandmarkActivityPanel {
 
     constructor(container) {
@@ -50,8 +52,14 @@ class LandmarkActivityPanel {
         });
     }
 
+    /**
+     * Convert the name to a more friendly version for showing on screen
+     * @param  {String} name
+     * @return {String}
+     * @todo Make this more dynamic and less beacon dependent
+     */
     _friendlyName(name) {
-        return name.split('_')[0];
+        return config.ble.toFriendlyName(name);
     }
 }
 
