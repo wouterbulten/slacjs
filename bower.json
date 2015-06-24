@@ -24,6 +24,6 @@
   ],
   "dependencies": {
     "jquery": "~2.1.3",
-    "mathjs": "~1.5.1"
+    "highcharts": "~4.1.6"
   }
 }
