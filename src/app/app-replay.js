@@ -80,12 +80,6 @@ window.SlacApp = {
             //for the best particle
             const user = this.controller.particleSet.userEstimate();
 
-            this.controller.lastObservations.forEach((obs) => {
-                const trueDist = this.distanceToBeacon(user.x, user.y, obs.name);
-
-                this._updateDistPlot(obs.name, trueDist, obs.r);
-            });
-
             //Show the current error
             this._calculateLandmarkError();
         });
@@ -160,130 +154,9 @@ window.SlacApp = {
 
             this.bleEventIteration++;
 
-            /*if(current.name != 'LowBeacon5_2015-06-16') {
-                console.log(current.name);
-                continue;
-            }*/
             this.controller.addDeviceObservation(current.address, current.rssi, current.name);
-
-            if(current.rssi < 0) {
-                const filteredRssi = this.controller.sensor.landmarks.get(current.address).filter.lastMeasurement();
-
-                this._updateRssiPlot(current.name, current.rssi, filteredRssi);
-            }
         }
         while(current.timestamp <= timestamp);
-    },
-
-    _createDistPlot(name) {
-
-        return;
-        $('#dist-plots').append(`<div id="${name}-dist"></div>`);
-
-        this.distPlots[name] = {
-
-            data: {
-                real: [],
-                measured: [],
-                rssi: [],
-                rawDist: [],
-                kalman: [],
-                index: 0
-            },
-
-            plot: new Highcharts.Chart({
-                chart: {
-                    renderTo: `${name}-dist`,
-                },
-                title: {
-                    text: `${name}`,
-                },
-                xAxis: {
-                    title: {
-                        text: 'Time'
-                    }
-                },
-                yAxis: [
-                    {
-                        title: {
-                            text: 'RSSI'
-                        },
-                        opposite: true,
-                        max: -50,
-                        min: -100
-                    },
-                    {
-                        title: {
-                            text: 'Distance'
-                        },
-                        min: 0,
-                        max: 10,
-                    }
-                ],
-                series: [
-                    {
-                        name: 'Computed distance from average user (averaged over all particles) to real beacon location',
-                        type: 'line',
-                        yAxis: 1
-                    },
-                    {
-                        name: 'Measured distance to beacon using path loss model',
-                        type: 'line',
-                        yAxis: 1
-                    },
-                    {
-                        name: 'RSSI',
-                        type: 'line',
-                        yAxis: 0
-                    },
-                    {
-                        name: 'Raw distance',
-                        type: 'line',
-                        yAxis: 1
-                    },
-                    {
-                        name: 'RSSI kalman',
-                        type: 'line',
-                        yAxis: 0
-                    }
-                ]
-            })
-        }
-    },
-
-    _updateRssiPlot(name, rssi, filteredRssi) {
-        return;
-        //Filter invalid values
-        let dist;
-        if (rssi > 0) {
-            rssi = null;
-            dist = null;
-        }
-        else {
-            dist = Math.pow(10, (rssi - config.landmarkConfig.txPower) / (-10 * config.landmarkConfig.n));
-        }
-
-
-        const plot = this.distPlots[name];
-        plot.data.rssi.push([plot.data.index, rssi]);
-        plot.data.rawDist.push([plot.data.index, dist]);
-        plot.data.kalman.push([plot.data.index, filteredRssi]);
-        plot.data.index++;
-
-        plot.plot.series[2].setData(plot.data.rssi);
-        plot.plot.series[3].setData(plot.data.rawDist);
-        plot.plot.series[4].setData(plot.data.kalman);
-    },
-
-    _updateDistPlot(name, real, measured) {
-        return;
-        const plot = this.distPlots[name];
-
-        plot.data.real.push([plot.data.index, real]);
-        plot.data.measured.push([plot.data.index, measured]);
-
-        plot.plot.series[0].setData(plot.data.real);
-        plot.plot.series[1].setData(plot.data.measured);
     },
 
     _calculateLandmarkError() {
