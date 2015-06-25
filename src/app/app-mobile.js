@@ -139,6 +139,9 @@ window.SlacApp = {
             this.landmarkPanel.processEvent(uid, name, event, msg);
         });
 
+		//Reset the view
+		this.landmarkPanel.reset();
+
 		console.log('[SLACjs] Controller created');
 
 		this.controller.start();

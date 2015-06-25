@@ -5,9 +5,9 @@ class LandmarkActivityPanel {
     constructor(container) {
         this.landmarks = new Map();
 
-        $(container).append('<ul class="fa-ul"></ul>');
+        $(container).append('<div class="beacon-list"></div>');
 
-        this.element = $(container + ' ul');
+        this.element = $(container + ' .beacon-list');
     }
 
     processEvent(uid, name, event, msg) {
@@ -20,17 +20,30 @@ class LandmarkActivityPanel {
 
         landmark.visible = true;
 
+        if(event == 'moved') {
+            landmark.moved = true;
+        }
+
         return;
     }
 
     render() {
 
         this.landmarks.forEach((l) => {
-            l.statusIcon.toggleClass('fa-check-circle-o', l.visible);
-            l.statusIcon.toggleClass('fa-circle-o', !l.visible);
+            l.element.toggleClass('beacon-inactive', !l.visible);
+            l.element.toggleClass('beacon-moved', l.moved);
+            l.element.toggleClass('beacon-new', l.new);
 
+            //Reset all the states
             l.visible = false;
+            l.moved = false;
+            l.new = false;
         });
+    }
+
+    reset() {
+        $(this.element).html("");
+        this.landmarks.clear();
     }
 
     _addLandmark(uid, name) {
@@ -39,16 +52,32 @@ class LandmarkActivityPanel {
         const friendlyName = this._friendlyName(name);
 
         $(this.element).append(
-            `<li class="${uiId}"><i class="fa-li fa fa-check-circle-o"></i>${friendlyName}</li>`
+            `
+            <span class="${uiId}">
+                <span class="fa-stack">
+                    <span class="fa fa-stack-1x fa-location-arrow moved-icon"></span>
+                    <span class="fa fa-stack-1x fa-plus new-icon"></span>
+                    <span class="fa fa-stack-2x fa-square-o"></span>
+                </span>
+                <span class="fa-stack">
+                    <span class="fa fa-circle fa-stack-1x visibility-icon"></span>
+                    <span class="fa fa-circle-thin fa-stack-2x"></span>
+                </span>
+                &nbsp; ${friendlyName}
+                <br>
+            </span>
+            `
         );
 
         this.landmarks.set(uid, {
             uid: uid,
             name: name,
             friendlyName: friendlyName,
-            statusIcon: $('.' + uiId + ' .fa-li'),
+            element: $(`.${uiId}`),
             visible: true,
-            uiId: uiId
+            uiId: uiId,
+            moved: false,
+            new: true,
         });
     }
 
