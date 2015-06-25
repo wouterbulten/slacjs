@@ -1,4 +1,5 @@
 import KalmanFilter from '../util/kalman';
+import config from '../config';
 
 class Sensor {
 
@@ -69,9 +70,20 @@ class Sensor {
 		//Get all the landmarks that have been upated during the current iteration
 		this.landmarks.forEach((l, uid) => {
 			if (l.changed && l.measurements > this.minMeasurements) {
+
+				//Get the filtered rssi value
 				const rssi = l.filter.lastMeasurement();
 
-				observedLandmarks.push({uid, r: this._rssiToDistance(rssi), name: l.name, moved: l.moved});
+				//Convert name to friendly name
+				//@todo remove direct dependency on config
+				const name = config.ble.toFriendlyName(l.name);
+
+				observedLandmarks.push({
+					uid,
+					r: this._rssiToDistance(rssi),
+					name,
+					moved: l.moved
+				});
 			}
 
 			//Reset all flags
@@ -130,7 +142,9 @@ class Sensor {
 	 */
 	_registerLandmark(uid, rssi, name, moved = false) {
 
-		this._event(uid, name, 'new', `New landmark found with name ${name}`);
+		if (!moved) {
+			this._event(uid, name, 'new', `New landmark found with name ${name}`);
+		}
 
 		const filter = new KalmanFilter({R: this.R, Q: this.Q});
 		filter.filter(rssi);

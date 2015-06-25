@@ -48,6 +48,7 @@ class ParticleSet {
 
 			//If the landmark has moved we remove it from all particles
 			if (moved) {
+				console.log('Moving landmark')
 				this._removeLandmark(uid);
 			}
 
@@ -172,11 +173,22 @@ class ParticleSet {
 	 */
 	_removeLandmark(uid) {
 
-		//Remove from the landmark list
-		const index = this.observedLandmarks.indexOf(uid);
-		this.observedLandmarks.splice(index, 1);
+		//Remove from the landmark list if it exists
+		const index = this.initialisedLandmarks.indexOf(uid);
 
-		this.particleList.forEach((p) => p.removeLandmark(uid));
+		if (index != -1) {
+			this.initialisedLandmarks.splice(index, 1);
+
+			//Remove it from all particles
+			this.particleList.forEach((p) => p.removeLandmark(uid));
+		}
+		else {
+
+			//It is not initalised yet, so we remove it from the init set
+			if (this.landmarkInitSet.has(uid)) {
+				this.landmarkInitSet.remove(uid);
+			}
+		}
 	}
 }
 
