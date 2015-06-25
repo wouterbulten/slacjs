@@ -37,6 +37,7 @@ class SlacController {
 		this.stepSize = config.pedometer.stepSize;
 
 		this.started = false;
+		this.paused = false;
 		this.callback = undefined;
 		this.lastObservations = [];
 	}
@@ -47,6 +48,7 @@ class SlacController {
 	 */
 	start() {
 		this.started = true;
+		this.paused = false;
 
 		return this;
 	}
@@ -56,7 +58,8 @@ class SlacController {
 	 * @return {SlacController}
 	 */
 	pause() {
-		this.started = false;
+		this.started = !this.started;
+		this.paused = true;
 
 		return this;
 	}
@@ -68,6 +71,10 @@ class SlacController {
 	 * @param {Number} z
 	 */
 	addMotionObservation(x, y, z, heading) {
+
+		if (!this.started) {
+			return;
+		}
 
 		//Update the pedometer
 		this.pedometer.processMeasurement(x, y, z);
@@ -82,6 +89,10 @@ class SlacController {
 	 * @param {String} name
 	 */
 	addDeviceObservation(uid, rssi, name) {
+
+		if (!this.started) {
+			return;
+		}
 
 		//Add the device observation to the sensor for filtering
 		this.sensor.addObservation(uid, rssi, name);

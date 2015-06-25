@@ -102,11 +102,20 @@ window.SlacApp = {
 
 		console.log('[SLACjs] Starting');
 
+		this.uiElements.btnStart.prop('disabled', true);
+		this.uiElements.btnPause.prop('disabled', false);
+		
 		if(this.controller !== undefined) {
+
+			if(this.controller.paused) {
+				this.controller.start();
+
+				return;
+			}
+
+			//When not paused, start resets it
 			this.reset();
 		}
-
-		this.uiElements.btnStart.prop('disabled', true);
 
 		//Go in background mode if it is enabled
 		if(config.backgroundMode) {
@@ -165,6 +174,7 @@ window.SlacApp = {
 		console.log('[SLACjs] Resetting controller');
 
 		this.uiElements.btnStart.prop('disabled', false);
+		this.uiElements.btnPause.prop('disabled', true);
 		this.uiElements.btnReset.prop('disabled', true);
 		this.uiElements.btnExport.prop('disabled', true);
 
@@ -187,6 +197,9 @@ window.SlacApp = {
 		console.log('[SLACjs] Pausing controller');
 
 		this.controller.pause();
+
+		this.uiElements.btnPause.prop('disabled', true);
+		this.uiElements.btnStart.prop('disabled', false);
 	},
 
 	/**
