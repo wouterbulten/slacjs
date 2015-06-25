@@ -104,7 +104,7 @@ window.SlacApp = {
 
 		this.uiElements.btnStart.prop('disabled', true);
 		this.uiElements.btnPause.prop('disabled', false);
-		
+
 		if(this.controller !== undefined) {
 
 			if(this.controller.paused) {
@@ -284,7 +284,7 @@ window.SlacApp = {
 		this.uiElements.indheading.html(data.heading.toFixed(2));
 
 		//Send the motion update to the controller
-		if (this.controller !== undefined) {
+		if (this.controller !== undefined  && !this.controller.paused) {
 
 			if(config.exportData) {
 				data.timestamp = new Date().getTime();
@@ -308,7 +308,7 @@ window.SlacApp = {
 	 */
 	_bluetoothObservation(data) {
 
-		if (this.controller !== undefined) {
+		if (this.controller !== undefined && !this.controller.paused) {
 
 			if(config.exportData) {
 				data.timestamp = new Date().getTime();
