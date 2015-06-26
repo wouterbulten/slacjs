@@ -51,7 +51,7 @@ module.exports = {
 
 	landmarkConfig: {
 		n: 2,
-		txPower: -62,
+		txPower: -64,
 		noise: 4,
 		range: 20,
 
@@ -85,11 +85,17 @@ module.exports = {
 			else {
 				return parts[0] + parts[1];
 			}
-		},
+		}
 	},
 
 	simulation: {
 		xMax: 20,
 		yMax: 20
+	},
+
+	replay: {
+		showVisualisation: true,
+		updateRate: 10,
+		delayAlgorithm: true,
 	}
 };

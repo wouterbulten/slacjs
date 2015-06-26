@@ -44,8 +44,11 @@ window.SlacApp = {
             console.error('No starting position found');
         }
 
-        //Create a renderer for the canvas view
-		this.renderer = new ReplayRenderer('slacjs-map', SlacJsLandmarkPositions);
+        if(config.replay.showVisualisation)
+        {
+            //Create a renderer for the canvas view
+    		this.renderer = new ReplayRenderer('slacjs-map', SlacJsLandmarkPositions);
+        }
 
         //Create a view for the panel that displays beacon info
         this.landmarkPanel = new LandmarkActivityPanel('#landmark-info');
@@ -95,8 +98,11 @@ window.SlacApp = {
         //Bind renderer to controller
 		this.controller.onUpdate((particles) => {
 
-            //Update the canvas
-            this.renderer.render(particles);
+            if(config.replay.showVisualisation)
+            {
+                //Update the canvas
+                this.renderer.render(particles);
+            }
 
             //Update the beacon info
             this.landmarkPanel.render();
@@ -105,7 +111,18 @@ window.SlacApp = {
         //Save the start time, we use this to determine which BLE events to send
         this.lastUpdate = new Date().getTime();
 
-        this.motionInterval = setInterval(() => this._processMotionObservation(), config.sensor.motion.frequency / 2);
+        //Run the algorithm real time or as fast as possible
+        if (config.replay.delayAlgorithm) {
+            this.motionInterval = setInterval(() => this._processMotionObservation(), config.replay.updateRate);
+        }
+        else {
+
+            let hasNext = true;
+
+            while (hasNext) {
+                hasNext = this._processMotionObservation()
+            }
+        }
     },
 
     /**
@@ -127,7 +144,7 @@ window.SlacApp = {
 
     /**
      * Simulate a motion event
-     * @return {void}
+     * @return {Boolean}
      */
     _processMotionObservation() {
 
@@ -135,7 +152,7 @@ window.SlacApp = {
             clearInterval(this.motionInterval);
 
             console.log('[SLACjs] Motion events finished');
-            return;
+            return false;
         }
 
         const data = SlacJsData.motion[this.motionEventIteration];
@@ -151,6 +168,8 @@ window.SlacApp = {
 
         this.currentMotionTimestamp = data.timestamp;
         this.motionEventIteration++;
+
+        return true;
     },
 
     /**
