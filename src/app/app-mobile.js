@@ -25,6 +25,7 @@ window.SlacApp = {
 
 	startHeading: 0,
 	lastUiRotation: 0,
+	orientationSetting: false,
 
 	/**
 	 * Setup the application
@@ -54,7 +55,7 @@ window.SlacApp = {
 		};
 
 		//Lock the orientation of the device
-		const orientationSetting = this._lockDeviceOrientation();
+		this.orientationSetting = this._lockDeviceOrientation();
 
 		//Create a new motion sensor object that listens for updates
 		//The sensor is working even if the algorithm is paused (to update the view)
@@ -364,7 +365,7 @@ window.SlacApp = {
 		//Create a renderer for the canvas view
 		//Based on the orientation setting, use an offset for the canvas
 		let height;
-		switch(orientationSetting) {
+		switch(this.orientationSetting) {
 			case 'portrait':
 			case 'portrait-secondary':
 			case 'portrait-primary':

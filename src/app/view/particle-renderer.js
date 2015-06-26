@@ -84,9 +84,9 @@ class ParticleRenderer extends BaseRenderer {
 		const minY = Math.min(valuesY);
 
 		if (minX < 0) {
-			offsetX = -1 * minY;
+			offsetX = -1 * minX;
 		}
-		if (minX < 0) {
+		if (minY < 0) {
 			offsetY = -1 * minY;
 		}
 
