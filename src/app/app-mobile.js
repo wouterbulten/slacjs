@@ -66,22 +66,6 @@ window.SlacApp = {
 		//Bind events to the buttons
 		this._bindButtons();
 
-		//Create a renderer for the canvas view
-		//Based on the orientation setting, use an offset for the canvas
-		let height;
-		switch(orientationSetting) {
-			case 'portrait':
-			case 'portrait-secondary':
-			case 'portrait-primary':
-				height = window.innerHeight - 120;
-				break;
-
-			default:
-				height = window.innerHeight - 60;
-		}
-
-		this.renderer = new ParticleRenderer('slacjs-map', height);
-
         //Create a view for the panel that displays beacon info
         this.landmarkPanel = new LandmarkActivityPanel('#landmark-info');
 
@@ -132,6 +116,9 @@ window.SlacApp = {
 
 		//Create a new controller
 		this.controller = new SlacController(config);
+
+		//Create the renderer
+		this._createCanvasRenderer();
 
 		//Bind renderer to controller
 		this.controller.onUpdate((particles) => {
@@ -367,5 +354,27 @@ window.SlacApp = {
 		}
 
 		return setting;
+	},
+
+	/**
+	 * Create a new renderer for the canvas
+	 * @return {void}
+	 */
+	_createCanvasRenderer() {
+		//Create a renderer for the canvas view
+		//Based on the orientation setting, use an offset for the canvas
+		let height;
+		switch(orientationSetting) {
+			case 'portrait':
+			case 'portrait-secondary':
+			case 'portrait-primary':
+				height = window.innerHeight - 120;
+				break;
+
+			default:
+				height = window.innerHeight - 60;
+		}
+
+		this.renderer = new ParticleRenderer('slacjs-map', height);
 	}
 };
