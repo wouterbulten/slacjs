@@ -27,6 +27,10 @@ window.SlacApp = {
 		config.particles.user.defaultPose.x = userStartX;
 		config.particles.user.defaultPose.y = userStartY;
 
+		//Reset the device height as in the simulation everything is in the same plane
+		config.landmarkConfig.distToFloor = 0;
+		config.landmarkConfig.deviceHeight = 0;
+
         //Create a new controller
         this.controller = new SlacController(config);
 

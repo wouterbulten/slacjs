@@ -190,11 +190,17 @@ class Sensor {
 
 	/**
 	 * Convert RSSI to a distance estimate
+	 *
+	 * Compensates for the difference between the mobile device and the beacon height
 	 * @param  {float} rssi
 	 * @return {float}
 	 */
 	_rssiToDistance(rssi) {
-		return Math.pow(10, (rssi - this.landmarkConfig.txPower) / (-10 * this.landmarkConfig.n));
+
+		const deltaHeight = this.landmarkConfig.deviceHeight - this.landmarkConfig.distToFloor;
+		const estimation = Math.pow(10, (rssi - this.landmarkConfig.txPower) / (-10 * this.landmarkConfig.n));
+
+		return Math.sqrt((estimation * estimation) - (deltaHeight * deltaHeight));
 	}
 
 	/**

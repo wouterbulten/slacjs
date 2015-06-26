@@ -51,9 +51,12 @@ module.exports = {
 
 	landmarkConfig: {
 		n: 2,
-		txPower: -64,
+		txPower: -62,
 		noise: 4,
-		range: 20
+		range: 20,
+
+		distToFloor: 0.1,
+		deviceHeight: 1.2
 	},
 
 	sensor: {
