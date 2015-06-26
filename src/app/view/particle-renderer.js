@@ -77,21 +77,15 @@ class ParticleRenderer extends BaseRenderer {
 			valuesY.push(y);
 		});
 
-		let offsetX = 0;
-		let offsetY = 0;
-
-		const minX = Math.min(valuesX);
-		const minY = Math.min(valuesY);
+		const minX = Math.min(...valuesX);
+		const minY = Math.min(...valuesY);
 
 		if (minX < 0) {
-			offsetX = -1 * minX;
+			this.offsetX = -1 * minX;
 		}
 		if (minY < 0) {
-			offsetY = -1 * minY;
+			this.offsetY = -1 * minY;
 		}
-
-		this.offsetX = offsetX;
-		this.offsetY = offsetY;
 	}
 
 	/**
