@@ -67,8 +67,8 @@ window.SlacApp = {
 		//Bind events to the buttons
 		this._bindButtons();
 
-        //Create a view for the panel that displays beacon info
-        this.landmarkPanel = new LandmarkActivityPanel('#landmark-info');
+		//Create a view for the panel that displays beacon info
+		this.landmarkPanel = new LandmarkActivityPanel('#landmark-info');
 
 		//Update the panel every second
 		setInterval(() => {
@@ -90,9 +90,9 @@ window.SlacApp = {
 		this.uiElements.btnStart.prop('disabled', true);
 		this.uiElements.btnPause.prop('disabled', false);
 
-		if(this.controller !== undefined) {
+		if (this.controller !== undefined) {
 
-			if(this.controller.paused) {
+			if (this.controller.paused) {
 				this.controller.start();
 
 				return;
@@ -103,7 +103,7 @@ window.SlacApp = {
 		}
 
 		//Go in background mode if it is enabled
-		if(config.backgroundMode) {
+		if (config.backgroundMode) {
 			/*
 			global cordova
 			 */
@@ -126,15 +126,26 @@ window.SlacApp = {
 			this.renderer.render(particles);
 		});
 
-		//Add a listener to the sensor of the controller
-        this.controller.sensor.setEventListener((uid, name, event, msg) => {
+		//Add an callback to the controller that runs before the first step
+		//Primary goal is to set the right start heading
+		this.controller.beforeUpdate((particles, iteration) => {
+			if (iteration === 0) {
+				this.startHeading = this.controller.heading;
+			}
 
-            if(event != 'update') {
+			//Reset the heading to let the first step always be in the same direction
+			this.controller.heading = 0;
+		});
+
+		//Add a listener to the sensor of the controller
+		this.controller.sensor.setEventListener((uid, name, event, msg) => {
+
+			if (event != 'update') {
 				console.log(`[SLACjs/sensor] ${uid} (${name}) ${event}, message: "${msg}"`);
 			}
 
-            this.landmarkPanel.processEvent(uid, name, event, msg);
-        });
+			this.landmarkPanel.processEvent(uid, name, event, msg);
+		});
 
 		//Reset the view
 		this.landmarkPanel.reset();
@@ -169,7 +180,7 @@ window.SlacApp = {
 		this.ble.stopListening();
 		delete this.controller;
 
-		if(config.backgroundMode) {
+		if (config.backgroundMode) {
 			/*
 			global cordova
 			 */

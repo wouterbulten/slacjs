@@ -36,9 +36,11 @@ class SlacController {
 		//Step size of a single step in meters
 		this.stepSize = config.pedometer.stepSize;
 
+		this.iteration = 0;
 		this.started = false;
 		this.paused = false;
-		this.callback = undefined;
+		this.afterUpdateCallback = undefined;
+		this.beforeUpdateCallback = undefined;
 		this.lastObservations = [];
 	}
 
@@ -101,12 +103,23 @@ class SlacController {
 	/**
 	 * Add a callback function that is run on every update
 	 *
-	 * The callback receives the particle set on each call.
+	 * The callback receives the particle set and the interation number on each call.
 	 * @param  {Function} callback
 	 * @return {void}
 	 */
 	onUpdate(callback) {
-		this.callback = callback;
+		this.afterUpdateCallback = callback;
+	}
+
+	/**
+	 * Add a callback function that is run before every update
+	 *
+	 * The callback receives the particle set and the interation number on each call.
+	 * @param  {Function} callback
+	 * @return {void}
+	 */
+	beforeUpdate(callback) {
+		this.beforeUpdateCallback = callback;
 	}
 
 	/**
@@ -115,8 +128,12 @@ class SlacController {
 	 */
 	_update() {
 
-		if(!this.started) {
+		if (!this.started) {
 			return;
+		}
+
+		if (this.beforeUpdateCallback !== undefined) {
+			this.beforeUpdateCallback(this.particleSet, this.iteration);
 		}
 
 		console.log('[SLACjs/controller] Update running');
@@ -139,9 +156,11 @@ class SlacController {
 		//particle set determines whether a resmample is required
 		this.particleSet.resample();
 
-		if(this.callback !== undefined) {
-			this.callback(this.particleSet);
+		if (this.afterUpdateCallback !== undefined) {
+			this.afterUpdateCallback(this.particleSet, this.iteration);
 		}
+
+		this.iteration++;
 	}
 
 }
