@@ -10,9 +10,9 @@ class ParticleSet {
 	 * @param  {Object} initConfig Config for the init filter
 	 * @return {ParticleSet}
 	 */
-	constructor(nParticles, userConfig, initConfig) {
+	constructor(nParticles, effectiveParticleThreshold, userConfig, initConfig) {
 		this.nParticles = nParticles;
-
+		this.effectiveParticleThreshold = effectiveParticleThreshold;
 		this.particleList = [];
 
 		//Internal list to keep track of initialised landmarks
@@ -87,8 +87,8 @@ class ParticleSet {
 	resample() {
 
 		const weights = this.particleList.map(p => p.weight);
-		if (numberOfEffectiveParticles(weights) < (this.nParticles * 0.5)) {
-
+		if (numberOfEffectiveParticles(weights) < this.effectiveParticleThreshold) {
+			console.log('resampling');
 			this.particleList = lowVarianceSampling(this.nParticles, weights).map((i) => {
 				return new Particle({}, this.particleList[i]);
 			});

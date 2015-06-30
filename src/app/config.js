@@ -24,7 +24,8 @@ module.exports = {
 	},
 
 	particles: {
-		N: 50,
+		N: 30,
+		effectiveParticleThreshold: 15,
 
 		user: {
 			defaultPose: {
@@ -32,7 +33,7 @@ module.exports = {
 				y: 0,
 				theta: 0
 			},
-			sdStep: 0.2,
+			sdStep: 0.15,
 			sdHeading: 0.1
 		},
 
@@ -81,7 +82,7 @@ module.exports = {
 
 			if (name.includes('2015')) {
 				return parts[0];
-	        }
+			}
 			else {
 				return parts[0] + parts[1];
 			}

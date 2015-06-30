@@ -87,7 +87,7 @@ class Pedometer {
 			this.stepArr.push(1);
 			this.stepArr.shift();
 
-			if(this.callbackOnStep !== undefined) {
+			if (this.callbackOnStep !== undefined) {
 				this.callbackOnStep();
 			}
 		}

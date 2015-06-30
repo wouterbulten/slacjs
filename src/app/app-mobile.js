@@ -310,6 +310,7 @@ window.SlacApp = {
 
 				this.observations.bluetooth.push(data);
 			}
+
 			this.controller.addDeviceObservation(data.address, data.rssi, data.name);
 		}
 	},
