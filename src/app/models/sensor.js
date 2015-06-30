@@ -84,11 +84,11 @@ class Sensor {
 					name,
 					moved: l.moved
 				});
-			}
 
-			//Reset all flags
-			l.changed = false;
-			l.moved = false;
+				//Reset all flags
+				l.changed = false;
+				l.moved = false;
+			}
 		});
 
 		return observedLandmarks;
