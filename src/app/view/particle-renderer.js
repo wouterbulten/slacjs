@@ -28,11 +28,11 @@ class ParticleRenderer extends BaseRenderer {
 		//Compute the offset based on the best particle
 		//This makes sure everything is >0
 		//(use only the best for performance)
-		this.updateOffsets(best.user);
+		this.updateOffsets(best.user, best.landmarks);
 
 		//Compute a scale factor based on the new coordinates
 		//of the best user
-		this.updateScaleFactor(best.user);
+		this.updateScaleFactor(best.user, best.landmarks);
 
 		particleSet.particles().forEach((p) => {
 
@@ -66,15 +66,21 @@ class ParticleRenderer extends BaseRenderer {
 	/**
 	 * Calculate the new maximum scale factor
 	 * @param  {Object} user
+	 * @param  {Object} landmark
 	 * @return {void}
 	 */
-	updateOffsets(user) {
+	updateOffsets(user, landmarks) {
 		const valuesX = [];
 		const valuesY = [];
 
 		user.trace.values().forEach(({x, y, theta}) => {
 			valuesX.push(x);
 			valuesY.push(y);
+		});
+
+		landmarks.forEach((l) => {
+			valuesX.push(l.x);
+			valuesY.push(l.y);
 		});
 
 		const minX = Math.min(...valuesX);
@@ -94,7 +100,7 @@ class ParticleRenderer extends BaseRenderer {
 	 * @param  {Object} user
 	 * @return {void}
 	 */
-	updateScaleFactor(user) {
+	updateScaleFactor(user, landmarks) {
 
 		let maxX = 0;
 		let maxY = 0;
@@ -106,6 +112,16 @@ class ParticleRenderer extends BaseRenderer {
 
 			if ((y + this.offsetY) > maxY) {
 				maxY = y + this.offsetY;
+			}
+		});
+
+		landmarks.forEach((p) => {
+			if ((p.x + this.offsetX) > maxX) {
+				maxX = p.x + this.offsetX;
+			}
+
+			if ((p.y + this.offsetY) > maxY) {
+				maxY = p.y + this.offsetY;
 			}
 		});
 

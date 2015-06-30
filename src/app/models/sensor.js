@@ -14,7 +14,7 @@ class Sensor {
 	 * @param  {Number} minMeasurements Minimum amount of measurements before we return a rssi value
 	 * @return {Sensor}
 	 */
-	constructor({n, txPower, noise, range, deviceHeight, distToFloor}, {R = 0.008, Q = undefined} = {}, minMeasurements = 10) {
+	constructor({n, txPower, noise, range, deviceHeight, distToFloor}, {R = 0.008, Q = undefined} = {}, minMeasurements = 5) {
 
 		this.landmarks = new Map();
 		this.landmarkConfig = {n, txPower, noise, range, deviceHeight, distToFloor};
@@ -67,7 +67,7 @@ class Sensor {
 	getObservations() {
 		const observedLandmarks = [];
 
-		//Get all the landmarks that have been upated during the current iteration
+		//Get all the landmarks that have been updated during the current iteration
 		this.landmarks.forEach((l, uid) => {
 			if (l.changed && l.measurements > this.minMeasurements) {
 

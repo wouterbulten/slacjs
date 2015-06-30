@@ -1,6 +1,9 @@
 {
 	"esnext": true,
 	"preset": "airbnb",
-	"validateIndentation": "\t",
+	"validateIndentation": {
+		"value": "\t",
+		"includeEmptylines": false
+	},
 	"requireLineFeedAtFileEnd": null
 }

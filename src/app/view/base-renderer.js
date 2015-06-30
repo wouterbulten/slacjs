@@ -1,15 +1,15 @@
 class BaseRenderer {
 
-    constructor(element) {
-        this.element = element;
-        this.canvas = document.getElementById(element);
-        this.ctx = this.canvas.getContext('2d');
+	constructor(element) {
+		this.element = element;
+		this.canvas = document.getElementById(element);
+		this.ctx = this.canvas.getContext('2d');
 
-        this.xMax = 1;
-        this.yMax = 1;
-    }
+		this.xMax = 1;
+		this.yMax = 1;
+	}
 
-    /**
+	/**
 	 * Clear the canvas
 	 * @return {ReplayRenderer}
 	 */
@@ -28,24 +28,24 @@ class BaseRenderer {
 		return this;
 	}
 
-    /**
+	/**
 	 * Resize the canvas for retina devices
 	 * @param {Number} fixedHeight
 	 * @return {void}
 	 */
 	optimizeForRetina(fixedHeight = undefined) {
 
-        let height;
-        const cs = window.getComputedStyle(this.canvas);
+		let height;
+		const cs = window.getComputedStyle(this.canvas);
 
-        if (fixedHeight === undefined) {
+		if (fixedHeight === undefined) {
 
-            //Calculate height as no height is given
-            height = parseInt(cs.getPropertyValue('height'), 10);
-        }
-        else {
-            height = fixedHeight;
-        }
+			//Calculate height as no height is given
+			height = parseInt(cs.getPropertyValue('height'), 10);
+		}
+		else {
+			height = fixedHeight;
+		}
 		const width = parseInt(cs.getPropertyValue('width'), 10);
 
 		//Calcuate a factor for the resolution
@@ -59,7 +59,7 @@ class BaseRenderer {
 		this.canvas.style.height = height + 'px';
 	}
 
-    /**
+	/**
 	 * Scale the canvas to zoom in
 	 * @return {void}
 	 */
@@ -75,7 +75,7 @@ class BaseRenderer {
 		return Math.min(scaleXMax, scaleYMax);
 	}
 
-    /**
+	/**
 	 * Plot a user object on the canvas
 	 * @param  {User} user
 	 * @param  {String} color
@@ -112,12 +112,13 @@ class BaseRenderer {
 		return resize;
 	}
 
-    /**
+	/**
 	 * Plot a object
 	 * @param {Object} objects A objects with at least an x,y value
 	 * @param {string} fillStyle
 	 */
 	plotObject(object, fillStyle = '#000000', size = 3) {
+
 		this.ctx.fillStyle = fillStyle;
 
 		//Compensate for landmark size
@@ -126,14 +127,14 @@ class BaseRenderer {
 
 		this.ctx.fillRect(x, y, size, size);
 
-		if(object.name !== undefined) {
-			this.ctx.font = "15px serif";
+		if (object.name !== undefined) {
+			this.ctx.font = '15px serif';
 			this.ctx.fillStyle = "#000000";
 			this.ctx.fillText(object.name, x, y);
 		}
 	}
 
-    /**
+	/**
 	 * Translate x
 	 * @param  {Number} x
 	 * @return {Number}

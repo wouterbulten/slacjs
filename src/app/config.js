@@ -38,16 +38,16 @@ module.exports = {
 		},
 
 		init: {
-			N: 500,
+			N: 200,
 			sd: 1,
 			randomN: 0,
-			effectiveParticleThreshold: 250,
+			effectiveParticleThreshold: 75,
 			maxVariance: 4
 		}
 	},
 
 	pedometer: {
-		stepSize: 0.6
+		stepSize: 0.4
 	},
 
 	landmarkConfig: {
@@ -69,7 +69,7 @@ module.exports = {
 				R: 0.008,
 				Q: 4
 			},
-			minMeasurements: 10
+			minMeasurements: 30
 		}
 	},
 
@@ -96,7 +96,7 @@ module.exports = {
 
 	replay: {
 		showVisualisation: true,
-		updateRate: 10,
+		updateRate: 50,
 		delayAlgorithm: true
 	}
 };

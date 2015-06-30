@@ -191,7 +191,7 @@ class LandmarkParticleSet {
 			//Update the weight accordingly
 			//p(r) = N(r|dist,sd)
 
-			const weight = pdfn(r, dist, this.stdRange * 2);
+			const weight = pdfn(r, dist, this.stdRange);
 
 			p.weight = p.weight * weight;
 		});
