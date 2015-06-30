@@ -38,8 +38,8 @@ module.exports = {
 		},
 
 		init: {
-			N: 200,
-			sd: 1,
+			N: 300,
+			sd: 0.5,
 			randomN: 0,
 			effectiveParticleThreshold: 75,
 			maxVariance: 4

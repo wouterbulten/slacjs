@@ -44,14 +44,20 @@ class ParticleRenderer extends BaseRenderer {
 		});
 
 		//Plot any landmark init filters
-		let color = 50;
+		let colors = ['rgb(228,26,28)', 'rgb(55,126,184)', 'rgb(77,175,74)', 'rgb(152,78,163)', 'rgb(255,127,0)', 'rgb(255,255,51)', 'rgb(166,86,40)', 'rgb(247,129,191)', 'rgb(153,153,153)'];
+		let currentColor = 0;
 
 		particleSet.landmarkInitSet.particleSetMap.forEach((landmarkPf) => {
+
+			if (currentColor > colors.length) {
+				currentColor = 0;
+			}
+
 			landmarkPf.particles.forEach((p) => {
-				this.plotObject(p, 'rgb(0,' + color + ',0)', 5);
+				this.plotObject(p, colors[currentColor], 5);
 			});
 
-			color += 50;
+			currentColor++;
 		});
 
 		//Plot the best user trace
