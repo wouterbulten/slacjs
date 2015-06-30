@@ -17,7 +17,7 @@ function getTask(task) {
 	var argArray = [].slice.call(arguments);
 	argArray[0] = gulp; //Replace first element with a gulp reference
 
-    return require('./tasks/' + task).apply(this, argArray);
+	return require('./tasks/' + task).apply(this, argArray);
 }
 
 /*

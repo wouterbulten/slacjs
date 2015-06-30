@@ -31,12 +31,12 @@ window.SlacApp = {
 		config.landmarkConfig.distToFloor = 0;
 		config.landmarkConfig.deviceHeight = 0;
 
-        //Create a new controller
-        this.controller = new SlacController(config);
+		//Create a new controller
+		this.controller = new SlacController(config);
 
-        this.controller.start();
+		this.controller.start();
 
-        //Bind renderer to controller
+		//Bind renderer to controller
 		this.controller.onUpdate((particles) => this.renderer.render(particles, this.user));
 
 		this.user = new SimulatedUser(
