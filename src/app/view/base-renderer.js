@@ -1,7 +1,6 @@
 class BaseRenderer {
 
     constructor(element) {
-
         this.element = element;
         this.canvas = document.getElementById(element);
         this.ctx = this.canvas.getContext('2d');

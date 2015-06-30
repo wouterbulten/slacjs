@@ -123,7 +123,7 @@ class BLE {
 		if (this.callback !== undefined && data.status == 'scanResult') {
 
 			//Run the filter if it exists
-			if(this.filterFunc === undefined || this.filterFunc(data)) {
+			if (this.filterFunc === undefined || this.filterFunc(data)) {
 				this.callback(data);
 			}
 		}

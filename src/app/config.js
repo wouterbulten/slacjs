@@ -46,7 +46,7 @@ module.exports = {
 	},
 
 	pedometer: {
-		stepSize: 0.5
+		stepSize: 0.6
 	},
 
 	landmarkConfig: {
@@ -79,8 +79,8 @@ module.exports = {
 		toFriendlyName: (name) => {
 			const parts = name.split('_');
 
-	        if (name.includes('2015')) {
-	            return parts[0];
+			if (name.includes('2015')) {
+				return parts[0];
 	        }
 			else {
 				return parts[0] + parts[1];
@@ -96,6 +96,6 @@ module.exports = {
 	replay: {
 		showVisualisation: true,
 		updateRate: 10,
-		delayAlgorithm: true,
+		delayAlgorithm: true
 	}
 };

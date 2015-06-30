@@ -111,10 +111,6 @@ window.SlacApp = {
 			cordova.plugins.backgroundMode.enable();
 		}
 
-		//Use the current heading as the base
-		config.particles.user.defaultPose.theta = degreeToRadian(this.motionSensor.heading);
-		this.startHeading = this.motionSensor.heading;
-
 		//Create a new controller
 		this.controller = new SlacController(config);
 
@@ -130,11 +126,11 @@ window.SlacApp = {
 		//Primary goal is to set the right start heading
 		this.controller.beforeUpdate((particles, iteration) => {
 			if (iteration === 0) {
-				this.startHeading = this.controller.heading;
-			}
+				this.startHeading = this.motionSensor.heading;
 
-			//Reset the heading to let the first step always be in the same direction
-			this.controller.heading = 0;
+				//Reset the heading to let the first step always be in the same direction
+				this.controller.heading = 0.5 * Math.PI;
+			}
 		});
 
 		//Add a listener to the sensor of the controller
@@ -285,7 +281,7 @@ window.SlacApp = {
 		//Send the motion update to the controller
 		if (this.controller !== undefined  && !this.controller.paused) {
 
-			if(config.exportData) {
+			if (config.exportData) {
 				data.timestamp = new Date().getTime();
 
 				this.observations.motion.push(data);
@@ -293,7 +289,7 @@ window.SlacApp = {
 
 			this.controller.addMotionObservation(
 				data.x, data.y, data.z,
-				degreeToNormalisedHeading(data.heading, this.startHeading)
+				degreeToNormalisedHeading(data.heading, this.startHeading) + (0.5 * Math.PI)
 			);
 
 			this.uiElements.stepCount.html(this.controller.pedometer.stepCount);
@@ -309,7 +305,7 @@ window.SlacApp = {
 
 		if (this.controller !== undefined && !this.controller.paused) {
 
-			if(config.exportData) {
+			if (config.exportData) {
 				data.timestamp = new Date().getTime();
 
 				this.observations.bluetooth.push(data);
@@ -345,12 +341,12 @@ window.SlacApp = {
 
 		let setting = false;
 
-		switch(device.platform) {
-			case "iOS":
+		switch (device.platform) {
+			case 'iOS':
 				setting = config.deviceOrientation.ios;
 				break;
 
-			case "android":
+			case 'Android':
 				setting = config.deviceOrientation.android;
 				break;
 		}
@@ -376,7 +372,7 @@ window.SlacApp = {
 		//Create a renderer for the canvas view
 		//Based on the orientation setting, use an offset for the canvas
 		let height;
-		switch(this.orientationSetting) {
+		switch (this.orientationSetting) {
 			case 'portrait':
 			case 'portrait-secondary':
 			case 'portrait-primary':

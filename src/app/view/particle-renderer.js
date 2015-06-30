@@ -13,9 +13,9 @@ class ParticleRenderer extends BaseRenderer {
 		this.offsetX = 0;
 		this.offsetY = 0;
 
-		this.padding = 5;
+		this.padding = 2;
 		this.scaleFactor = undefined;
-		this.maxScaleFactor = 100;
+		this.maxScaleFactor = 200;
 
 		this.optimizeForRetina(height);
 	}
@@ -51,14 +51,14 @@ class ParticleRenderer extends BaseRenderer {
 				this.plotObject(p, 'rgb(0,' + color + ',0)', 5);
 			});
 
-            color += 50;
+			color += 50;
 		});
 
 		//Plot the best user trace
 		this.plotUserTrace(best.user, '#24780D');
 
-        //Plot the landmarks of the best particle
-        best.landmarks.forEach((landmark) => {
+		//Plot the landmarks of the best particle
+		best.landmarks.forEach((landmark) => {
 			this.plotObject(landmark, '#B52B2B', 10);
 		});
 	}
@@ -83,6 +83,7 @@ class ParticleRenderer extends BaseRenderer {
 		if (minX < 0) {
 			this.offsetX = -1 * minX;
 		}
+
 		if (minY < 0) {
 			this.offsetY = -1 * minY;
 		}
@@ -102,6 +103,7 @@ class ParticleRenderer extends BaseRenderer {
 			if ((x + this.offsetX) > maxX) {
 				maxX = x + this.offsetX;
 			}
+
 			if ((y + this.offsetY) > maxY) {
 				maxY = y + this.offsetY;
 			}

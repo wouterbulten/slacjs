@@ -156,11 +156,11 @@ class SlacController {
 		//particle set determines whether a resmample is required
 		this.particleSet.resample();
 
+		this.iteration++;
+
 		if (this.afterUpdateCallback !== undefined) {
 			this.afterUpdateCallback(this.particleSet, this.iteration);
 		}
-
-		this.iteration++;
 	}
 
 }
