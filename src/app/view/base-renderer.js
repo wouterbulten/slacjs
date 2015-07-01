@@ -135,6 +135,32 @@ class BaseRenderer {
 	}
 
 	/**
+	 * Plot a set of landmark initialization particle filters
+	 * @param  {[type]} landmarkInitSet [description]
+	 * @return {[type]}                 [description]
+	 */
+	plotLandmarkInitSet(landmarkInitSet) {
+
+		//Plot any landmark init filters
+		let colors = ['rgb(228,26,28)', 'rgb(55,126,184)', 'rgb(77,175,74)', 'rgb(152,78,163)', 'rgb(255,127,0)', 'rgb(255,255,51)', 'rgb(166,86,40)', 'rgb(247,129,191)', 'rgb(153,153,153)'];
+		let currentColor = 0;
+
+		landmarkInitSet.particleSetMap.forEach((landmarkPf) => {
+
+			if (currentColor > colors.length) {
+				currentColor = 0;
+			}
+
+			landmarkPf.particles.forEach((p) => {
+				this.plotObject(p, colors[currentColor], 5);
+			});
+
+			currentColor++;
+		});
+
+	}
+
+	/**
 	 * Translate x
 	 * @param  {Number} x
 	 * @return {Number}
