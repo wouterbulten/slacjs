@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="format-detection" content="telephone=no" />
+		<meta name="msapplication-tap-highlight" content="no" />
+		<!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+		<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi" />
+		<link rel="stylesheet" type="text/css" href="vendor/bootswatch/flatly.min.css">
+		<link rel="stylesheet" type="text/css" href="vendor/fontawesome/css/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="css/app.css">
+		<title>SLACjs</title>
+	</head>
+	<body>
+
+		<nav class="navbar navbar-default navbar-fixed-bottom">
+			<div class="container">
+
+				<div class="col-sm-2">
+					<div class="navbar-header hidden-xs">
+						<span class="navbar-brand">SLACjs <sup class="text-muted">1.0</sup></span>
+					</div>
+				</div>
+
+				<div class="col-sm-10 text-center">
+					<ul class="nav navbar-nav repo">
+						<li><a href="#"><i class="fa fa-github"></i>&nbsp; wouterbulten/slacjs</a></li>
+					</ul>
+
+					<div class="navbar-text">
+						<ul class="device-indicator">
+							<li class="device-motion enabled"><i class="fa fa-circle-o"></i> Motion</li>
+							<li class="device-compass enabled"><i class="fa fa-circle-o"></i> Compass</li>
+							<li class="device-ble enabled"><i class="fa fa-circle-o"></i> Bluetooth</li>
+						</ul>
+					</div>
+
+					<div class="navbar-right">
+						<button type="button" class="btn btn-success navbar-btn btn-start" disabled>Start</button>
+						<button type="button" class="btn btn-default navbar-btn btn-pause">Pause</button>
+						<button type="button" class="btn btn-danger navbar-btn btn-reset">Restart</button>
+						<button type="button" class="btn btn-default navbar-btn btn-export">Export</button>
+					</div>
+				</div>
+			</div>
+		</nav>
+
+		<div class="container-fluid full-height">
+			<div class="col-sm-3 hidden-xs sidebar">
+				<h2>Motion</h2>
+				<hr>
+				<ul>
+					<li>x: <span class="text-muted motion-indicator-x">0.0</span></li>
+					<li>y: <span class="text-muted motion-indicator-y">0.0</span></li></li>
+					<li>z: <span class="text-muted motion-indicator-z">0.0</span></li></li>
+					<li><i class="fa fa-compass"></i> <span class="text-muted motion-indicator-heading">120.0</span></li>
+					<li>Step count: <span class="text-muted motion-step-count">0</span></li>
+				</ul>
+
+				<h2>Devices</h2>
+				<hr>
+
+					<div class="text-center">
+						<small>
+							<span class="fa fa-circle"></span> : Update,
+							<span class="fa fa-plus"></span> : New,
+							<span class="fa fa-location-arrow"></span> : Moved
+						</small>
+					</div>
+				<hr>
+
+				<div id="landmark-info"></div>
+			</div>
+			<div class="col-sm-9 map-container text-center">
+				<div class="visible-xs-block">
+					<ul class="dense-motion-data">
+						<li>x: <span class="text-muted motion-indicator-x">0.0</span></li>
+						<li>y: <span class="text-muted motion-indicator-y">0.0</span></li></li>
+						<li>z: <span class="text-muted motion-indicator-z">0.0</span></li></li>
+						<li><i class="fa fa-compass"></i> <span class="text-muted motion-indicator-heading">120.0</span></li>
+						<li>S: <span class="text-muted motion-step-count">0</span></li>
+					</ul>
+				</div>
+				<canvas id="slacjs-map" class="map"></canvas>
+			</div>
+		</div>
+
+		<script type="text/javascript" src="data/replay-data-170615-LowBeacon-LoopReverseLoop.js"></script>
+		<script type="text/javascript" src="data/environment-data-LowBeacon.js"></script>
+		<script type="text/javascript" src="assets/js/browser-polyfill.js"></script>
+		<script type="text/javascript" src="vendor/vendor.js"></script>
+		<script type="text/javascript" src="assets/js/slacjs-app.js"></script>
+
+		<script type="text/javascript">
+
+		$(window).ready(function() {
+
+			SlacApp.initialize();
+			SlacApp.start();
+
+		});
+		</script>
+	</body>
+</html>

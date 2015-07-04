@@ -9,7 +9,8 @@ module.exports = {
 	entries: {
 		local: ['src/app/app-local.js'],
 		mobile: ['src/app/app-mobile.js'],
-		replay: ['src/app/app-replay.js']
+		replay: ['src/app/app-replay.js'],
+		demo: ['src/app/app-demo.js']
 	},
 
 	'tests': [
@@ -26,6 +27,7 @@ module.exports = {
 			replayHtml: 'src/replay/**/*.html',
 			replayData: 'src/replay/data/*.js',
 			mobile: 'src/mobile/**/*.*',
+			demo: 'src/demo/**/*.*',
 			tests: 'src/tests/**/*.js',
 			polyfill: 'node_modules/babelify/node_modules/babel-core/browser-polyfill.js'
 		},
@@ -45,6 +47,15 @@ module.exports = {
 			www: 'mobile/www/',
 			vendor: 'mobile/www/vendor/'
 		},
+
+		demo: {
+			base: 'dist/',
+			styles: 'dist/assets/css/',
+			scripts: 'dist/assets/js/',
+			vendor: 'dist/vendor/',
+			public: 'dist/',
+			replayData: 'dist/data/'
+		}
 	},
 
 	cordova: {

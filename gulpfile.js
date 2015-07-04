@@ -72,6 +72,19 @@ gulp.task('mobile-setup', ['mobile-resources'], getTask('cordova-setup'));
 gulp.task('mobile-vendor', getTask('vendor', config.dir.mobile.vendor));
 gulp.task('mobile-polyfill', getTask('polyfill', config.dir.mobile.vendor));
 
+/*
+Tasks for demo
+*/
+gulp.task('build-js-demo', getTask(
+	'transpile', config.entries.demo, config.dir.dist.scripts, true
+));
+gulp.task('demo-resources', getTask('demo-resources'));
+gulp.task('demo-vendor', getTask('vendor', config.dir.demo.vendor));
+gulp.task('demo-polyfill', getTask('polyfill', config.dir.demo.vendor));
+gulp.task('demo-resources', getTask('demo-resources'));
+gulp.task('build-html-demo', getTask('move', config.dir.src.demo, config.dir.dist.public));
+
+gulp.task('build-demo', ['lint', 'build-js-demo', 'build-vendor', 'build-polyfill', 'build-html-demo', 'move-replay-data']);
 
 /*
 
@@ -83,6 +96,9 @@ gulp.task('reload-scripts', ['lint', 'build-js'], browserSync.reload);
 gulp.task('reload-scripts-replay', ['lint', 'build-js-replay'], browserSync.reload);
 gulp.task('reload-index', ['build-html'], browserSync.reload);
 gulp.task('reload-index-replay', ['build-html-replay'], browserSync.reload);
+gulp.task('reload-index-demo', ['build-html-demo'], browserSync.reload);
+gulp.task('reload-scripts-demo', ['lint', 'build-js-demo'], browserSync.reload);
+
 
 // Main task for serving the non-mobile local version of SlacJS
 gulp.task('serve', ['build'], function() {
@@ -126,4 +142,20 @@ gulp.task('serve-mobile', ['mobile'], function() {
 	// Watch .js files
 	gulp.watch(config.dir.src.scripts, ['lint', 'mobile-build-js']);
 
+});
+
+// Main task for serving the replay local version of SlacJS
+gulp.task('serve-demo', ['build-demo'], function() {
+
+	// Watch .css files
+	gulp.watch(config.dir.src.styles, ['reload-styles']);
+
+	// Watch .js files
+	gulp.watch(config.dir.src.scripts, ['reload-scripts-demo']);
+
+	gulp.watch(config.dir.src.demo, ['reload-index-demo']);
+
+	browserSync({
+		server: './dist'
+	});
 });
