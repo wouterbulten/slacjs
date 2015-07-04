@@ -50,6 +50,25 @@ window.SlacApp = {
 			this.renderer = new ParticleRenderer('slacjs-map', window.innerHeight - 120);
 		}
 
+		//Cache all UI elements
+		this.uiElements = {
+			indx: $('.motion-indicator-x'),
+			indy: $('.motion-indicator-y'),
+			indz: $('.motion-indicator-z'),
+			indheading: $('.motion-indicator-heading'),
+			stepCount: $('.motion-step-count'),
+			map: $('#slacjs-map'),
+
+			deviceMotionEnabled: $('.device-motion'),
+			deviceCompassEnabled: $('.device-compass'),
+			deviceBleEnabled: $('.device-ble'),
+
+			btnStart: $('.btn-start'),
+			btnReset: $('.btn-reset'),
+			btnPause: $('.btn-pause'),
+			btnExport: $('.btn-export')
+		};
+
 		//Create a view for the panel that displays beacon info
 		this.landmarkPanel = new LandmarkActivityPanel('#landmark-info');
 	},
@@ -154,6 +173,12 @@ window.SlacApp = {
 
 		const data = SlacJsData.motion[this.motionEventIteration];
 
+		//Update the view
+		this.uiElements.indx.html(data.x.toFixed(2));
+		this.uiElements.indy.html(data.y.toFixed(2));
+		this.uiElements.indz.html(data.z.toFixed(2));
+		this.uiElements.indheading.html(data.heading.toFixed(2));
+
 		if (this.startMotionTimestamp === 0) {
 			this.startMotionTimestamp = data.timestamp;
 		}
@@ -165,7 +190,7 @@ window.SlacApp = {
 
 		this.currentMotionTimestamp = data.timestamp;
 		this.motionEventIteration++;
-
+		this.uiElements.stepCount.html(this.controller.pedometer.stepCount);
 		return true;
 	},
 

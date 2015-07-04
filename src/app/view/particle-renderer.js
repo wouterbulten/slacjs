@@ -13,7 +13,7 @@ class ParticleRenderer extends BaseRenderer {
 		this.offsetX = 0;
 		this.offsetY = 0;
 
-		this.padding = 2;
+		this.padding = 0;
 		this.scaleFactor = undefined;
 		this.maxScaleFactor = 200;
 
