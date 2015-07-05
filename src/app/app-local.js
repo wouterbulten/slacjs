@@ -61,12 +61,17 @@ window.SlacApp = {
 	},
 
 	step: function() {
-		this.user.walk();
+
+		const success = this.user.walk();
+
+		if (!success) {
+			return;
+		}
 
 		//Transform to angle and distance
 		//Simulate this by getting the control from the simulated user
 		const {r, theta} = this.user.getLastControl();
-
+		console.log({r, theta})
 		//As we simulate a user, and not the raw sensors we inject the data into the controller
 		this.controller._stepSize = r;
 		this.controller.heading = theta;

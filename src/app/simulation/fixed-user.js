@@ -13,16 +13,19 @@ export default class FixedUser extends User {
 	walk() {
 
 		if (this.iteration >= this.path.length) {
-			return;
+			this.lastControl = {r: 0, theta: 0};
+			return false;
 		}
 
 		this.move(this.path[this.iteration]);
 		this.lastControl = this.path[this.iteration];
 
 		this.iteration++;
+
+		return true;
 	}
 
 	getLastControl() {
-		return {r: 1, theta: 0};
+		return this.lastControl;
 	}
 }
