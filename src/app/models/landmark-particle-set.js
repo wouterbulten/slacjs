@@ -139,8 +139,8 @@ class LandmarkParticleSet {
 
 		return lowVarianceSampling(nSamples, weights).map((i) => {
 			return {
-				x: this.particles[i].x,
-				y: this.particles[i].y,
+				x: randn(this.particles[i].x, this.stdRange / 4),
+				y: randn(this.particles[i].y, this.stdRange / 4),
 				weight: 1
 			};
 		});
