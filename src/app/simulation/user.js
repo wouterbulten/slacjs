@@ -96,6 +96,7 @@ class SimulatedUser extends User {
 
 			this.iteration++;
 		}
+
 		this.iteration += 0.1;
 		return {r: this.v + this.iteration, theta: 0.5};
 		//return {r: Math.abs(randn(this.v, 1)), theta: randn(0.1, 0.2)};

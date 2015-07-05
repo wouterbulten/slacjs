@@ -1,4 +1,5 @@
 import SimulatedUser from './simulation/user';
+import FixedUser from './simulation/fixed-user';
 import { SimulatedLandmarkSet } from './simulation/landmark';
 import SlacController from './slac-controller';
 import SimulationRenderder from './view/simulation-renderer';
@@ -20,12 +21,8 @@ window.SlacApp = {
 	initialize: function() {
 		'use strict';
 
-		const userStartX = config.simulation.xMax / 2;
-		const userStartY = config.simulation.yMax / 2;
-
-		//Move the user to the center of the screen
-		config.particles.user.defaultPose.x = userStartX;
-		config.particles.user.defaultPose.y = userStartY;
+		//Update the initial pose with the true starting position
+		config.particles.user.defaultPose = config.simulation.user;
 
 		//Reset the device height as in the simulation everything is in the same plane
 		config.landmarkConfig.distToFloor = 0;
@@ -39,11 +36,7 @@ window.SlacApp = {
 		//Bind renderer to controller
 		this.controller.onUpdate((particles) => this.renderer.render(particles, this.user));
 
-		this.user = new SimulatedUser(
-			{x: userStartX, y: userStartY, theta: 0.0},
-			0.8,
-			{xRange: config.simulation.xMax, yRange: config.simulation.yMax, padding: 5}
-		);
+		this.user = new FixedUser(config.simulation.user, config.simulation.path);
 
 		this.landmarks = new SimulatedLandmarkSet(
 			20,
@@ -67,12 +60,12 @@ window.SlacApp = {
 	},
 
 	step: function() {
-		this.user.randomWalk();
+		this.user.walk();
 
 		//Transform to angle and distance
 		//Simulate this by getting the control from the simulated user
 		const {r, theta} = this.user.getLastControl();
-
+		console.log({r, theta});
 		//As we simulate a user, and not the raw sensors we inject the data into the controller
 		this.controller._stepSize = r;
 		this.controller.heading = theta;
