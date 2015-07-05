@@ -9,14 +9,12 @@ window.SlacENV = config.environment;
 
 window.SlacApp = {
 
-	particleSet: undefined,
-	visualizer: undefined,
-	sensor: undefined,
-
 	user: undefined,
 	renderer: undefined,
 	controller: undefined,
 	landmarks: undefined,
+
+	error: {avg: 0},
 
 	initialize: function() {
 		'use strict';
@@ -59,12 +57,22 @@ window.SlacApp = {
 		);
 	},
 
+	reset: function() {
+		//Create a new controller
+		this.controller = new SlacController(config);
+
+		this.controller.start();
+
+		//Bind renderer to controller
+		this.controller.onUpdate((particles) => this.renderer.render(particles, this.user));
+	},
+
 	step: function() {
 
 		const success = this.user.walk();
 
 		if (!success) {
-			return;
+			return false;
 		}
 
 		//Simulated broadcasts
@@ -82,6 +90,8 @@ window.SlacApp = {
 		this.controller._update();
 
 		this._calculateLandmarkError();
+
+		return true;
 	},
 
 	/**
@@ -93,13 +103,14 @@ window.SlacApp = {
 		const distArr = [];
 		let landmarkErrorsStr = '';
 
-		this.controller.particleSet.bestParticle().landmarks.forEach(function(l) {
+		this.controller.particleSet.bestParticle().landmarks.forEach((l) => {
 
 			const trueL = config.simulation.landmarks[l.name];
 
 			const dist = Math.sqrt(Math.pow(trueL.x - l.x, 2) + Math.pow(trueL.y - l.y, 2));
 
 			distArr.push(dist);
+			this.error[l.name] = dist;
 
 			landmarkErrorsStr += l.name + ': ' + dist + '<br>';
 		});
@@ -108,6 +119,8 @@ window.SlacApp = {
 			$('.landmark-individual-error').html(landmarkErrorsStr);
 
 			const avg = distArr.reduce(function(total, d) { return total + d; }, 0) / distArr.length;
+
+			this.error.avg = avg;
 
 			$('.landmark-error').html(avg);
 		}
