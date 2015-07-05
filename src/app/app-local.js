@@ -28,6 +28,9 @@ window.SlacApp = {
 		config.landmarkConfig.distToFloor = 0;
 		config.landmarkConfig.deviceHeight = 0;
 
+		config.particles.user.sdStep = config.simulation.user.sdStep;
+		config.particles.user.sdHeading = config.simulation.user.sdHeading;
+
 		//Create a new controller
 		this.controller = new SlacController(config);
 
@@ -77,5 +80,36 @@ window.SlacApp = {
 
 		//Run the private update function as we do not use the pedometer part of the controller
 		this.controller._update();
+
+		this._calculateLandmarkError();
+	},
+
+	/**
+	 * Calculate the landmark error and show on screen
+	 * @return {[type]} [description]
+	 */
+	_calculateLandmarkError() {
+
+		const distArr = [];
+		let landmarkErrorsStr = '';
+
+		this.controller.particleSet.bestParticle().landmarks.forEach(function(l) {
+
+			const trueL = config.simulation.landmarks[l.name];
+
+			const dist = Math.sqrt(Math.pow(trueL.x - l.x, 2) + Math.pow(trueL.y - l.y, 2));
+
+			distArr.push(dist);
+
+			landmarkErrorsStr += l.name + ': ' + dist + '<br>';
+		});
+
+		if (distArr.length > 0) {
+			$('.landmark-individual-error').html(landmarkErrorsStr);
+
+			const avg = distArr.reduce(function(total, d) { return total + d; }, 0) / distArr.length;
+
+			$('.landmark-error').html(avg);
+		}
 	}
 };

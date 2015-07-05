@@ -33,6 +33,8 @@ module.exports = {
 				y: 0,
 				theta: 0
 			},
+
+			//Can be overriden in specific environments, e.g. simulation
 			sdStep: 0.15,
 			sdHeading: 0.1
 		},
@@ -80,7 +82,10 @@ module.exports = {
 		toFriendlyName: (name) => {
 			const parts = name.split('_');
 
-			if (name.includes('2015')) {
+			if (parts.length === 1) {
+				return parts[0];
+			}
+			else if (name.includes('2015')) {
 				return parts[0];
 			}
 			else {
@@ -129,7 +134,9 @@ module.exports = {
 		user: {
 			x: 2.46,
 			y: 3.8,
-			theta: 0
+			theta: 0,
+			sdStep: 0,
+			sdHeading: 0
 		},
 
 		path: [

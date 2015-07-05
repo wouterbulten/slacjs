@@ -7,20 +7,7 @@
 	<title>SLACjs Test</title>
 
 	<style>
-		* { margin:0; padding:0; } /* to remove the top and left whitespace */
-
-		html, body { width:100%; height:100%; } /* just to be sure these are full screen*/
-
-		canvas { display:block; } /* To remove the scrollbars */
-
-		#slac-stage {
-			width: 100%;
-			position: relative;
-
-		}
 		#slac-stage canvas {
-			z-index: -1;
-			position: absolute;
 			border: 1px solid black;
 			background-color: #eeeeee;
 			box-sizing:border-box;
@@ -32,11 +19,15 @@
 
 <body>
 
+
+<h1>SLAC.js <small>(ES6 Version)</small></h1>
+<p>Current average error: <span class="landmark-error"></span></p>
+
 <div id="slac-stage">
 	<canvas id="slacjs-map" height="600" width="600"></canvas>
 </div>
 
-<h1>SLAC.js <small>(ES6 Version)</small></h1>
+<p class="landmark-individual-error"></p>
 
 <script type="text/javascript" src="assets/js/browser-polyfill.js"></script>
 <script type="text/javascript" src="vendor/vendor.js"></script>
@@ -51,7 +42,7 @@ var step = function() {
 
 var timer = setInterval(function() {
 	SlacApp.step();
-}, 1000);
+}, 100);
 
 </script>
 </body>
