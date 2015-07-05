@@ -41,7 +41,7 @@ window.SlacApp = {
 		this.landmarks = new SimulatedLandmarkSet(
 			20,
 			{xRange: config.simulation.xMax, yRange: config.simulation.yMax},
-			50,
+			config.simulation.sensorUpdateRate,
 			config.landmarkConfig,
 			config.simulation.landmarks
 		);
@@ -54,10 +54,6 @@ window.SlacApp = {
 			config.simulation.yMax,
 			0, 0
 		);
-
-		//Start broadcasting of the simulated landmarks
-		//Broadcasts are sent to the sensor, the user object is used to find nearby landmarks
-		this.landmarks.startBroadcast(this.controller, this.user);
 	},
 
 	step: function() {
@@ -68,10 +64,13 @@ window.SlacApp = {
 			return;
 		}
 
+		//Simulated broadcasts
+		this.landmarks.simulateBroadcasts(config.simulation.broadcastsPerStep, this.controller, this.user);
+
 		//Transform to angle and distance
 		//Simulate this by getting the control from the simulated user
 		const {r, theta} = this.user.getLastControl();
-		console.log({r, theta})
+
 		//As we simulate a user, and not the raw sensors we inject the data into the controller
 		this.controller._stepSize = r;
 		this.controller.heading = theta;

@@ -54,6 +54,20 @@ export class SimulatedLandmarkSet {
 	}
 
 	/**
+	 * Simulate N broadcasts
+	 * @param  {[type]} N          [description]
+	 * @param  {[type]} controller [description]
+	 * @param  {[type]} user       [description]
+	 * @return {[type]}            [description]
+	 */
+	simulateBroadcasts(N, controller, user) {
+
+		for (let i = 0; i < N; i++) {
+			this._broadCast(controller, user, false)
+		}
+	}
+
+	/**
 	 * Set the update rate of the landmarks
 	 * @param {float} updateRate
 	 * @return {SimulatedLandmarkSet}
@@ -72,9 +86,10 @@ export class SimulatedLandmarkSet {
 	 */
 	measurementsAtPoint(x, y) {
 		const landmarks = this.landmarksInRange(x, y);
-		const measurements = [];
 
-		return landmarks.forEach((l) => measurements.push({uid: l.uid, rssi: l.rssiAt(x, y), name: l.name}));
+		return landmarks.map((l) => {
+			return {uid: l.uid, rssi: l.rssiAt(x, y), name: l.name};
+		});
 	}
 
 	/**
@@ -136,15 +151,19 @@ export class SimulatedLandmarkSet {
 	 * @param  {User} user
 	 * @return {void}
 	 */
-	_broadCast(controller, user) {
+	_broadCast(controller, user, restart = true) {
 
-		const m = this.randomMeasurementAtPoint(user.x, user.y);
+		const measurements = this.measurementsAtPoint(user.x, user.y);
 
-		if (m !== undefined) {
-			controller.addDeviceObservation(m.uid, m.rssi, m.name);
+		measurements.forEach((m) => {
+			if (m !== undefined) {
+				controller.addDeviceObservation(m.uid, m.rssi, m.name);
+			}
+		});
+
+		if (restart) {
+			this.broadcastId = window.setTimeout(() => this._broadCast(controller, user), this.updateRate);
 		}
-
-		this.broadcastId = window.setTimeout(() => this._broadCast(controller, user), this.updateRate);
 	}
 
 	/**

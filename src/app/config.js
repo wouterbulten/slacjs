@@ -92,6 +92,8 @@ module.exports = {
 	simulation: {
 		xMax: 10,
 		yMax: 10,
+		sensorUpdateRate: 50,
+		broadcastsPerStep: 20,
 
 		landmarks: {
 			'LowBeacon1': {
