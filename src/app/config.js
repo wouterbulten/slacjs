@@ -90,8 +90,8 @@ module.exports = {
 	},
 
 	simulation: {
-		xMax: 20,
-		yMax: 20,
+		xMax: 10,
+		yMax: 10,
 
 		landmarks: {
 			'LowBeacon1': {

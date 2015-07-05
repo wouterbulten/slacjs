@@ -42,13 +42,14 @@ window.SlacApp = {
 			20,
 			{xRange: config.simulation.xMax, yRange: config.simulation.yMax},
 			50,
-			config.landmarkConfig
+			config.landmarkConfig,
+			config.simulation.landmarks
 		);
 
 		//Create a renderer for the canvas view
 		this.renderer = new SimulationRenderder(
 			'slacjs-map',
-			this.landmarks.landmarks,
+			config.simulation.landmarks,
 			config.simulation.xMax,
 			config.simulation.yMax,
 			0, 0
@@ -65,7 +66,7 @@ window.SlacApp = {
 		//Transform to angle and distance
 		//Simulate this by getting the control from the simulated user
 		const {r, theta} = this.user.getLastControl();
-		console.log({r, theta});
+
 		//As we simulate a user, and not the raw sensors we inject the data into the controller
 		this.controller._stepSize = r;
 		this.controller.heading = theta;

@@ -11,7 +11,7 @@ export class SimulatedLandmarkSet {
 	 * @param  {Object} landmarkConfig Landmark config
 	 * @return {SimulatedLandmarkSet}
 	 */
-	constructor(N, {xRange, yRange}, updateRate, landmarkConfig) {
+	constructor(N, {xRange, yRange}, updateRate, landmarkConfig, landmarks = {}) {
 		this.landmarks = [];
 		this.xRange = xRange;
 		this.yRange = yRange;
@@ -19,8 +19,17 @@ export class SimulatedLandmarkSet {
 		this.landmarkConfig = landmarkConfig;
 		this.broadcastId = undefined;
 
-		for (let i = 0; i < N; i++) {
-			this.landmarks.push(this._randomLandmark('landmark-' + i));
+		if (landmarks === {}) {
+			for (let i = 0; i < N; i++) {
+				this.landmarks.push(this._randomLandmark('landmark-' + i));
+			}
+		}
+		else {
+			for (let uid in landmarks) {
+				if (landmarks.hasOwnProperty(uid)) {
+					this.landmarks.push(this._landmarkFromCoordinate(uid, landmarks[uid]));
+				}
+			}
 		}
 	}
 
@@ -103,6 +112,19 @@ export class SimulatedLandmarkSet {
 		return new Landmark(uid, {
 			x: Math.random() * this.xRange,
 			y: Math.random() * this.yRange
+		}, this.landmarkConfig);
+	}
+
+	/**
+	 * Create a landmark from a set of coordinates
+	 * @param  {string} uid Uid of landmark
+	 * @param  {Object} c   Coordinates
+	 * @return {Landmark}
+	 */
+	_landmarkFromCoordinate(uid, c) {
+		return new Landmark(uid, {
+			x: c.x,
+			y: c.y
 		}, this.landmarkConfig);
 	}
 
