@@ -39,6 +39,8 @@ var maxSimulations = 100;
 var currentSimulation = 0;
 var errors = [];
 
+var timeBetweenSimulations = 1000;
+
 var errorsPerLandmark = {};
 
 var step = function() {
@@ -53,7 +55,12 @@ var step = function() {
 		startSimulation();
 	}
 	else {
-		setTimeout(step, 1);
+		if (timeBetweenSimulations > 0) {
+			setTimeout(step, timeBetweenSimulations);
+		}
+		else {
+			step();
+		}
 	}
 }
 
@@ -76,7 +83,7 @@ function printErrors() {
 	for(var key in errorsPerLandmark) {
 		if(errorsPerLandmark.hasOwnProperty(key)) {
 
-			var output = 'var error_' + key + ' = [';
+			var output = 'error' + key + ' = np.array([';
 
 			errorsPerLandmark[key].forEach(function(e, i) {
 
@@ -84,10 +91,10 @@ function printErrors() {
 					output += e;
 				}
 				else {
-					output += e + ','
+					output += e + ', '
 				}
 			});
-			output += '];';
+			output += ']);<br>';
 
 			totalOutput += output;
 		}

@@ -17,7 +17,25 @@ class SimulationRenderder extends ReplayRenderer {
 
 		super.render(particleSet);
 
-		this.plotUserTrace(user, '#4100E8');
+		this.plotUserTrace(user, '#4100E8', 3);
+	}
+
+	/**
+	 * Translate x
+	 * @param  {Number} x
+	 * @return {Number}
+	 */
+	tx(x) {
+		return super.tx(x);
+	}
+
+	/**
+	 * Translate y
+	 * @param  {Number} y
+	 * @return {Number}
+	 */
+	ty(y) {
+		return super.ty(y) - 125;
 	}
 }
 
