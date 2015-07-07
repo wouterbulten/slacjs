@@ -72,7 +72,7 @@ class LandmarkParticleSet {
 		const {varX, varY} = this._particleVariance();
 
 		//@todo Make this constraint configurable
-		if (varX < 8 && varY < 8) {
+		if (varX < this.maxVariance && varY < this.maxVariance) {
 
 			//Compute a weighted average of the particles
 			const {x, y} = this.averagePosition();
