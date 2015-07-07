@@ -4,6 +4,7 @@ import { SimulatedLandmarkSet } from './simulation/landmark';
 import SlacController from './slac-controller';
 import SimulationRenderder from './view/simulation-renderer';
 import config from './config';
+import { randn } from './util/math';
 
 window.SlacENV = config.environment;
 
@@ -80,7 +81,10 @@ window.SlacApp = {
 
 		//Transform to angle and distance
 		//Simulate this by getting the control from the simulated user
-		const {r, theta} = this.user.getLastControl();
+		let {r, theta} = this.user.getLastControl();
+
+		r = randn(r, 0.15);
+		theta = randn(theta, 0.1);
 
 		//As we simulate a user, and not the raw sensors we inject the data into the controller
 		this.controller._stepSize = r;
@@ -122,7 +126,7 @@ window.SlacApp = {
 
 			this.error.avg = avg;
 
-			$('.landmark-error').html(avg);
+			$('.landmark-error').html(Math.round((avg * 100)) / 100);
 		}
 	}
 };
