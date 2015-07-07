@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>SLACjs Test</title>
+
+	<style>
+		#slac-stage canvas {
+			border: 1px solid black;
+			background-color: #eeeeee;
+		}
+	</style>
+</head>
+
+<body>
+
+<h1>SLAC.js <small>(Replaying recorded data)</small></h1>
+<p>Current average error: <span class="landmark-error"></span></p>
+
+<div id="slac-stage">
+	<canvas height="600" width="600" id="slacjs-map"></canvas>
+</div>
+
+<div id="error-plot"></div>
+<p class="landmark-individual-error"></p>
+
+<div id="landmark-info"></div>
+<div id="error-output"></div>
+
+<script type="text/javascript" src="data/replay-data-170615-LowBeacon-LoopReverseLoop.js"></script>
+<script type="text/javascript" src="data/environment-data-LowBeacon.js"></script>
+<script type="text/javascript" src="assets/js/browser-polyfill.js"></script>
+<script type="text/javascript" src="vendor/vendor.js"></script>
+<script type="text/javascript" src="assets/js/slacjs-app.js"></script>
+
+<script type="text/javascript">
+var maxSimulations = 100;
+var currentSimulation = 0;
+var errors = [];
+
+var errorsPerLandmark = {};
+
+function parseErrors(error) {
+	for (var key in error) {
+		if (error.hasOwnProperty(key)) {
+			if (errorsPerLandmark[key] === undefined) {
+				errorsPerLandmark[key] = [error[key]];
+			}
+			else {
+				errorsPerLandmark[key].push(error[key]);
+			}
+		}
+	}
+}
+
+function printErrors() {
+	var totalOutput = '';
+
+	for(var key in errorsPerLandmark) {
+		if(errorsPerLandmark.hasOwnProperty(key)) {
+
+			var output = 'error' + key + ' = np.array([';
+
+			errorsPerLandmark[key].forEach(function(e, i) {
+
+				if(i == (errorsPerLandmark[key].length - 1)) {
+					output += e;
+				}
+				else {
+					output += e + ', '
+				}
+			});
+			output += ']);<br>';
+
+			totalOutput += output;
+		}
+	}
+
+	$('#error-output').html(totalOutput);
+}
+
+for (var i = 0; i < maxSimulations; i++) {
+	SlacApp.initialize();
+	SlacApp.start();
+
+	errors.push(SlacApp.error);
+	parseErrors(SlacApp.error);
+}
+printErrors();
+
+</script>
+</body>
+</html>

@@ -76,7 +76,7 @@ module.exports = {
 	},
 
 	ble: {
-		frequency: 100,
+		frequency: 10,
 		devicePrefix: 'LowBeacon',
 
 		toFriendlyName: (name) => {
@@ -135,8 +135,8 @@ module.exports = {
 			x: 2.46,
 			y: 3.8,
 			theta: 0,
-			sdStep: 0,
-			sdHeading: 0
+			sdStep: 0.15,
+			sdHeading: 0.1
 		},
 
 		path: [
@@ -211,7 +211,7 @@ module.exports = {
 
 	replay: {
 		showVisualisation: true,
-		updateRate: 50,
+		updateRate: 2000,
 		delayAlgorithm: true
 	}
 };

@@ -1,7 +1,6 @@
 import config from './config';
 import SlacController from './slac-controller';
 import ReplayRenderer from './view/replay-renderer';
-import LandmarkActivityPanel from './view/landmark-activity-panel';
 import { degreeToNormalisedHeading } from './util/motion';
 
 /**
@@ -30,7 +29,23 @@ window.SlacApp = {
 
 	errorPlot: {},
 
+	error: {avg: 0},
+
 	initialize() {
+
+		//Reset all the timers and counters so that we can reuse this object
+		//on multiple runs
+		this.bleEventIteration = 0;
+		this.motionEventIteration = 0;
+
+		this.lastUpdate = 0;
+
+		this.startMotionTimestamp = 0;
+		this.currentMotionTimestamp = 0;
+
+		this.startHeading = 0;
+
+		this.error = {avg: 0};
 
 		if (typeof SlacJsData === 'undefined') {
 			console.error('No replay data found');
@@ -50,11 +65,11 @@ window.SlacApp = {
 			this.renderer = new ReplayRenderer('slacjs-map', SlacJsLandmarkPositions);
 		}
 
-		//Create a view for the panel that displays beacon info
-		this.landmarkPanel = new LandmarkActivityPanel('#landmark-info');
-
 		//Create plot for the errors
-		this._initErrorPlot();
+		//Only when we actually show the progress of the algorithm
+		if (config.replay.delayAlgorithm) {
+			this._initErrorPlot();
+		}
 	},
 
 	start() {
@@ -89,8 +104,6 @@ window.SlacApp = {
 			if (event != 'update') {
 				console.log(`[SLCAjs/sensor] ${uid} ${event}, message: "${msg}"`);
 			}
-
-			this.landmarkPanel.processEvent(uid, name, event, msg);
 		});
 
 		this.controller.start();
@@ -103,9 +116,6 @@ window.SlacApp = {
 				//Update the canvas
 				this.renderer.render(particles);
 			}
-
-			//Update the beacon info
-			this.landmarkPanel.render();
 		});
 
 		//Save the start time, we use this to determine which BLE events to send
@@ -200,13 +210,14 @@ window.SlacApp = {
 		const distArr = [];
 		let landmarkErrorsStr = '';
 
-		this.controller.particleSet.bestParticle().landmarks.forEach(function(l) {
+		this.controller.particleSet.bestParticle().landmarks.forEach((l) => {
 
 			const trueL = SlacJsLandmarkPositions[l.name];
 
 			const dist = Math.sqrt(Math.pow(trueL.x - l.x, 2) + Math.pow(trueL.y - l.y, 2));
 
 			distArr.push(dist);
+			this.error[l.name] = dist;
 
 			landmarkErrorsStr += l.name + ': ' + dist + '<br>';
 		});
@@ -215,10 +226,16 @@ window.SlacApp = {
 			$('.landmark-individual-error').html(landmarkErrorsStr);
 
 			const avg = distArr.reduce(function(total, d) { return total + d; }, 0) / distArr.length;
-			this.errorPlot.data.push(avg);
 
-			this.errorPlot.plot.series[0].setData(this.errorPlot.data);
+			//Only update the plot when we actually show the progress of the algorithm
+			if (config.replay.delayAlgorithm) {
+				this.errorPlot.data.push(avg);
+
+				this.errorPlot.plot.series[0].setData(this.errorPlot.data);
+			}
+
 			$('.landmark-error').html(avg);
+			this.error.avg = avg;
 		}
 	},
 
