@@ -6,6 +6,7 @@ import KalmanFilter from '../util/kalman';
  * Based on a FirefoxOS ES5 implementation.
  *
  * @see http://sebastien.menigot.free.fr/index.php?view=article&id=93
+ * @see http://www.analog.com/library/analogdialogue/archives/44-06/pedometer.html
  */
 class Pedometer {
 
