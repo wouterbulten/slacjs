@@ -20,7 +20,7 @@ class Pedometer {
 		this.minAcc   = 1.0;  // minimum of the acceleration on the window L
 		this.maxAcc   = -Infinity; // maximum of the acceleration on the window L
 		this.threshold = -Infinity; // threshold to detect a step
-		this.sensibility = 1.0 / 30.0;  // sensibility to detect a step
+		this.sensitivity = 1.0 / 30.0;  // sensitivity to detect a step
 
 		this.stepCount = 0;           // number of steps
 		this.stepArr   = new Array(windowSize); // steps in 2 seconds
@@ -75,8 +75,8 @@ class Pedometer {
 
 		if (
 
-			//Sensiblity, the difference must increase the sensibility
-			Math.abs(diff) >= this.sensibility &&
+			//Sensiblity, the difference must increase the sensitivity
+			Math.abs(diff) >= this.sensitivity &&
 
 			//Acceleration must be above the threshold, and the previous one below (i.e. a new step)
 			(this.accNorm[this.accNorm.length - 1] >= this.threshold) &&
@@ -133,10 +133,10 @@ class Pedometer {
 
 		if (!isNaN(this.varAcc)) {
 			this.filter.setMeasurementNoise(this.varAcc);
-			this.sensibility = 2.0 * (Math.sqrt(this.varAcc) / (9.80665 * 9.80665));
+			this.sensitivity = 2.0 * (Math.sqrt(this.varAcc) / (9.80665 * 9.80665));
 		}
 		else {
-			this.sensibility = 1.0 / 30.0;
+			this.sensitivity = 1.0 / 30.0;
 		}
 	}
 }
