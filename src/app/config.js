@@ -58,8 +58,8 @@ module.exports = {
 		noise: 4,
 		range: 20,
 
-		distToFloor: 0.1,
-		deviceHeight: 1.2
+		distToFloor: 0,
+		deviceHeight: 0
 	},
 
 	sensor: {

@@ -28,18 +28,23 @@
 </div>
 
 <p class="landmark-individual-error"></p>
-<p class="error-output"><p>
+<p class="error-output"></p>
+
+<textarea rows="4" cols="50" class="error-csv"></textarea>
 
 <script type="text/javascript" src="assets/js/browser-polyfill.js"></script>
 <script type="text/javascript" src="vendor/vendor.js"></script>
 <script type="text/javascript" src="assets/js/slacjs-app.js"></script>
 
 <script type="text/javascript">
-var maxSimulations = 100;
+var conditions = [1, 2, 5, 10, 25, 50, 100];
+var maxSimulations = 500;
 var currentSimulation = 0;
-var errors = [];
+var currentCondition = 0;
+var errors = {};
+var beacons = 7;
 
-var timeBetweenSimulations = 1000;
+var timeBetweenSimulations = 0;
 
 var errorsPerLandmark = {};
 
@@ -48,9 +53,13 @@ var step = function() {
 
 	if (!success) {
 		SlacApp.reset();
-		errors.push(SlacApp.error);
 
-		parseErrors(SlacApp.error);
+		if(errors[currentCondition] === undefined) {
+			errors[currentCondition] = [];
+		}
+
+		errors[currentCondition].push(SlacApp.error);
+		SlacApp.error = {};
 
 		startSimulation();
 	}
@@ -64,7 +73,7 @@ var step = function() {
 	}
 }
 
-function parseErrors(error) {
+/*function parseErrors(error) {
 	for (var key in error) {
 		if (error.hasOwnProperty(key)) {
 			if (errorsPerLandmark[key] === undefined) {
@@ -102,13 +111,40 @@ function printErrors() {
 
 	$('.error-output').html(totalOutput);
 }
+*/
+
+function outputToCsv() {
+
+	var csv = '';
+
+	conditions.forEach(function(c, i) {
+		errors[i].forEach(function(e) {
+			var output = c;
+
+			for(var b = 1; b <= beacons; b++) {
+				if(e[b] === undefined) {
+					output += ';';
+				}
+				else {
+					output += (';' + e[b].toFixed(4))
+				}
+			}
+
+			csv += output + '\n';
+		});
+	});
+
+	$('.error-csv').val(csv);
+}
 
 function startSimulation() {
 	currentSimulation++;
 
 	if(currentSimulation > maxSimulations) {
-		console.log(JSON.stringify(errors));
-		printErrors();
+
+		//Start the new condition
+		currentCondition++;
+		startCondition();
 		return;
 	}
 
@@ -117,7 +153,21 @@ function startSimulation() {
 	setTimeout(step, 20);
 }
 
-startSimulation();
+function startCondition() {
+
+	console.log(currentCondition);
+	if(currentCondition >= conditions.length) {
+		outputToCsv();
+		return;
+	}
+
+	SlacApp.broadcastsPerStep = conditions[currentCondition];
+
+	currentSimulation = 0;
+	startSimulation();
+}
+
+startCondition();
 
 </script>
 </body>

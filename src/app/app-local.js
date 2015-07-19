@@ -17,6 +17,8 @@ window.SlacApp = {
 
 	error: {avg: 0},
 
+	broadcastsPerStep: undefined,
+
 	initialize: function() {
 		'use strict';
 
@@ -30,13 +32,16 @@ window.SlacApp = {
 		config.particles.user.sdStep = config.simulation.user.sdStep;
 		config.particles.user.sdHeading = config.simulation.user.sdHeading;
 
+		if(this.broadcastsPerStep === undefined) {
+			this.broadcastsPerStep = config.simulation.broadcastsPerStep;
+		}
 		//Create a new controller
 		this.controller = new SlacController(config);
 
 		this.controller.start();
 
 		//Bind renderer to controller
-		this.controller.onUpdate((particles) => this.renderer.render(particles, this.user));
+		//this.controller.onUpdate((particles) => this.renderer.render(particles, this.user));
 
 		this.user = new FixedUser(config.simulation.user, config.simulation.path);
 
@@ -65,7 +70,7 @@ window.SlacApp = {
 		this.controller.start();
 
 		//Bind renderer to controller
-		this.controller.onUpdate((particles) => this.renderer.render(particles, this.user));
+		//this.controller.onUpdate((particles) => this.renderer.render(particles, this.user));
 	},
 
 	step: function() {
@@ -77,7 +82,7 @@ window.SlacApp = {
 		}
 
 		//Simulated broadcasts
-		this.landmarks.simulateBroadcasts(config.simulation.broadcastsPerStep, this.controller, this.user);
+		this.landmarks.simulateBroadcasts(this.broadcastsPerStep, this.controller, this.user);
 
 		//Transform to angle and distance
 		//Simulate this by getting the control from the simulated user
@@ -104,8 +109,8 @@ window.SlacApp = {
 	 */
 	_calculateLandmarkError() {
 
-		const distArr = [];
-		let landmarkErrorsStr = '';
+		//const distArr = [];
+		//let landmarkErrorsStr = '';
 
 		this.controller.particleSet.bestParticle().landmarks.forEach((l) => {
 
@@ -113,13 +118,13 @@ window.SlacApp = {
 
 			const dist = Math.sqrt(Math.pow(trueL.x - l.x, 2) + Math.pow(trueL.y - l.y, 2));
 
-			distArr.push(dist);
-			this.error[l.name] = dist;
+			//distArr.push(dist);
+			this.error[l.name.replace("LowBeacon", "")] = dist;
 
-			landmarkErrorsStr += l.name + ': ' + dist + '<br>';
+			//landmarkErrorsStr += l.name + ': ' + dist + '<br>';
 		});
 
-		if (distArr.length > 0) {
+		/*if (distArr.length > 0) {
 			$('.landmark-individual-error').html(landmarkErrorsStr);
 
 			const avg = distArr.reduce(function(total, d) { return total + d; }, 0) / distArr.length;
@@ -127,6 +132,6 @@ window.SlacApp = {
 			this.error.avg = avg;
 
 			$('.landmark-error').html(Math.round((avg * 100)) / 100);
-		}
+		}*/
 	}
 };

@@ -88,7 +88,6 @@ class ParticleSet {
 
 		const weights = this.particleList.map(p => p.weight);
 		if (numberOfEffectiveParticles(weights) < this.effectiveParticleThreshold) {
-			console.log('resampling');
 			this.particleList = lowVarianceSampling(this.nParticles, weights).map((i) => {
 				return new Particle({}, this.particleList[i]);
 			});

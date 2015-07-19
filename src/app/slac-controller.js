@@ -140,7 +140,7 @@ class SlacController {
 			this.beforeUpdateCallback(this.particleSet, this.iteration);
 		}
 
-		console.log('[SLACjs/controller] Update running');
+		//console.log('[SLACjs/controller] Update running');
 
 		//@todo Check for the amount of steps here
 		const dist = 1 * this.stepSize;
