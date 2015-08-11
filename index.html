@@ -1,26 +1,13 @@
 <!DOCTYPE HTML>
-
 <html>
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>SLACjs Test</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>SLACjs</title>
 
 	<style>
-		* { margin:0; padding:0; } /* to remove the top and left whitespace */
-
-		html, body { width:100%; height:100%; } /* just to be sure these are full screen*/
-
-		canvas { display:block; } /* To remove the scrollbars */
-
-		#slac-stage {
-			width: 100%;
-			position: relative;
-			
-		}
-		#slac-stage canvas { 
-			z-index: -1;
-			position: absolute;
+		#slac-stage canvas {
 			border: 1px solid black;
 			background-color: #eeeeee;
 			box-sizing:border-box;
@@ -28,84 +15,138 @@
 			-webkit-box-sizing:border-box;
 		}
 	</style>
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
 
-<div id="slac-stage">
-	<canvas id="slac-map"></canvas>
-</div>
+<div class="container">
 
-<h1>SLAC.js <small>(ES6 Version)</small></h1>
-<button id="toggle-simulation">Toggle simulation</button>
-<button id="step">Step</button>
-Iteration time:
-<select id="time">
-	<option>5000</option>
-	<option>2000</option>
-	<option>1000</option>
-	<option>500</option>
-	<option selected>250</option>
-	<option>50</option>
-	<option>10</option>
-</select>
-Landmark update rate
-<select id="l-time">
-	<option>5000</option>
-	<option>2000</option>
-	<option>1000</option>
-	<option>500</option>
-	<option selected>50</option>
-	<option>10</option>
-</select>
+	<div class="row">
+
+		<div class="page-header">
+			<h1>SLAC.js <small>Indoor localisation using Javascript</small></h1>
+		</div>
+
+		<p class="lead">
+			Simultaneously Localisation and Configuration (SLAC) of indoor Wireless Sensor Networks and their users built upon FastSLAM.
+		</p>
+
+		<p>With SLAC we aim to simultaneously locate both the user and the devices of a system deployed in an indoor environment.
+			The algorithm is privacy-aware and is an online localisation method; i.e. localisation starts whenever a user starts
+			moving inside a building. Moreover, for the SLAC system we focus on a solution that can be deployed in smart spaces without
+			additional hardware requirements besides users’ mobile phones and the components of the space. By utilising a mobile
+			phone we remove the need for a application-dependent device that the user needs to keep.
+		</p>
+
+		<p>See for more information <a href="https://github.com/wouterbulten/slacjs">SLACjs on Github</a></p>
+
+		<hr>
+		<h2>Live demonstration</h2>
+
+		<p>The demo below shows a simulated world with 7 devices (black squares). A user walks
+			around (blue line) and collects RSSI measurements from the devices.
+
+			Each grey line shows a single particle representing the user's trace. The green line shows
+			the current best particle (based on the importance weight).
+
+			Red squares (with the device name) show the current best estimate of that device's location. The
+			estimate is retrieved from the best particle.</p>
+
+		<p><b>Note:</b> The simulation is slowed down to show the actual process. Between each simulation there is a
+			500ms delay.
+		</p>
+
+		<p>
+			<button class="btn btn-success" id="start-sim">Start simulation</button>
+		</p>
+
+		<div id="slac-stage">
+			<canvas id="slacjs-map" height="600" width="600" class="img-thumbnail"></canvas>
+		</div>
+
+		<div class="panel panel-default">
+			<div class="panel-heading"><h3 class="panel-title">Current average error <small>(Only visible after at least 1 landmark has been found)</small></h3></div>
+  			<div class="panel-body">
+	  			<span class="landmark-error">&infin;</span>m
+			</div>
+		</div>
+
+		<div class="panel panel-default">
+			<div class="panel-heading"><h3 class="panel-title">Individual landmark errors <small>(Only visible after initialisation phase)</small></h3></div>
+  			<div class="panel-body">
+	  			<p class="landmark-individual-error"></p>
+			</div>
+			<p class="error-output"><p>
+		</div>
+
+		<hr>
+		<h2>Other demos</h2>
+		<p>Some other demos are also available online showing specific parts of the algorithm. A few of the demo's run an older version of the SLAC algorithm.</p>
+
+		<ul>
+			<li><a href="random-movement/tests/landmark-init.html">EKF initalisation</a>. Demo showing the dedicated particle filter that is used to
+				initialize a new device. It finds a rough estimate of the device's position using a particle filter. This version does not yet contain
+			the improved resampling function that is used in the newest version of SLACjs.</a>
+			<li><a href="random-movement/index.html">Older version of the algorithm on random data</a>. The world and movement is fully random.</li>
+			<li><a href="replay/index.html">Replay version of a live tests</a>. Data has been recorded inside a real building with
+				7 bluetooth beacons used as landmarks. The demo version runs a slightly older version and does not show the maximum
+				attainable localisation performance.</li>
+		</ul>
+
+		<hr style="margin-top: 150px;">
+		<h2>License</h2>
+
+		<p>Copyright (C) 2015 Wouter Bulten</p>
+		<p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
+		<p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
+	</div>
+</div>
 
 <script type="text/javascript" src="assets/js/browser-polyfill.js"></script>
 <script type="text/javascript" src="vendor/vendor.js"></script>
 <script type="text/javascript" src="assets/js/slacjs-app.js"></script>
 
 <script type="text/javascript">
-SlacApp.initialize();
+var maxSimulations = 1;
+var currentSimulation = 0;
+var errors = [];
 
-var timeout = undefined;
+var timeBetweenSteps = 500;
 
-var iteration = function() {
-	SlacApp.step();
-	timeout = setTimeout(iteration, $('#time').val());
-};
+var errorsPerLandmark = {};
 
-timeout = setTimeout(iteration, 500);
+var step = function() {
+	var success = SlacApp.step();
 
-$(window).ready(function() {
-	
-	$('#step').on('click', function() {
-		SlacApp.step();
-	});
+	if (!success) {
+		SlacApp.reset();
 
-	$('#l-time').change(function() {
-		SlacApp.landmarks.setUpdateRate($('#l-time').val());
-	});
-
-	$('#toggle-simulation').on('click', function() {
-
-		if(timeout !== undefined) {
-			clearTimeout(timeout);
-			timeout = undefined;
-
-			//Disable the simulated broadcast
-			SlacApp.landmarks.stopBroadCast();
-
-			console.log("Paused");
+		simulationStarted = false;
+		document.getElementById('start-sim').disabled = false;
+	}
+	else {
+		if (timeBetweenSteps > 0) {
+			setTimeout(step, timeBetweenSteps);
 		}
 		else {
-			timeout = setTimeout(iteration, 500);
-
-			//Enable the broadcast again
-			SlacApp.landmarks.startBroadcast(SlacApp.sensor, SlacApp.user);
-
-			console.log("Started");
+			step();
 		}
-	});
-})
+	}
+}
+
+var simulationStarted = false;
+document.getElementById('start-sim').onclick=function() {
+	if(!simulationStarted) {
+		simulationStarted = true;
+		SlacApp.initialize();
+
+		setTimeout(step, 20);
+		document.getElementById('start-sim').disabled = true;
+	}
+};
+
+
 </script>
 </body>
 </html>

@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>SLACjs Test</title>
+
+	<style>
+		* { margin:0; padding:0; } /* to remove the top and left whitespace */
+
+		html, body { width:100%; height:100%; } /* just to be sure these are full screen*/
+
+		canvas { display:block; } /* To remove the scrollbars */
+
+		#slac-stage {
+			width: 100%;
+			position: relative;
+			
+		}
+		#slac-stage canvas { 
+			z-index: -1;
+			position: absolute;
+			border: 1px solid black;
+			background-color: #eeeeee;
+			box-sizing:border-box;
+			-moz-box-sizing:border-box;
+			-webkit-box-sizing:border-box;
+		}
+	</style>
+</head>
+
+<body>
+
+<div id="slac-stage">
+	<canvas id="slac-map"></canvas>
+</div>
+
+<h1>SLAC.js <small>(ES6 Version)</small></h1>
+<button id="toggle-simulation">Toggle simulation</button>
+<button id="step">Step</button>
+Iteration time:
+<select id="time">
+	<option>5000</option>
+	<option>2000</option>
+	<option>1000</option>
+	<option>500</option>
+	<option selected>250</option>
+	<option>50</option>
+	<option>10</option>
+</select>
+Landmark update rate
+<select id="l-time">
+	<option>5000</option>
+	<option>2000</option>
+	<option>1000</option>
+	<option>500</option>
+	<option selected>50</option>
+	<option>10</option>
+</select>
+
+<script type="text/javascript" src="assets/js/browser-polyfill.js"></script>
+<script type="text/javascript" src="vendor/vendor.js"></script>
+<script type="text/javascript" src="assets/js/slacjs-app.js"></script>
+
+<script type="text/javascript">
+SlacApp.initialize();
+
+var timeout = undefined;
+
+var iteration = function() {
+	SlacApp.step();
+	timeout = setTimeout(iteration, $('#time').val());
+};
+
+timeout = setTimeout(iteration, 500);
+
+$(window).ready(function() {
+	
+	$('#step').on('click', function() {
+		SlacApp.step();
+	});
+
+	$('#l-time').change(function() {
+		SlacApp.landmarks.setUpdateRate($('#l-time').val());
+	});
+
+	$('#toggle-simulation').on('click', function() {
+
+		if(timeout !== undefined) {
+			clearTimeout(timeout);
+			timeout = undefined;
+
+			//Disable the simulated broadcast
+			SlacApp.landmarks.stopBroadCast();
+
+			console.log("Paused");
+		}
+		else {
+			timeout = setTimeout(iteration, 500);
+
+			//Enable the broadcast again
+			SlacApp.landmarks.startBroadcast(SlacApp.sensor, SlacApp.user);
+
+			console.log("Started");
+		}
+	});
+})
+</script>
+</body>
+</html>
