@@ -39,10 +39,27 @@
 			phone we remove the need for a application-dependent device that the user needs to keep.
 		</p>
 
+		<h4 style="padding-top:30px;">Contents</h4>
+		<ol>
+			<li><a href="#presentation">Presentation</a></li>
+			<li><a href="#demo">Demonstration (running in the browser)</a></li>
+			<li><a href="#examples">Additional examples</a></li>
+			<li><a href="#license">License</a></li>
+		</ol>
 		<p>See for more information <a href="https://github.com/wouterbulten/slacjs">SLACjs on Github</a></p>
 
-		<hr>
-		<h2>Live demonstration</h2>
+	</div>
+	<div class="row">
+		<h2 style="padding-top: 50px;" id="presentation">Presentation</h2>
+
+		<div style="height: 30%; padding: 30%; box-sizing: border-box; position: relative;">
+		<iframe style="border: 1px solid lightgrey; position: absolute; top: 0; left: 0; height: 100%; width: 100%" id="slacjs-presentation" marginheight="0" marginwidth="0" src="https://wouterbulten.nl/slacjs-presentation">
+		  Fallback text here for unsupporting browsers, of which there are scant few.
+		</iframe>
+		</div>
+	</div>
+	<div class="row">
+		<h2 style="padding-top: 50px;" id="demo">Live demonstration</h2>
 
 		<p>The demo below shows a simulated world with 7 devices (black squares). A user walks
 			around (blue line) and collects RSSI measurements from the devices.
@@ -81,7 +98,7 @@
 		</div>
 
 		<hr>
-		<h2>Other demos</h2>
+		<h2 id="examples">Other demos</h2>
 		<p>Some other demos are also available online showing specific parts of the algorithm. A few of the demo's run an older version of the SLAC algorithm.</p>
 
 		<ul>
@@ -95,7 +112,7 @@
 		</ul>
 
 		<hr style="margin-top: 150px;">
-		<h2>License</h2>
+		<h2 id="license">License</h2>
 
 		<p>Copyright (C) 2015 Wouter Bulten</p>
 		<p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
@@ -111,6 +128,9 @@ window.devicePixelRatio = 2; //Small hack to make the rendering of the canvas be
 <script type="text/javascript" src="assets/js/slacjs-app.js"></script>
 
 <script type="text/javascript">
+/*
+DEMO JAVASCRIPT
+ */
 var maxSimulations = 1;
 var currentSimulation = 0;
 var errors = [];
