@@ -11,18 +11,9 @@ SLAC is implemented in Javascript using the ECMAScript 6 standard. See [es6featu
 This project is part of a Master Thesis in Artificial Intelligence at the [Radboud University](http://www.ru.nl) and an internship at [DoBots](https://dobots.nl/) and [Almende](http://www.almende.com/).
 
 
-## Presentation
+## Live demo & Presentation
 
-A online presentation describing the SLACjs project can be found here:
-
-https://wouterbulten.nl/slacjs-presentation
-
-## Demo's
-
-The following list of demo's are demo's of the local/browser version of SLACjs and use simulated data.
-
-* [Full demonstration with simulated data](https://wouterbulten.nl/slacjs)
-* [Landmark initialisation example](https://wouterbulten.nl/slacjs/tests/landmark-init.html)
+An online [demo](https://wouterbulten.nl/slacjs#demo) and [presentation](https://wouterbulten.nl/slacjs#presentation) can be found on the project's website: https://wouterbulten.nl/slacjs/.
 
 ## Screenshots
 
