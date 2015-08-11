@@ -1,0 +1,31 @@
+.chart-legend {
+    font-size: 0.7em !important;
+}
+.chart-legend span {
+
+}
+
+.reveal .slides section img {
+     border: 0;
+     box-shadow: none;
+     margin-bottom: 0;
+}
+.img-container {
+    position: relative;
+    width: 1200px;
+    height: 1000px;
+}
+.img-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 1px solid red;
+    width: 1200px;
+    height: 1000px;
+}
+
+.column-left, .column-right {
+    width: 50%;
+    float: left;
+    font-size: 0.7em !important;
+}

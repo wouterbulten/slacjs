@@ -1,0 +1,8 @@
+{
+	"preset": "airbnb",
+	"validateIndentation": {
+		"value": "\t",
+		"includeEmptylines": false
+	},
+	"requireLineFeedAtFileEnd": null
+}

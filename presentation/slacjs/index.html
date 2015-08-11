@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>SLACjs Test</title>
+
+	<style>
+		#slac-stage canvas {
+			border: 1px solid black;
+			background-color: #eeeeee;
+			box-sizing:border-box;
+			-moz-box-sizing:border-box;
+			-webkit-box-sizing:border-box;
+		}
+	</style>
+</head>
+
+<body>
+
+
+<h1>SLAC.js <small>(ES6 Version)</small></h1>
+<p>Current average error: <span class="landmark-error"></span></p>
+
+<div id="slac-stage">
+	<canvas id="slacjs-map" height="600" width="600"></canvas>
+</div>
+
+<p class="landmark-individual-error"></p>
+<p class="error-output"><p>
+
+<script type="text/javascript" src="assets/js/browser-polyfill.js"></script>
+<script type="text/javascript" src="vendor/vendor.js"></script>
+<script type="text/javascript" src="assets/js/slacjs-app.js"></script>
+
+<script type="text/javascript">
+var maxSimulations = 1;
+var currentSimulation = 0;
+var errors = [];
+
+var timeBetweenSimulations = 1000;
+
+var errorsPerLandmark = {};
+
+var step = function() {
+	var success = SlacApp.step();
+
+	if (!success) {
+		SlacApp.reset();
+		errors.push(SlacApp.error);
+
+		//parseErrors(SlacApp.error);
+
+		startSimulation();
+	}
+	else {
+		if (timeBetweenSimulations > 0) {
+			setTimeout(step, timeBetweenSimulations);
+		}
+		else {
+			step();
+		}
+	}
+}
+
+function parseErrors(error) {
+	for (var key in error) {
+		if (error.hasOwnProperty(key)) {
+			if (errorsPerLandmark[key] === undefined) {
+				errorsPerLandmark[key] = [error[key]];
+			}
+			else {
+				errorsPerLandmark[key].push(error[key]);
+			}
+		}
+	}
+}
+
+function printErrors() {
+	var totalOutput = '';
+
+	for(var key in errorsPerLandmark) {
+		if(errorsPerLandmark.hasOwnProperty(key)) {
+
+			var output = 'error' + key + ' = np.array([';
+
+			errorsPerLandmark[key].forEach(function(e, i) {
+
+				if(i == (errorsPerLandmark[key].length - 1)) {
+					output += e;
+				}
+				else {
+					output += e + ', '
+				}
+			});
+			output += ']);<br>';
+
+			totalOutput += output;
+		}
+	}
+
+	$('.error-output').html(totalOutput);
+}
+
+function startSimulation() {
+	currentSimulation++;
+
+	if(currentSimulation > maxSimulations) {
+		console.log(JSON.stringify(errors));
+		printErrors();
+		return;
+	}
+
+	SlacApp.initialize();
+
+	setTimeout(step, 20);
+}
+
+startSimulation();
+
+</script>
+</body>
+</html>
