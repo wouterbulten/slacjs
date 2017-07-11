@@ -13,7 +13,7 @@ This project is part of a Master Thesis in Artificial Intelligence at the [Radbo
 
 ## Live demo & Presentation
 
-An online [demo](https://wouterbulten.nl/slacjs#demo) and [presentation](https://wouterbulten.nl/slacjs#presentation) can be found on the project's website: https://wouterbulten.nl/slacjs/.
+An online [demo](https://www.wouterbulten.nl/projects/slacjs#demo) and [presentation](https://www.wouterbulten.nl/projects/slacjs#presentation) can be found on the project's website: https://www.wouterbulten.nl/projects/slacjs/.
 
 ## Screenshots
 
