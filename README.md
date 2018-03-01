@@ -1,7 +1,5 @@
 # SLACjs
 
-[![Build Status](https://travis-ci.org/wouterbulten/slacjs.svg)](https://travis-ci.org/wouterbulten/slacjs) [![devDependency Status](https://david-dm.org/wouterbulten/slacjs/dev-status.svg)](https://david-dm.org/wouterbulten/slacjs#info=devDependencies) [![Code Climate](https://codeclimate.com/github/wouterbulten/slacjs/badges/gpa.svg)](https://codeclimate.com/github/wouterbulten/slacjs) [![bitHound Score](https://www.bithound.io/github/wouterbulten/slacjs/badges/score.svg)](https://www.bithound.io/github/wouterbulten/slacjs)
-
 Simultaneous Localisation and Configuration (SLAC) for Wireless Sensor Networks in indoor environments using FastSLAM.
 
 With SLAC we aim to simultaneously localise both the user and the devices of a system deployed in an indoor environment. The algorithm is privacy-aware and is an online localisation method; i.e. localisation starts whenever a user starts moving inside a building. Moreover, for the SLAC system we focus on a solution that can be deployed in smart spaces without additional hardware requirements besides users’ mobile phones` and the components of the space. By utilising a mobile phone we remove the need for a application-dependent device that the user needs to keep.
